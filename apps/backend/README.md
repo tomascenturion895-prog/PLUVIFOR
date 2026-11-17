@@ -55,3 +55,12 @@ Todos los errores tienen la misma forma y nunca incluyen detalles internos ni el
 ## Reglas del proyecto
 
 Un hueco de datos no es 0 mm. Ver `AGENTS.md` y `docs/CONTRIBUTING.md`.
+
+## Base de datos
+
+```
+alembic upgrade head      # crea/actualiza las tablas (usa DATABASE_URL)
+alembic revision --autogenerate -m "descripcion"   # tras cambiar un modelo
+```
+
+Las reglas de calidad (un hueco no es 0 mm, categorías, unidad) son restricciones de la base; ver `docs/modelo-datos.md`.

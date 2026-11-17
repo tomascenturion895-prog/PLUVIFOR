@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api import health
 from app.config import Settings, get_settings
+from app.db.session import create_db_engine, create_session_factory
 from app.errors import register_error_handlers
 
 
@@ -21,6 +22,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url="/openapi.json" if settings.docs_enabled else None,
     )
     app.dependency_overrides[get_settings] = lambda: settings
+    app.state.engine = create_db_engine(settings.database_url)
+    app.state.session_factory = create_session_factory(app.state.engine)
 
     app.add_middleware(
         CORSMiddleware,
