@@ -1,0 +1,4 @@
+estacion_id,id_interno,nombre,tipo,localidad,provincia,lat,lon,altura_m,desde_siga,hasta_siga,fuente,url,consultado
+51,NH0464,INTA - El Colorado (EMC),Convencional,Pirané,Formosa,-26.3,-59.38,78,1960-01-01,2015-06-28,SIGA INTA,https://siga.inta.gob.ar,2026-11-16
+424,A872905,El Colorado - EEA El Colorado,Automática (Nimbus THP),Pirané,Formosa,-26.33,-59.35,106,2013-10-07,2022-12-07,SIGA INTA,https://siga.inta.gob.ar,2026-11-16
+425,A872904,Bartolomé de las Casas - EEA El Colorado,Automática (Nimbus THP),Bartolomé de las Casas,Formosa,-25.45,-59.5,116.4,2013-12-12,2023-03-24,SIGA INTA,https://siga.inta.gob.ar,2026-11-16
