@@ -1,0 +1,19 @@
+[project]
+name = "pluvifor-backend"
+version = "0.1.0"
+description = "API de PLUVIFOR: reporte pluvial provincial de Formosa"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
