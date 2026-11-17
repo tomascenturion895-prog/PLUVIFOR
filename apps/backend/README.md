@@ -64,3 +64,13 @@ alembic revision --autogenerate -m "descripcion"   # tras cambiar un modelo
 ```
 
 Las reglas de calidad (un hueco no es 0 mm, categorías, unidad) son restricciones de la base; ver `docs/modelo-datos.md`.
+
+## Importar series
+
+```
+python -m app.cli import-stations ../../docs/datos/estaciones_siga_formosa.csv
+python -m app.cli import-rainfall ../../docs/datos/lluvia_diaria_siga_formosa.csv           # audita: no guarda
+python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_formosa.csv  # guarda
+```
+
+Cada corrida deja una fila en `import_logs` (huella sha256, filas leídas/aceptadas/rechazadas y motivos). Volver a cargar el mismo archivo no duplica filas. Se rechazan fechas posteriores al corte (31/10/2026), valores negativos, estaciones inexistentes y estados incoherentes.
