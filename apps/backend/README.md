@@ -74,3 +74,11 @@ python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_f
 ```
 
 Cada corrida deja una fila en `import_logs` (huella sha256, filas leídas/aceptadas/rechazadas y motivos). Volver a cargar el mismo archivo no duplica filas. Se rechazan fechas posteriores al corte (31/10/2026), valores negativos, estaciones inexistentes y estados incoherentes.
+
+## Banderas de calidad
+
+```
+python -m app.cli recompute-flags   # recalcula rachas de ceros (60 días o más)
+```
+
+Un hueco (`sin_fila`, `fila_sin_valor`) corta la racha: no se afirma que no llovió un día sin dato. Las banderas se reemplazan en cada corrida y guardan la versión de la regla.
