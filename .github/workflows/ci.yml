@@ -1,0 +1,104 @@
+# Integración continua: en cada Pull Request y en cada push a main corre
+# lint + tests del backend y lint + tests + build del frontend.
+# Los pasos se saltean solos si todavía no existe esa parte de la aplicación.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (lint + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Comprobar que existe el backend
+        id: existe
+        working-directory: .
+        run: |
+          if [ -f apps/backend/requirements-dev.txt ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Todavía no hay backend: se omiten los pasos."
+          fi
+
+      - uses: actions/setup-python@v6
+        if: steps.existe.outputs.presente == 'true'
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/backend/requirements-dev.txt
+
+      - name: Instalar dependencias
+        if: steps.existe.outputs.presente == 'true'
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        if: steps.existe.outputs.presente == 'true'
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Tests (pytest)
+        if: steps.existe.outputs.presente == 'true'
+        run: pytest
+
+  frontend:
+    name: Frontend (lint + tests + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Comprobar que existe el frontend
+        id: existe
+        working-directory: .
+        run: |
+          if [ -f apps/frontend/package-lock.json ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Todavía no hay frontend: se omiten los pasos."
+          fi
+
+      - uses: actions/setup-node@v6
+        if: steps.existe.outputs.presente == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Instalar dependencias
+        if: steps.existe.outputs.presente == 'true'
+        run: npm ci
+
+      - name: Lint
+        if: steps.existe.outputs.presente == 'true'
+        run: |
+          npm run lint
+          npm run format:check
+
+      - name: Tests
+        if: steps.existe.outputs.presente == 'true'
+        run: npm test
+
+      - name: Build
+        if: steps.existe.outputs.presente == 'true'
+        run: npm run build
