@@ -13,7 +13,9 @@ from app.domain.enums import ImportMode
 from app.ingestion.siga import InvalidFileError
 from app.ingestion.types import ImportReport
 from app.repositories.ingestion import SqlIngestionRepository
+from app.repositories.quality import SqlQualityRepository
 from app.services.importer import ImportService
+from app.services.quality import QualityService
 
 
 def _print_report(report: ImportReport) -> None:
@@ -44,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--commit", action="store_true", help="Guarda los datos (por defecto solo audita)"
     )
     rainfall.add_argument("file", type=Path)
+
+    commands.add_parser("recompute-flags", help="Recalcula las banderas de calidad")
     return parser
 
 
@@ -52,6 +56,14 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     engine = create_db_engine(settings.database_url)
     try:
+        if args.command == "recompute-flags":
+            with create_session_factory(engine)() as session:
+                counts = QualityService(SqlQualityRepository(session)).recompute_zero_streaks()
+            print(
+                f"Estaciones revisadas: {len(counts)} · "
+                f"tramos de ceros prolongados: {sum(counts.values())}"
+            )
+            return 0
         with create_session_factory(engine)() as session:
             service = ImportService(SqlIngestionRepository(session), settings.data_cutoff_date)
             content = args.file.read_bytes()
