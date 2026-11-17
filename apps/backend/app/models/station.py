@@ -1,11 +1,12 @@
 from datetime import date
 
 from sqlalchemy import CheckConstraint, ForeignKey, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.domain.enums import CoordsStatus
 from app.models._types import text_enum
+from app.models.source import Source
 
 
 class Station(Base):
@@ -25,6 +26,7 @@ class Station(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
+    source: Mapped[Source] = relationship(lazy="raise")
     code: Mapped[str] = mapped_column(String(64))
     internal_code: Mapped[str | None] = mapped_column(String(64))
     name: Mapped[str] = mapped_column(String(200))
