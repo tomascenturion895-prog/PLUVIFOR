@@ -1,0 +1,10 @@
+# Configuración de gitleaks (escáner de secretos). Se usa en pre-commit y en el CI.
+title = "PLUVIFOR · reglas de gitleaks"
+
+[extend]
+# Reglas por defecto de gitleaks (claves de GitHub, AWS, Google, Slack, llaves privadas, etc.).
+useDefault = true
+
+# No hay excepciones globales a propósito: ningún archivo queda fuera del escaneo,
+# ni siquiera .env.example. Si aparece un falso positivo real, se agrega una excepción
+# puntual (por huella o por regla y ruta) y se explica en el PR.
