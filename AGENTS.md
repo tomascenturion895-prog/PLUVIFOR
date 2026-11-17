@@ -1,6 +1,6 @@
 # PLUVIFOR · contexto para asistentes de IA
 
-> Este archivo es la **fuente de verdad** para cualquier asistente de IA que trabaje en este repositorio (Claude, Gemini en Antigravity, opencode u otro). Léelo completo antes de escribir código. Si algo de lo que te piden contradice este archivo, avisa en lugar de hacerlo.
+> Este archivo es la **fuente de verdad** para cualquier asistente de IA que trabaje en este repositorio (Claude, Gemini en Antigravity, opencode u otro). Leelo completo antes de escribir código. Si algo de lo que te piden contradice este archivo, avisá en lugar de hacerlo.
 
 ## Qué es el proyecto
 
@@ -31,7 +31,7 @@ Leyenda obligatoria, siempre visible en la interfaz y en los documentos:
 | Parte | Tecnología |
 |---|---|
 | Backend | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff |
-| Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, ESLint + Prettier |
+| Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, Oxlint + Prettier |
 | Capas geográficas | GeoJSON del IGN dentro del repositorio |
 | CI | GitHub Actions |
 
@@ -62,7 +62,7 @@ Frontend (desde `apps/frontend`):
 npm ci
 npm run dev        # http://localhost:5173
 npm test
-npm run lint
+npm run lint && npm run format:check
 npm run build
 ```
 
@@ -70,7 +70,7 @@ npm run build
 
 - Las reglas de ramas, commits y Pull Requests están en `docs/CONTRIBUTING.md`. Una rama por tarea de Jira: `feature/SCRUM-<n>-descripcion`.
 - Commits en el formato `tipo: descripción (SCRUM-n)`.
-- Hace falta test para toda lógica nueva: como mínimo el caso feliz y uno de entrada inválida.
+- Hace falta un test para toda lógica nueva: como mínimo el caso feliz y uno de entrada inválida.
 - Cambios chicos y enfocados en una tarea. No refactorices ni cambies archivos ajenos a la tarea.
 - **Seguridad:** nunca escribas claves, tokens ni contraseñas en el código ni en commits. Las variables van en `.env` (ignorado por Git); el ejemplo está en `.env.example`. Valida toda entrada del usuario; usa el ORM, no SQL armado con texto.
 - Textos de la interfaz y mensajes de error en **español**. Código, nombres de variables y rutas de la API en inglés.
