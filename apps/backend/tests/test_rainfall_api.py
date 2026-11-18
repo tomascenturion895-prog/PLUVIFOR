@@ -49,13 +49,20 @@ def station_id(db: Session) -> int:
 def get(client: TestClient, station_id: int, **params):
     params.setdefault("from", "2016-01-01")
     params.setdefault("to", "2016-01-10")
-    return client.get(f"/stations/{station_id}/series", params=params)
+    return client.get("/api/rainfall", params={"station_id": station_id, **params})
 
 
 def test_series_keeps_gaps_as_null_never_zero(client: TestClient, station_id: int):
     body = get(client, station_id).json()
     by_date = {d["obs_date"]: d for d in body["days"]}
-    assert by_date["2016-01-02"] == {"obs_date": "2016-01-02", "state": "dato", "mm": 0.0}
+    assert by_date["2016-01-02"] == {
+        "obs_date": "2016-01-02",
+        "state": "dato",
+        "mm": 0.0,
+        "category": "observado",
+        "source": "siga_inta",
+        "flags": [],
+    }
     assert by_date["2016-01-03"]["mm"] is None and by_date["2016-01-03"]["state"] == "sin_fila"
     assert by_date["2016-01-04"]["mm"] is None
     assert by_date["2016-01-04"]["state"] == "fila_sin_valor"
@@ -150,7 +157,11 @@ def test_invalid_ranges(client: TestClient, station_id: int, params: dict, code:
 def test_bad_input_and_unknown_station(client: TestClient, station_id: int):
     assert get(client, station_id, **{"from": "no-es-fecha"}).status_code == 422
     assert get(client, station_id, category="inventada").status_code == 422
-    assert client.get(f"/stations/{station_id}/series").status_code == 422
+    assert client.get("/api/rainfall", params={"station_id": station_id}).status_code == 422
+    assert (
+        client.get("/api/rainfall", params={"from": "2016-01-01", "to": "2016-01-02"}).status_code
+        == 422
+    )
     missing = get(client, 9999)
     assert missing.status_code == 404 and missing.json()["error"]["code"] == "station_not_found"
 
@@ -171,3 +182,25 @@ def test_categories_are_never_mixed(client: TestClient, db: Session, station_id:
     assert observed["summary"]["accumulated_mm"] == 12.5
     assert estimated["summary"]["accumulated_mm"] == 99.0
     assert estimated["category"] == "estimado"
+
+
+def test_each_day_lists_the_flags_that_cover_it(client: TestClient, db: Session, station_id: int):
+    db.add(
+        QualityFlag(
+            station_id=station_id,
+            code="ceros_prolongados",
+            start_date=date(2016, 1, 5),
+            end_date=date(2016, 1, 7),
+            severity=Severity.AVISO,
+            rule_version="ceros_prolongados/1",
+        )
+    )
+    db.commit()
+    by_date = {d["obs_date"]: d for d in get(client, station_id).json()["days"]}
+    assert by_date["2016-01-04"]["flags"] == []
+    assert by_date["2016-01-06"]["flags"] == ["ceros_prolongados"]
+    assert by_date["2016-01-08"]["flags"] == []
+
+
+def test_series_route_under_stations_no_longer_exists(client: TestClient, station_id: int):
+    assert client.get(f"/stations/{station_id}/series").status_code == 404

@@ -12,6 +12,9 @@ class DayOut(BaseModel):
     obs_date: date
     state: RainState
     mm: float | None  # None = sin dato; nunca 0
+    category: DataCategory
+    source: str
+    flags: list[str]  # banderas de calidad que cubren este día
 
 
 class SummaryOut(BaseModel):
