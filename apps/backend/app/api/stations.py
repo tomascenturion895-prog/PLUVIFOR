@@ -8,7 +8,7 @@ from app.repositories.stations import Page, StationFilters
 from app.schemas.stations import StationList, StationOut
 from app.services.stations import StationService
 
-router = APIRouter(prefix="/stations", tags=["estaciones"])
+router = APIRouter(prefix="/api/stations", tags=["estaciones"])
 
 Service = Annotated[StationService, Depends(get_station_service)]
 
@@ -17,6 +17,7 @@ Service = Annotated[StationService, Depends(get_station_service)]
 def list_stations(
     service: Service,
     source: Annotated[str | None, Query(max_length=64, description="Código de la fuente")] = None,
+    network: Annotated[str | None, Query(max_length=100, description="Red de medición")] = None,
     department: Annotated[str | None, Query(max_length=100)] = None,
     zone: Annotated[str | None, Query(max_length=100)] = None,
     coords_status: CoordsStatus | None = None,
@@ -27,7 +28,12 @@ def list_stations(
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> StationList:
     filters = StationFilters(
-        source_code=source, department=department, zone=zone, coords_status=coords_status, text=q
+        source_code=source,
+        network=network,
+        department=department,
+        zone=zone,
+        coords_status=coords_status,
+        text=q,
     )
     items, total = service.search(filters, Page(limit=limit, offset=offset))
     return StationList(items=items, total=total, limit=limit, offset=offset)

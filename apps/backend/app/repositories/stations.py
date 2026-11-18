@@ -11,6 +11,7 @@ from app.models import Source, Station
 @dataclass(frozen=True)
 class StationFilters:
     source_code: str | None = None
+    network: str | None = None
     department: str | None = None
     zone: str | None = None
     coords_status: CoordsStatus | None = None
@@ -56,6 +57,8 @@ class SqlStationRepository:
     def _apply(query: Select, filters: StationFilters) -> Select:
         if filters.source_code:
             query = query.where(Source.code == filters.source_code)
+        if filters.network:
+            query = query.where(Source.network == filters.network)
         if filters.department:
             query = query.where(Station.department == filters.department)
         if filters.zone:
