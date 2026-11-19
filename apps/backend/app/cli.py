@@ -14,8 +14,12 @@ from app.domain.enums import ImportMode
 from app.ingestion.types import ImportReport, InvalidFileError
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
+from app.repositories.references import SqlReferenceRepository
 from app.services.importer import ImportService
 from app.services.quality import QualityService
+from app.services.references import ReferenceService
+
+DEFAULT_NORMALS_FILE = DEFAULT_DATA_DIR / "normales_smn_formosa_aero_1991_2020.csv"
 
 
 def _print_report(report: ImportReport) -> None:
@@ -48,6 +52,11 @@ def build_parser() -> argparse.ArgumentParser:
     rainfall.add_argument("file", type=Path)
 
     commands.add_parser("recompute-flags", help="Recalcula las banderas de calidad")
+
+    normals = commands.add_parser(
+        "import-normals", help="Carga la normal mensual (referencia) con su fuente"
+    )
+    normals.add_argument("file", type=Path, nargs="?", default=DEFAULT_NORMALS_FILE)
 
     demo = commands.add_parser(
         "reset-demo", help="Borra la base SQLite y la recarga desde docs/datos (sin internet)"
@@ -93,6 +102,15 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     engine = create_db_engine(settings.database_url)
     try:
+        if args.command == "import-normals":
+            with create_session_factory(engine)() as session:
+                done = ReferenceService(SqlReferenceRepository(session)).import_normals(
+                    args.file.name, args.file.read_bytes()
+                )
+            print(
+                f"Normal cargada: estación {done.station_code}, {done.months} meses, {done.period}"
+            )
+            return 0
         if args.command == "recompute-flags":
             with create_session_factory(engine)() as session:
                 counts = QualityService(SqlQualityRepository(session)).recompute_zero_streaks()
