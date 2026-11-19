@@ -11,6 +11,7 @@ Cómo dejar tu computadora lista para trabajar en PLUVIFOR, desde cero. Sirve pa
 | Git | cualquiera reciente | Bajar y subir el código |
 | Python | 3.12 o superior | Backend (API) |
 | Node.js | 22 o superior (LTS) | Frontend, y el script de verificación |
+| Go | 1.24 o superior | API en Go (`apps/api-go`); la demo corre sin Go |
 | Editor de código | VS Code, Antigravity u otro | Escribir código |
 | Una cuenta de GitHub con acceso al repositorio | — | Pull Requests |
 
@@ -24,13 +25,14 @@ Si ya usás **Laragon** (Windows), puede traer Git, Node y Python; igual verific
 winget install Git.Git
 winget install Python.Python.3.12
 winget install OpenJS.NodeJS.LTS
+winget install GoLang.Go
 ```
 
 Cerrá y volvé a abrir la terminal después de instalar.
 
-**macOS:** `brew install git python@3.12 node`
+**macOS:** `brew install git python@3.12 node go`
 
-**Linux (Debian/Ubuntu):** `sudo apt install git python3.12 python3.12-venv` y Node.js 22 desde nodejs.org o con `nvm`.
+**Linux (Debian/Ubuntu):** `sudo apt install git python3.12 python3.12-venv` y Node.js 22 desde nodejs.org o con `nvm`; Go desde <https://go.dev/dl/>.
 
 ### Identidad de Git (importante)
 
@@ -122,7 +124,18 @@ python -m app.cli recompute-flags
 - **No verificado:** la suite completa no corre contra PostgreSQL de forma automática (las pruebas de importación y de migraciones crean su propia base SQLite), no hay PostGIS y las capas geográficas siguen siendo archivos GeoJSON.
 - Se probó con Python 3.13 y PostgreSQL 16 en una máquina de trabajo, sin concurrencia ni volumen.
 
-## 6. Frontend
+## 6. API en Go
+
+Desde `apps/api-go` (solo hace falta si vas a trabajar en esa parte; la demo no la necesita):
+
+```bash
+go vet ./... && go test ./...
+go run ./cmd/api                    # http://localhost:8080/health   (puerto: API_GO_PORT)
+```
+
+**Cómo saber que funciona:** `/health` responde `{"status":"ok",...}`. Hoy la API en Go es un esqueleto: no sirve datos todavía, así que las pantallas siguen hablando con el backend en Python. Detalles en `apps/api-go/README.md`.
+
+## 7. Frontend
 
 Desde `apps/frontend`:
 
@@ -136,7 +149,7 @@ Se ejecutan los dos a la vez, cada uno en su terminal, y el backend tiene que es
 
 Pruebas de extremo a extremo en navegador real (escritorio, tableta y celular): `npm run test:e2e`. Detalles en `docs/qa/analisis-responsive.md`.
 
-## 7. Revisión automática antes de cada commit (recomendado)
+## 8. Revisión automática antes de cada commit (recomendado)
 
 ```bash
 pip install pre-commit
