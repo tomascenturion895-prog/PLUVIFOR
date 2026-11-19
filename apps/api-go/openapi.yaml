@@ -80,6 +80,31 @@ paths:
               schema: { $ref: '#/components/schemas/Series' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/field-reports:
+    post:
+      summary: Cargar un reporte de lluvia de campo (policial), observado y sin validar
+      x-implemented-in: python
+      responses:
+        '201':
+          description: El reporte guardado, con su fuente y su ubicación (o pendiente).
+          content:
+            application/json:
+              schema: { type: object }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/network/health:
+    get:
+      summary: Salud de la red, estaciones activas, en silencio y sin datos
+      x-implemented-in: python
+      parameters:
+        - { name: silent_after_days, in: query, description: 'Días sin lectura (antes del corte) para marcar en silencio; por defecto 30', schema: { type: integer, minimum: 1, maximum: 365 } }
+      responses:
+        '200':
+          description: Una fila por estación con su última lectura con valor. Un silencio no lleva 0 mm.
+          content:
+            application/json:
+              schema: { type: object }
+        '422': { $ref: '#/components/responses/Invalid' }
 components:
   responses:
     NotFound:

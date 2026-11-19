@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/apierror"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/config"
@@ -15,6 +16,12 @@ const Version = "0.1.0"
 
 // Option agrega rutas al servidor (las tareas siguientes se apoyan en esto).
 type Option func(*http.ServeMux)
+
+// WithBackend reenvía /api/* al handler indicado (el proxy al backend en Python). Las rutas propias
+// de Go se registran con otra Option y tienen prioridad sobre este reenvío: la más específica gana.
+func WithBackend(h http.Handler) Option {
+	return func(mux *http.ServeMux) { mux.Handle("/api/", h) }
+}
 
 // New devuelve el manejador con las rutas, el 404/405 en el formato único y la recuperación de fallos.
 func New(cfg config.Config, logger *slog.Logger, opts ...Option) http.Handler {
@@ -57,7 +64,8 @@ type errorRewriter struct {
 
 func (e *errorRewriter) WriteHeader(status int) {
 	if status == http.StatusNotFound || status == http.StatusMethodNotAllowed {
-		if e.Header().Get("Content-Type") != "application/json; charset=utf-8" {
+		// Un 404/405 que ya viene en JSON (por ejemplo, el del backend en Python) se respeta tal cual.
+		if !strings.HasPrefix(e.Header().Get("Content-Type"), "application/json") {
 			e.rewritten = true
 			e.ResponseWriter.Header().Del("Content-Length")
 			apierror.Status(e.ResponseWriter, status)

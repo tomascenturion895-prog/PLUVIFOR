@@ -112,3 +112,26 @@ def test_el_comando_sin_terminal_ni_yes_no_borra(monkeypatch, url, tmp_path, cap
         assert contar(url)[1] == 7648
     finally:
         get_settings.cache_clear()
+
+
+def test_importar_por_linea_de_comandos_recalcula_las_banderas(url, monkeypatch, capsys):
+    """SCRUM-86: tras `import-rainfall --commit` la racha de ceros queda guardada."""
+    reset_demo(url, CUTOFF, SI)
+    engine = create_engine(url)
+    with Session(engine) as db:
+        db.execute(QualityFlag.__table__.delete())
+        db.commit()
+    engine.dispose()
+    assert contar(url)[2] == 0
+    monkeypatch.setenv("DATABASE_URL", url)
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    archivo = Path(__file__).parent / "fixtures" / "siga_casos_reales.csv"
+    assert cli.main(["import-rainfall", "--commit", str(archivo)]) == 0
+    assert "Banderas recalculadas" in capsys.readouterr().out
+    assert contar(url)[2] == 1
+    assert cli.main(["import-rainfall", "--commit", str(archivo)]) == 0
+    assert contar(url)[2] == 1  # correrlo dos veces no duplica
+    assert cli.main(["import-rainfall", str(archivo)]) == 0  # en simulación no toca nada
+    get_settings.cache_clear()

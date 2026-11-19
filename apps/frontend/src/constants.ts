@@ -5,10 +5,12 @@ export const LEYENDA_PROTOTIPO =
 /** Secciones de la navegación, en el orden en que se muestran. */
 export const SECCIONES = [
   { ruta: '/', nombre: 'Inicio' },
+  { ruta: '/maqueta', nombre: 'Maqueta' },
   { ruta: '/mapa', nombre: 'Mapa' },
   { ruta: '/estacion', nombre: 'Estación' },
   { ruta: '/comparador', nombre: 'Comparador' },
   { ruta: '/parte', nombre: 'Parte pluvial' },
+  { ruta: '/reporte', nombre: 'Reporte de campo' },
   { ruta: '/importar', nombre: 'Importar y auditar' },
   { ruta: '/salud', nombre: 'Salud de la red' },
   { ruta: '/ayuda', nombre: 'Ayuda' },
@@ -22,3 +24,6 @@ export const MAX_ARCHIVO_BYTES = 5 * 1024 * 1024
 
 /** Cantidad máxima de estaciones por parte (igual que la API). */
 export const MAX_ESTACIONES_PARTE = 20
+
+/** Cantidad máxima de estaciones del comparador. */
+export const MAX_ESTACIONES_COMPARADOR = 4

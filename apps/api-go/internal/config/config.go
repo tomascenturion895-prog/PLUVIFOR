@@ -4,6 +4,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ const (
 	defaultDatabaseURL = "sqlite:///./pluvifor.db"
 	defaultCutoff      = "2026-10-31"
 	defaultPort        = "8080"
+	defaultBackendURL  = "http://127.0.0.1:8000"
 )
 
 // Config es la configuración de la API. La base es la misma que usa Python (DATABASE_URL).
@@ -21,6 +23,8 @@ type Config struct {
 	Port       string
 	CutoffDate string // AAAA-MM-DD: fecha de corte de los datos
 	Database   Database
+	// BackendURL es la API de datos en Python (apps/backend), a la que Go reenvía /api/*.
+	BackendURL *url.URL
 }
 
 // Database describe la base sin guardar la URL completa (puede llevar usuario y clave).
@@ -56,7 +60,25 @@ func Load(lookup Lookup) (Config, error) {
 		return Config{}, err
 	}
 	cfg.Database = Database{Engine: engine}
+	backend, err := backendURL(get("BACKEND_URL", defaultBackendURL))
+	if err != nil {
+		return Config{}, err
+	}
+	cfg.BackendURL = backend
 	return cfg, nil
+}
+
+// backendURL valida la dirección del backend. El error no repite la URL: podría llevar datos de acceso.
+func backendURL(raw string) (*url.URL, error) {
+	u, err := url.Parse(raw)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return nil, errors.New("BACKEND_URL debe ser una dirección http o https con servidor")
+	}
+	if u.User != nil {
+		return nil, errors.New("BACKEND_URL no puede llevar usuario ni clave")
+	}
+	u.Path, u.RawQuery, u.Fragment = "", "", ""
+	return u, nil
 }
 
 // engineOf devuelve solo el motor. El mensaje de error no repite la URL: puede llevar la clave.
