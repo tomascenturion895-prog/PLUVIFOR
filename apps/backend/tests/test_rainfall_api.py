@@ -204,3 +204,89 @@ def test_each_day_lists_the_flags_that_cover_it(client: TestClient, db: Session,
 
 def test_series_route_under_stations_no_longer_exists(client: TestClient, station_id: int):
     assert client.get(f"/stations/{station_id}/series").status_code == 404
+
+
+def test_compare_two_stations_returns_aligned_series_and_warnings(
+    client: TestClient, db: Session, station_id: int
+):
+    src2 = Source(
+        code="provincial",
+        name="Red provincial",
+        network="Provincial",
+        category=DataCategory.OBSERVADO,
+        day_cutoff_local="07:00",  # distinto corte (07:00 vs 09:00)
+    )
+    db.add(src2)
+    db.flush()
+    st2 = Station(source_id=src2.id, code="P1", name="Clorinda", lat=-25.3, lon=-57.7)
+    db.add(st2)
+    db.flush()
+    # Agregar datos para P1 con diferente cobertura
+    for i in range(5):
+        db.add(
+            RainfallRecord(
+                station_id=st2.id,
+                obs_date=START + timedelta(days=i),
+                state=RainState.DATO,
+                mm=5.0,
+                category=DataCategory.OBSERVADO,
+                validation=Validation.VALIDADO,
+            )
+        )
+    db.commit()
+
+    # Probar pasando station_ids repetido y separado por comas
+    resp = client.get(
+        f"/api/rainfall/compare?station_ids={station_id}&station_ids={st2.id}&from=2016-01-01&to=2016-01-10"
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["stations"]) == 2
+    assert data["stations"][0]["station_id"] == station_id
+    assert data["stations"][1]["station_id"] == st2.id
+
+    # Advertencia de corte horario distinto (09:00 vs 07:00) y cobertura despareja
+    warning_codes = [w["code"] for w in data["comparability_warnings"]]
+    assert "horario_corte_distinto" in warning_codes
+    assert "cobertura_despareja" in warning_codes
+
+    # Verificar que huecos no se completan con 0
+    days_st1 = {d["obs_date"]: d for d in data["stations"][0]["days"]}
+    assert days_st1["2016-01-03"]["mm"] is None
+    assert days_st1["2016-01-03"]["state"] == "sin_fila"
+
+
+def test_compare_comma_separated_ids(client: TestClient, station_id: int):
+    resp = client.get(
+        f"/api/rainfall/compare?station_ids={station_id}&from=2016-01-01&to=2016-01-10"
+    )
+    assert resp.status_code == 200
+    assert len(resp.json()["stations"]) == 1
+
+
+def test_compare_missing_station_is_404(client: TestClient, station_id: int):
+    resp = client.get(
+        f"/api/rainfall/compare?station_ids={station_id}&station_ids=99999&from=2016-01-01&to=2016-01-10"
+    )
+    assert resp.status_code == 404
+    assert resp.json()["error"]["code"] == "station_not_found"
+
+
+def test_compare_invalid_input_and_range_is_422(client: TestClient, station_id: int):
+    # Sin estaciones
+    assert client.get("/api/rainfall/compare?from=2016-01-01&to=2016-01-10").status_code == 422
+    # Rango invertido
+    resp = client.get(
+        f"/api/rainfall/compare?station_ids={station_id}&from=2016-01-10&to=2016-01-01"
+    )
+    assert resp.status_code == 422
+    assert resp.json()["error"]["code"] == "invalid_range"
+    # Fecha posterior al corte
+    resp_cutoff = client.get(
+        f"/api/rainfall/compare?station_ids={station_id}&from=2026-11-05&to=2026-11-10"
+    )
+    assert resp_cutoff.status_code == 422
+    assert resp_cutoff.json()["error"]["code"] == "after_cutoff"
+    # ID de estación no numérico o inválido
+    resp_bad_id = client.get("/api/rainfall/compare?station_ids=abc&from=2016-01-01&to=2016-01-10")
+    assert resp_bad_id.status_code == 422
