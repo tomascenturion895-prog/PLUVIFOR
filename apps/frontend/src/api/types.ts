@@ -84,3 +84,41 @@ export interface Series {
 export interface ApiErrorBody {
   error: { code: string; message: string; details?: { field: string; message: string }[] }
 }
+
+export type ImportKind = 'rainfall' | 'stations'
+
+export interface Rejection {
+  line: number
+  reason: string
+  message: string
+}
+
+export interface ImportReport {
+  filename: string
+  sha256: string
+  mode: 'audit' | 'commit'
+  saved: boolean
+  rows_read: number
+  rows_accepted: number
+  rows_rejected: number
+  rejections_by_reason: Record<string, number>
+  rejections: Rejection[]
+  rejections_truncated: boolean
+  inserted: number
+  updated: number
+}
+
+export interface ImportLog {
+  id: number
+  source: string
+  mode: string
+  status: string
+  filename: string
+  sha256: string
+  rows_read: number
+  rows_accepted: number
+  rows_rejected: number
+  rejections_by_reason: Record<string, number>
+  cutoff_applied: string
+  started_at: string
+}

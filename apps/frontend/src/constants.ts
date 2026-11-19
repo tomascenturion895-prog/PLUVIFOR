@@ -16,3 +16,6 @@ export const SECCIONES = [
 
 /** Fecha de corte de los datos: no se consultan ni muestran días posteriores. */
 export const FECHA_CORTE = '2026-10-31'
+
+/** Tamaño máximo de un archivo a importar (igual que el de la API: 5 MB). */
+export const MAX_ARCHIVO_BYTES = 5 * 1024 * 1024

@@ -1,4 +1,12 @@
-import type { DataCategory, Series, Station, StationList } from './types'
+import type {
+  DataCategory,
+  ImportKind,
+  ImportLog,
+  ImportReport,
+  Series,
+  Station,
+  StationList,
+} from './types'
 
 /** Error de la API o de la red, con un mensaje listo para mostrar (en español). */
 export class ApiError extends Error {
@@ -89,6 +97,47 @@ export function getRainfall(
 ): Promise<Series> {
   const { stationId, from, to, category } = params
   return request<Series>(`/api/rainfall${query({ station_id: stationId, from, to, category })}`, {
+    signal,
+  })
+}
+
+/** Fuente que hoy sabe leer la API. No se agregan otras hasta que exista su conector. */
+export const FUENTE_IMPORTACION = 'siga_inta'
+
+function conClave(apiKey: string): Record<string, string> {
+  return { 'X-API-Key': apiKey }
+}
+
+function importar(
+  accion: 'audit' | 'commit',
+  params: { apiKey: string; kind: ImportKind; filename: string; content: string },
+  signal?: AbortSignal,
+): Promise<ImportReport> {
+  const { apiKey, kind, filename, content } = params
+  const search = query({ source: FUENTE_IMPORTACION, kind, filename })
+  return request<ImportReport>(`/api/import/${accion}${search}`, {
+    method: 'POST',
+    headers: { ...conClave(apiKey), 'Content-Type': 'text/csv' },
+    body: content,
+    signal,
+  })
+}
+
+/** Valida el archivo y devuelve el informe sin guardar nada. */
+export const auditImport = (
+  params: Parameters<typeof importar>[1],
+  signal?: AbortSignal,
+): Promise<ImportReport> => importar('audit', params, signal)
+
+/** Guarda lo aceptado y registra la carga. */
+export const commitImport = (
+  params: Parameters<typeof importar>[1],
+  signal?: AbortSignal,
+): Promise<ImportReport> => importar('commit', params, signal)
+
+export function getImportLogs(apiKey: string, signal?: AbortSignal): Promise<ImportLog[]> {
+  return request<ImportLog[]>(`/api/import/logs${query({ limit: 20 })}`, {
+    headers: conClave(apiKey),
     signal,
   })
 }
