@@ -10,8 +10,7 @@ from pathlib import Path
 from app.config import get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.domain.enums import ImportMode
-from app.ingestion.siga import InvalidFileError
-from app.ingestion.types import ImportReport
+from app.ingestion.types import ImportReport, InvalidFileError
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
 from app.services.importer import ImportService
