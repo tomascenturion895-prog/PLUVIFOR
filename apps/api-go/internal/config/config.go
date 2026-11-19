@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,6 +24,9 @@ type Config struct {
 	Port       string
 	CutoffDate string // AAAA-MM-DD: fecha de corte de los datos
 	Database   Database
+	// Pedidos por minuto y por cliente (0 desactiva el límite): general y de importación.
+	RateLimitPerMinute       int
+	RateLimitImportPerMinute int
 	// BackendURL es la API de datos en Python (apps/backend), a la que Go reenvía /api/*.
 	BackendURL *url.URL
 }
@@ -30,6 +34,9 @@ type Config struct {
 // Database describe la base sin guardar la URL completa (puede llevar usuario y clave).
 type Database struct {
 	Engine string // "sqlite" o "postgresql"
+	// SQLitePath es la ruta del archivo cuando el motor es SQLite (no es un secreto). Vacía en PostgreSQL.
+	// Una ruta relativa se resuelve desde donde corre Go, no desde donde corre Python: conviene absoluta.
+	SQLitePath string
 }
 
 // Lookup permite probar sin tocar el entorno real.
@@ -55,16 +62,26 @@ func Load(lookup Lookup) (Config, error) {
 	if _, err := time.Parse("2006-01-02", cfg.CutoffDate); err != nil {
 		return Config{}, errors.New("DATA_CUTOFF_DATE debe tener el formato AAAA-MM-DD")
 	}
-	engine, err := engineOf(get("DATABASE_URL", defaultDatabaseURL))
+	dbURL := get("DATABASE_URL", defaultDatabaseURL)
+	engine, err := engineOf(dbURL)
 	if err != nil {
 		return Config{}, err
 	}
 	cfg.Database = Database{Engine: engine}
+	if engine == "sqlite" {
+		cfg.Database.SQLitePath = sqlitePath(dbURL)
+	}
 	backend, err := backendURL(get("BACKEND_URL", defaultBackendURL))
 	if err != nil {
 		return Config{}, err
 	}
 	cfg.BackendURL = backend
+	if cfg.RateLimitPerMinute, err = nonNegative(get("API_GO_RATE_LIMIT_PER_MINUTE", "120"), "API_GO_RATE_LIMIT_PER_MINUTE"); err != nil {
+		return Config{}, err
+	}
+	if cfg.RateLimitImportPerMinute, err = nonNegative(get("API_GO_RATE_LIMIT_IMPORT_PER_MINUTE", "10"), "API_GO_RATE_LIMIT_IMPORT_PER_MINUTE"); err != nil {
+		return Config{}, err
+	}
 	return cfg, nil
 }
 
@@ -95,4 +112,22 @@ func engineOf(url string) (string, error) {
 	default:
 		return "", fmt.Errorf("DATABASE_URL: motor %q no soportado (sqlite o postgresql)", scheme)
 	}
+}
+
+// sqlitePath saca la ruta de una URL de SQLAlchemy: sqlite:///./x.db (relativa) o sqlite:////tmp/x.db (absoluta).
+func sqlitePath(url string) string {
+	_, rest, _ := strings.Cut(url, "://")
+	rest = strings.TrimPrefix(rest, "/") // el primer / separa el servidor (vacío) de la ruta
+	if i := strings.IndexAny(rest, "?#"); i >= 0 {
+		rest = rest[:i]
+	}
+	return rest
+}
+
+func nonNegative(raw, name string) (int, error) {
+	n, err := strconv.Atoi(raw)
+	if err != nil || n < 0 || n > 1_000_000 {
+		return 0, fmt.Errorf("%s debe ser un entero entre 0 y 1000000", name)
+	}
+	return n, nil
 }

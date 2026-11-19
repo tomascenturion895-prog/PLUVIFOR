@@ -37,7 +37,7 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 
 | Parte | Tecnología |
 |---|---|
-| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Ya tiene escritas y probadas (paridad con Python) las rutas `/api/stations`, `/api/stations/{id}` y `/api/rainfall`, pero falta el driver de base de datos (decisión pendiente) para activarlas: hoy las responde Python |
+| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Atiende por sí mismo `/api/stations`, `/api/stations/{id}` y `/api/rainfall` leyendo la base en solo lectura (paridad con Python probada); necesita compilarse con el driver de SQLite, `ncruces/go-sqlite3` (`-tags sqlite`, ver `apps/api-go/README.md`) |
 | Procesamiento (datos, importación, IA) | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff, en `apps/backend`. Hoy responde **todas** las rutas `/api/*` reales |
 | Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, Oxlint + Prettier |
 | Capas geográficas | GeoJSON del IGN dentro del repositorio |
@@ -46,7 +46,7 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 ## Estructura
 
 ```
-apps/api-go/      API en Go (esqueleto: /health, errores, contrato OpenAPI)
+apps/api-go/      API en Go (consultas de estaciones y lluvia, reenvío a Python, contrato OpenAPI)
 apps/backend/     Procesamiento y API de datos (FastAPI)
 apps/frontend/    Interfaz web (React + Vite)
 docs/             Documentación, datos y QA
@@ -88,7 +88,8 @@ npm run build
 - **Go** (`apps/api-go`): puerta de entrada de las consultas. Mismo formato de errores `{"error": {"code", "message"}}` y mismas reglas que Python; el contrato es `openapi.yaml`.
 - **Python** (`apps/backend`): reglas de calidad, importación, procesamiento y predicción con IA. Mientras Go no implemente una ruta, esa ruta responde desde Python.
 - Las reglas de integridad del dato valen igual en las dos partes. Las dos leen la misma base (`DATABASE_URL`).
-- Nada de dependencias nuevas sin acordarlo, tampoco en Go: el driver de base de datos está pendiente de decisión.
+- Nada de dependencias nuevas sin acordarlo, tampoco en Go. Driver de SQLite propuesto el 19/11 (`github.com/ncruces/go-sqlite3`), aislado en `internal/sqlstore/driver_sqlite.go`: queda aceptado al mergear el PR que lo suma.
+- Reparto de trabajo (decisión del 19/11): Python procesa e importa y es el único que escribe en la base; Go atiende las consultas, en solo lectura. Las rutas de consulta se portan a Go de a una, con prueba de paridad contra Python.
 
 ## Cómo trabajar
 

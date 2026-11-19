@@ -46,7 +46,7 @@ flowchart LR
 ```
 
 
-**Reparto del stack (decisión del 19/11/2026):** la API va en **Go** (`apps/api-go`) por rapidez y Python (FastAPI, `apps/backend`) hace el procesamiento de datos, la importación y la predicción con IA. **Estado real de Go:** responde `/health`, usa el formato único de errores y **reenvía todo `/api/*` a Python** sin cambiar nada (estado, cuerpo, encabezados y clave de administración; si Python no responde, 502 o 504 en español). Además ya tiene escritas y probadas `GET /api/stations`, `GET /api/stations/{id}` y `GET /api/rainfall`, con las mismas respuestas que Python para los mismos datos (47 consultas comparadas en `apps/api-go/testdata/parity`). **Todavía no las sirve con datos reales: falta elegir el driver de base de datos** y eso lo decide el equipo; hoy las responde Python a través del reenvío. Cuando se elija, conectarlas es un adaptador de un archivo y dos líneas de arranque. La decisión de la puerta del 19/11 está en `docs/decisiones/2026-11-19-puerta-go.md`. El diagrama del Plan v2 vive en el enlace de `docs/decisiones/2026-11-18.md`; el de arriba refleja lo que hay en el repositorio.
+**Reparto del stack (decisión del 19/11/2026):** la API va en **Go** (`apps/api-go`) por rapidez y Python (FastAPI, `apps/backend`) hace el procesamiento de datos, la importación y la predicción con IA. **Estado real de Go:** responde `/health`, usa el formato único de errores y **reenvía todo `/api/*` a Python** sin cambiar nada (estado, cuerpo, encabezados y clave de administración; si Python no responde, 502 o 504 en español). Además ya tiene escritas y probadas `GET /api/stations`, `GET /api/stations/{id}` y `GET /api/rainfall`, con las mismas respuestas que Python para los mismos datos (47 consultas comparadas en `apps/api-go/testdata/parity`). **Las lee de la base en solo lectura** (`internal/sqlstore`, probado contra SQLite real) cuando se compila con el driver de SQLite (`-tags sqlite`, `ncruces/go-sqlite3`); sin driver, arranca igual y las reenvía a Python. Go también limita pedidos por cliente y pone los mismos encabezados de seguridad. Reparto: Python procesa e importa y es el único que escribe; Go atiende las consultas. La decisión de la puerta del 19/11 está en `docs/decisiones/2026-11-19-puerta-go.md`. El diagrama del Plan v2 vive en el enlace de `docs/decisiones/2026-11-18.md`; el de arriba refleja lo que hay en el repositorio.
 
 ### Capas del backend (`apps/backend/app/`)
 
@@ -110,7 +110,7 @@ Los **umbrales** (60 días, 0,2, 150 km, 50 mm, 0,5 y 0,8) los eligió el equipo
 
 | Parte | Tecnología | Versión |
 |---|---|---|
-| API de consultas | Go, solo biblioteca estándar (sin dependencias) | 1.24 |
+| API de consultas | Go; biblioteca estándar y un solo driver, `ncruces/go-sqlite3` (SQLite en Go puro) | 1.24 / v0.25.0 |
 | Backend | Python | 3.12 (el CI usa 3.12) |
 | | FastAPI / Uvicorn | 0.163.2 / 0.54.0 |
 | | SQLAlchemy / Alembic | 2.1.9 / 1.20.1 |
@@ -148,7 +148,7 @@ Se revisó con una lista y el resultado está en `docs/entrega/informe-seguridad
 
 **Todavía no existe o está pendiente:**
 
-- **Go no sirve datos reales todavía:** sus rutas de estaciones y lluvia están listas y probadas, pero esperan la elección del driver de base de datos. El comparador, los acumulados, el parte, la importación, la salud de la red y los reportes de campo solo existen en Python.
+- **Go sirve solo estaciones y la serie diaria**, y necesita el driver de SQLite agregado (un paso con `go get`, ver `apps/api-go/README.md`). Con PostgreSQL todavía no lee. El comparador, los acumulados, el parte, la importación, la salud de la red y los reportes de campo solo existen en Python.
 - Datos de la red provincial, UPCA, SNIH, INA y CHIRPS: **ninguno está cargado**. Del INA hay solo un listado de estaciones. Ver `docs/fuentes/README.md`.
 - La normal mensual es de **una sola estación** (Formosa Aero, SMN) y no representa a toda la provincia.
 - Las coordenadas de varias estaciones siguen pendientes. Además, el sistema marca una estación como «coordenadas verificadas» cuando trae latitud y longitud, sin comprobar su origen.

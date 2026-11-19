@@ -8,9 +8,8 @@ info:
     - La API en Go implementa `GET /health`. Las rutas de estaciones y de la serie diaria
       (`/api/stations`, `/api/stations/{station_id}`, `/api/rainfall`) **ya están escritas y probadas
       en Go** (`x-implemented-in: go`), con las mismas respuestas que Python para los mismos datos
-      (pruebas de paridad en `testdata/parity`). Se activan cuando el servidor recibe un lector de la
-      base; hasta que se elija el driver de base de datos (ver `README.md`), esas rutas las sigue
-      respondiendo Python a través del reenvío, con el mismo contrato.
+      (pruebas de paridad en `testdata/parity`). Las atiende Go leyendo la base en solo lectura cuando
+      se compila con el driver de SQLite; sin driver, las reenvía a Python con el mismo contrato.
     - Las demás rutas de `/api` (comparador, acumulados, informes, importación) siguen en Python.
     - Un hueco no es 0 mm: en la serie, un día sin dato lleva `state` = `sin_fila` o `fila_sin_valor`
       y `mm` = `null`, nunca 0.
