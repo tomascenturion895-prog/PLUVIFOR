@@ -25,6 +25,8 @@ class RainfallRecord(Base):
         CheckConstraint("(state = 'dato') = (mm IS NOT NULL)", name="gap_is_not_zero"),
         CheckConstraint("unit = 'mm'", name="unit_is_mm"),
         Index("ix_rainfall_records_obs_date", "obs_date"),
+        # Consultas de toda la provincia por categoría y período.
+        Index("ix_rainfall_records_category_obs_date", "category", "obs_date"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
