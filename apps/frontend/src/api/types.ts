@@ -175,3 +175,30 @@ export interface Report {
   text: string
   notice: string
 }
+
+export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
+
+export interface StationHealth {
+  station_id: number
+  code: string
+  name: string
+  zone: string | null
+  department: string | null
+  source: string
+  network: string
+  state: NetworkState
+  last_reading_date: string | null
+  /** Milímetros de la última lectura con valor. Vacío si la estación nunca tuvo datos. */
+  last_reading_mm: number | null
+  days_since_last: number | null
+}
+
+export interface NetworkHealth {
+  category: DataCategory
+  data_cutoff_date: string
+  silent_after_days: number
+  active: number
+  silent: number
+  no_data: number
+  stations: StationHealth[]
+}

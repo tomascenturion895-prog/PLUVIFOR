@@ -34,11 +34,6 @@ export { Mapa } from './Map'
 export const Comparador = () => (
   <Pendiente titulo="Comparador">Compará estaciones y períodos con sus advertencias.</Pendiente>
 )
-export const Salud = () => (
-  <Pendiente titulo="Salud de la red">
-    Qué estaciones reportan y cuáles están en silencio.
-  </Pendiente>
-)
 export const Ayuda = () => (
   <Pendiente titulo="Ayuda">Qué significa cada estado y cada advertencia.</Pendiente>
 )
