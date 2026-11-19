@@ -1,5 +1,5 @@
 # Integración continua: en cada Pull Request y en cada push a main corre
-# lint + tests del backend y lint + tests + build del frontend.
+# vet + tests de la API en Go, lint + tests del backend en Python y lint + tests + build del frontend.
 # Los pasos se saltean solos si todavía no existe esa parte de la aplicación.
 name: CI
 
@@ -57,6 +57,43 @@ jobs:
       - name: Tests (pytest)
         if: steps.existe.outputs.presente == 'true'
         run: pytest
+
+  api-go:
+    name: API en Go (vet + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api-go
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Comprobar que existe la API en Go
+        id: existe
+        working-directory: .
+        run: |
+          if [ -f apps/api-go/go.mod ]; then
+            echo "presente=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "presente=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Todavía no hay API en Go: se omiten los pasos."
+          fi
+
+      - uses: actions/setup-go@v6
+        if: steps.existe.outputs.presente == 'true'
+        with:
+          go-version-file: apps/api-go/go.mod
+
+      - name: Formato (gofmt)
+        if: steps.existe.outputs.presente == 'true'
+        run: test -z "$(gofmt -l .)"
+
+      - name: Análisis (go vet)
+        if: steps.existe.outputs.presente == 'true'
+        run: go vet ./...
+
+      - name: Tests (go test)
+        if: steps.existe.outputs.presente == 'true'
+        run: go test ./...
 
   frontend:
     name: Frontend (lint + tests + build)

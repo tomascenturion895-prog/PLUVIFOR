@@ -52,6 +52,10 @@
   color: #7a1f1f;
   background: #fdecec;
   border-radius: 0.4rem;
+  /* El mensaje de una advertencia puede ser largo: se parte en líneas en lugar de ensanchar la página. */
+  align-items: flex-start;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .sr-only {

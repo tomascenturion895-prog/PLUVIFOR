@@ -1,0 +1,655 @@
+estacion_id,estacion,fecha,mm_pluviometrica,mm_cronologica,unidad,estado,bandera,categoria,fuente
+51,INTA - El Colorado (EMC),2014-04-08,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-04-09,3.5,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-04-10,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-04-11,143,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-04-12,12.5,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-04-13,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-15,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-16,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-17,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-18,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-19,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-20,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-21,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-22,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-23,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-24,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-25,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-26,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-27,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-28,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-29,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-30,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-08-31,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-01,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-02,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-03,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-04,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-05,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-06,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-07,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-08,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-09,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-10,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-11,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-12,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-13,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-14,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-15,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-16,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-17,0,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-18,73,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-19,42.5,,mm,dato,,OBSERVADO,SIGA INTA
+51,INTA - El Colorado (EMC),2014-09-20,0,,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-08,3.5,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-09,0,3.5,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-10,138,60.5,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-11,11.75,88.75,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-12,0,0.5,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2014-04-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-19,0.5,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-20,0,0.5,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-09-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-10-31,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-11-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2015-12-31,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-01-31,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-02-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-03-31,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-04-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-27,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-28,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-29,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-30,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-05-31,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-01,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-02,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-03,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-04,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-05,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-06,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-07,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-08,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-09,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-10,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-11,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-12,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-13,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-14,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-15,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-16,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-17,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-18,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-19,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-20,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-21,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-22,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-23,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-24,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-25,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-26,0,0,mm,dato,ceros_prolongados,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-27,,0,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-28,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-29,0,,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-06-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-07-01,6.75,6.75,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-07-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-07-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-07-04,1,0,mm,dato,,OBSERVADO,SIGA INTA
+424,El Colorado - EEA El Colorado,2016-07-05,0,1,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-18,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-19,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-24,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-25,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-26,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-29,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-09-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-08,29,3.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-09,2.25,27,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-10,2.5,3,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-11,0.75,0.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-15,2.75,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-16,0,2.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-24,1.5,1,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-25,48,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-26,4,48,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-27,0,4,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-29,27,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-30,16.75,43.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-10-31,0.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-03,0.5,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-04,0.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-08,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-09,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-10,1.5,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-11,0.25,1.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-16,10.75,10.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-17,5.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-18,0,5.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-24,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-25,10.25,9.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-26,0,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-27,72.75,52.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-28,0.25,20.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-29,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-11-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-01,24,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-02,0.5,24.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-03,5,5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-08,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-09,54.5,53,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-10,0,1.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-11,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-14,18.75,18.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-18,19.5,19.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-19,0.5,0.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-20,0.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-23,20.75,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-24,2.5,23.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-25,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-26,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-28,39.75,39.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-29,0.25,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2015-12-31,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-03,77.25,49.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-04,6.5,34.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-08,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-09,8.5,8.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-10,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-11,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-24,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-25,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-26,66.25,66.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-29,5.5,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-30,24.75,30.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-01-31,0.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-02,75.5,29.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-03,0.5,46.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-05,2.5,2.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-08,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-09,10,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-10,8,16.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-11,0,0.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-15,40.25,8.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-16,0.25,31.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-19,45.75,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-20,10.75,56.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-21,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-22,0.25,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-24,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-25,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-26,40,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-27,0.25,40.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-02-29,6,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-01,50.75,56.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-08,93,36.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-09,1.5,57.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-10,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-11,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-12,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-21,8.25,6.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-22,0.25,2.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-23,8,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-24,114,121.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-25,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-26,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-29,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-03-31,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-08,61.75,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-09,9,64.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-10,2,7.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-11,0,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-12,2,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-13,1,3,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-15,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-20,2.75,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-21,0,2.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-24,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-25,2.5,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-26,0.25,2.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-29,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-04-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-05,0.5,0.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-06,4.5,2.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-07,0.25,2,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-08,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-09,5.25,1.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-10,0.25,3.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-11,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-15,0.25,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-16,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-24,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-25,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-26,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-27,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-29,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-05-31,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-04,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-05,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-06,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-07,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-08,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-09,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-10,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-11,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-12,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-13,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-14,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-15,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-16,0,0.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-17,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-18,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-19,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-20,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-21,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-22,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-23,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-24,9.75,2.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-25,20.25,7.25,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-26,14,24.75,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-27,7.5,17,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-28,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-29,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-06-30,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-07-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-07-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-07-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-07-04,0.25,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2016-07-05,1.25,1.5,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-01,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-02,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-03,0,0,mm,dato,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-04,,,mm,fila_sin_valor,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-05,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-06,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-07,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-08,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-09,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-10,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-11,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-12,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-13,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-14,,,mm,sin_fila,,OBSERVADO,SIGA INTA
+425,Bartolomé de las Casas - EEA El Colorado,2018-05-15,,,mm,sin_fila,,OBSERVADO,SIGA INTA

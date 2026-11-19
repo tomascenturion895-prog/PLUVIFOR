@@ -77,3 +77,17 @@ Acá están las respuestas del SIGA **tal como llegaron**, sin modificar: un arc
 ## Cambio del endpoint
 
 El archivo de datos del SIGA cambia de nombre de vez en cuando: el que usaba la primera versión de `descargar_siga.py` dejó de existir y hoy es otro. El script ahora lo busca solo en el JavaScript del sitio. Si el sitio cambia de estructura y no lo encuentra, avisa y se detiene.
+
+## Importar desde el SIGA en vivo, con respaldo en CSV (SCRUM-64)
+
+```bash
+cd apps/backend
+python -m app.cli import-siga-live --station 424 --from 2016-01-01 --to 2016-06-30           # audita
+python -m app.cli import-siga-live --station 424 --station 425 --from 2016-01-01 --to 2016-06-30 --commit
+```
+
+- Descubre el endpoint igual que `descargar_siga.py` (no hay ninguno escrito a mano), pide de a 730 días y **nunca después del 31/10/2026**.
+- Cada día sale como `dato` (un 0 es un dato), `fila_sin_valor` o `sin_fila`: los dos últimos no son 0 mm.
+- **Si el SIGA no responde o cambió, usa el CSV versionado y lo avisa** en pantalla («no datos en vivo»). El intento fallido queda en `import_logs` con estado `failed`.
+- El respaldo carga el CSV completo (3 estaciones), no solo lo pedido.
+- **Qué NO está verificado:** el camino en vivo nunca corrió contra el SIGA real (el entorno de desarrollo no llega a ese sitio). Se probó con respuestas simuladas en el formato de `original/`. El camino del respaldo sí se probó con la red realmente cortada. Antes de la demo hay que correrlo una vez con internet.

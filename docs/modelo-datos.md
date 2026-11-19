@@ -188,7 +188,7 @@ Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`au
 
 ### `climate_references` — normales climáticas
 
-Normal mensual (`month` 1–12) en mm, con período de cálculo y nota de fuente. Categoría siempre `referencia`. **Solo se carga con fuente verificada**; si no hay, la tabla queda vacía y se documenta.
+Normal mensual (`month` 1–12) en mm, con período de cálculo y nota de fuente. Categoría siempre `referencia`. **Solo se carga con fuente verificada**; si no hay, la tabla queda vacía y se documenta. Hoy hay una sola normal: la de **Formosa Aero (SMN, 1991-2020)**, ver `docs/fuentes/smn-normales.md`. No hay normales para las demás estaciones.
 
 ## 4. Reglas que se aplican al cargar y al consultar
 
@@ -229,9 +229,11 @@ Un acumulado con cobertura baja **siempre** se muestra con su advertencia.
 
 Verificación de la carga: 7.648 filas en total; 4.378 + 887 = 5.265 con `dato`; 365 con `fila_sin_valor` (7 de ellas traen valor cronológico, que no rellena el hueco); 2.018 `sin_fila`.
 
-### Consultas de acumulado (para la API en Go)
+### Consultas de acumulado
 
 Una fila por estación, **incluso las que no tienen registros en el período** (aparecen con `NULL`, no se omiten). Se filtra por **una** categoría: observado, referencia y estimado nunca se suman. `SUM(mm)` ignora los huecos (`mm` es `NULL`) y devuelve `NULL` si no hubo ningún día con dato: un hueco no suma 0.
+
+La API permite consultar todas las estaciones si se omiten los filtros, o limitar el resultado a una estación o zona. En todos los casos devuelve acumulados separados por estación, nunca un total provincial ni una suma de estaciones.
 
 ```sql
 -- :cat = 'observado' | 'referencia' | 'estimado'; :desde y :hasta inclusivos

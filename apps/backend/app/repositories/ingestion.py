@@ -1,3 +1,4 @@
+import hashlib
 import json
 from datetime import date, datetime
 from typing import Protocol
@@ -18,12 +19,22 @@ class IngestionRepository(Protocol):
 
     def find_source_id(self, code: str) -> int | None: ...
 
-    def station_ids(self, source_id: int) -> dict[str, int]: ...
+    def station_ids(self, source_id: int | None = None) -> dict[str, int]: ...
 
     def upsert_stations(self, source_id: int, rows: list[StationRow]) -> tuple[int, int]: ...
 
     def record_import(
         self, source_id: int, report: ImportReport, cutoff: date, started_at: datetime
+    ) -> int: ...
+
+    def record_failed_attempt(
+        self,
+        source_id: int,
+        mode: ImportMode,
+        filename: str,
+        reason_code: str,
+        cutoff: date,
+        started_at: datetime,
     ) -> int: ...
 
     def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]: ...
@@ -59,10 +70,11 @@ class SqlIngestionRepository:
     def find_source_id(self, code: str) -> int | None:
         return self._session.scalar(select(Source.id).where(Source.code == code))
 
-    def station_ids(self, source_id: int) -> dict[str, int]:
-        rows = self._session.execute(
-            select(Station.code, Station.id).where(Station.source_id == source_id)
-        )
+    def station_ids(self, source_id: int | None = None) -> dict[str, int]:
+        stmt = select(Station.code, Station.id)
+        if source_id is not None:
+            stmt = stmt.where(Station.source_id == source_id)
+        rows = self._session.execute(stmt)
         return {code: station_id for code, station_id in rows}
 
     def upsert_stations(self, source_id: int, rows: list[StationRow]) -> tuple[int, int]:
@@ -113,6 +125,34 @@ class SqlIngestionRepository:
         )
         self._session.add(log)
         self._session.flush()
+        return log.id
+
+    def record_failed_attempt(
+        self,
+        source_id: int,
+        mode: ImportMode,
+        filename: str,
+        reason_code: str,
+        cutoff: date,
+        started_at: datetime,
+    ) -> int:
+        """Deja constancia de un intento que no llegó a leer ninguna fila (por ejemplo, sin red)."""
+        log = ImportLog(
+            source_id=source_id,
+            mode=mode,
+            status=ImportStatus.FAILED,
+            filename=filename,
+            sha256=hashlib.sha256(reason_code.encode()).hexdigest(),
+            rows_read=0,
+            rows_accepted=0,
+            rows_rejected=0,
+            rejections=json.dumps({reason_code: 1}, ensure_ascii=False),
+            cutoff_applied=cutoff,
+            started_at=started_at,
+        )
+        self._session.add(log)
+        self._session.flush()
+        self._session.commit()
         return log.id
 
     def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]:
