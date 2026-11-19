@@ -1,0 +1,130 @@
+/* Pasada de pulido (reglas de Emil Kowalski y guías de interfaz de Vercel, aplicadas a mano).
+   Solo presentación: ningún dato ni regla cambia. */
+:root {
+  /* Curva de salida fuerte: arranca rápido y frena suave. Nunca ease-in. */
+  --salida: cubic-bezier(0.23, 1, 0.32, 1);
+  --rapido: 140ms;
+  --medio: 220ms;
+}
+
+/* Marcas de estado dibujadas: no dependen de que la tipografía tenga el símbolo. */
+.marca-estado {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.35em;
+  vertical-align: -0.05em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.marca-estado-activa {
+  background: currentColor;
+}
+
+.marca-estado-en_silencio {
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+.marca-estado-sin_datos {
+  background: transparent;
+}
+
+/* Números alineados en columnas y tarjetas; títulos equilibrados. */
+.resumen dd,
+.tabla-dias td,
+.tabla-scroll td,
+table td {
+  font-variant-numeric: tabular-nums;
+}
+
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* Transiciones solo de color, borde y transform, con curva de salida. */
+button,
+.encabezado nav a,
+.accesos li,
+.capas-plegable > summary {
+  transition:
+    background-color var(--rapido) var(--salida),
+    border-color var(--rapido) var(--salida),
+    color var(--rapido) var(--salida),
+    transform var(--rapido) var(--salida);
+}
+
+/* Al apretar, el botón responde: baja apenas de tamaño. */
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Efectos de hover solo con mouse: en pantallas táctiles quedaban «pegados» tras tocar. */
+@media (hover: none), (pointer: coarse) {
+  .encabezado nav a:hover,
+  .a11y-boton:hover,
+  .acciones button:hover:not(:disabled),
+  .atajos button:hover,
+  .maqueta-layout button:hover,
+  .barra-tiempo button:hover {
+    background: revert-layer;
+    border-color: revert-layer;
+    color: revert-layer;
+  }
+}
+
+/* El panel de accesibilidad entra con opacidad y un desplazamiento corto desde el botón. */
+.a11y-panel {
+  transform-origin: top right;
+  transition:
+    opacity var(--medio) var(--salida),
+    transform var(--medio) var(--salida);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+/* Los bloques de la maqueta suben suave al elegirlos (solo trazo, sin mover geometría). */
+.maqueta-tapa {
+  transition:
+    stroke var(--rapido) var(--salida),
+    stroke-width var(--rapido) var(--salida);
+}
+
+/* Movimiento reducido: se conserva el cambio de color y opacidad, se quita el desplazamiento. */
+@media (prefers-reduced-motion: reduce) {
+  button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .a11y-panel {
+    transition: opacity var(--rapido) linear;
+
+    @starting-style {
+      transform: none;
+    }
+  }
+}
+
+html[data-movimiento='reducido'] button:active:not(:disabled) {
+  transform: none;
+}
+
+/* Foco visible en todos los controles, también sobre fondos oscuros. */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role='button']:focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 2px;
+}
