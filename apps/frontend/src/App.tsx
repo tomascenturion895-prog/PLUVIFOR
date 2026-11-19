@@ -3,8 +3,9 @@ import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
 import Comparador from './pages/Compare'
 import Importar from './pages/Importar'
+import NetworkHealth from './pages/NetworkHealth'
 import Parte from './pages/Parte'
-import { Ayuda, Inicio, Mapa, NoEncontrada, Salud } from './pages/Paginas'
+import { Ayuda, Inicio, Mapa, NoEncontrada } from './pages/Paginas'
 
 export default function App() {
   return (
@@ -17,7 +18,7 @@ export default function App() {
         <Route path="comparador" element={<Comparador />} />
         <Route path="parte" element={<Parte />} />
         <Route path="importar" element={<Importar />} />
-        <Route path="salud" element={<Salud />} />
+        <Route path="salud" element={<NetworkHealth />} />
         <Route path="ayuda" element={<Ayuda />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>

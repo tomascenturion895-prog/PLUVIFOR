@@ -4,6 +4,7 @@ import type {
   ImportKind,
   ImportLog,
   ImportReport,
+  NetworkHealth,
   Report,
   Series,
   SeriesCompare,
@@ -185,6 +186,17 @@ export function getCompare(
   const { stationIds, from, to, category } = params
   return request<SeriesCompare>(
     `/api/rainfall/compare${query({ station_ids: stationIds.join(','), from, to, category })}`,
+    { signal },
+  )
+}
+
+/** Estaciones activas, en silencio y sin datos, calculadas contra la fecha de corte. */
+export function getNetworkHealth(
+  params: { silentAfterDays?: number } = {},
+  signal?: AbortSignal,
+): Promise<NetworkHealth> {
+  return request<NetworkHealth>(
+    `/api/network/health${query({ silent_after_days: params.silentAfterDays })}`,
     { signal },
   )
 }
