@@ -165,7 +165,7 @@ CHECK (unit = 'mm')
 
 Compatibles con SQLite y PostgreSQL. En SQLAlchemy se declaran como `CheckConstraint` y `UniqueConstraint`, con `Enum(..., native_enum=False)`.
 
-Índices: la restricción única ya cubre las búsquedas por estación y fecha; se agrega un índice por `obs_date` para consultas de toda la provincia en un período.
+Índices: la restricción única ya cubre las búsquedas por estación y fecha. Además hay un índice por `obs_date` y otro por `(category, obs_date)` para consultas de toda la provincia en un período, y en `stations` uno por `zone` y otro por `department` (migración `0002`).
 
 ### `quality_flags` — advertencias que abarcan un período
 
@@ -228,6 +228,31 @@ Un acumulado con cobertura baja **siempre** se muestra con su advertencia.
 | `fuente` | `sources.code` (`siga_inta`) |
 
 Verificación de la carga: 7.648 filas en total; 4.378 + 887 = 5.265 con `dato`; 365 con `fila_sin_valor` (7 de ellas traen valor cronológico, que no rellena el hueco); 2.018 `sin_fila`.
+
+### Consultas de acumulado (para la API en Go)
+
+Una fila por estación, **incluso las que no tienen registros en el período** (aparecen con `NULL`, no se omiten). Se filtra por **una** categoría: observado, referencia y estimado nunca se suman. `SUM(mm)` ignora los huecos (`mm` es `NULL`) y devuelve `NULL` si no hubo ningún día con dato: un hueco no suma 0.
+
+```sql
+-- :cat = 'observado' | 'referencia' | 'estimado'; :desde y :hasta inclusivos
+SELECT s.id,
+       s.name,
+       COALESCE(SUM(CASE WHEN r.state = 'dato' THEN 1 ELSE 0 END), 0)                  AS dias_con_dato,
+       COALESCE(SUM(CASE WHEN r.id IS NOT NULL AND r.state <> 'dato' THEN 1 ELSE 0 END), 0) AS dias_sin_valor,
+       SUM(r.mm)                                                                       AS acumulado_mm
+FROM stations s
+LEFT JOIN rainfall_records r
+       ON r.station_id = s.id
+      AND r.category = :cat
+      AND r.obs_date BETWEEN :desde AND :hasta
+WHERE s.id = :estacion          -- por estación
+   -- s.zone = :zona            -- por zona
+   -- s.department = :depto     -- por departamento
+GROUP BY s.id, s.name
+ORDER BY s.id;
+```
+
+Los días que no existen en la base (sin fila) no figuran en `dias_sin_valor`: se calculan como la longitud del período menos los días con registro. Implementación de referencia: `SqlSeriesRepository.accumulated_by_station` y `accumulated_by_group` (`apps/backend/app/repositories/series.py`).
 
 ## 7. Escala y continuidad
 
