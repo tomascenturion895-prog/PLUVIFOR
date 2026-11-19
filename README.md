@@ -16,14 +16,16 @@ Con El Niño, la lluvia se comporta distinto según la zona de la provincia, y c
 
 Un sistema web que reúne las series de lluvia de toda la provincia y permite **consultarlas por estación, zona y período**, sin ocultar la calidad del dato. La idea central: **un hueco no es un cero**. Si una estación no informó, el sistema lo muestra como "sin dato", y si hay señales de que algo anda mal, lo advierte.
 
-## Qué hace
+## Qué hace (estado real al 19/11/2026)
 
-| Módulo | Función |
+| Módulo | Qué existe hoy |
 |---|---|
-| **1. Ingesta y auditoría** | Carga datos de distintas fuentes, los normaliza y deja un registro de limpieza de cada decisión tomada. |
-| **2. Mapa provincial** | Muestra las estaciones de todo el territorio, no solo la capital, con acumulados por período. |
-| **3. Comparador** | Compara estaciones, zonas y períodos, con unidades claras y separación entre lluvia observada y estimada. |
-| **4. Parte pluvial** | Genera un resumen listo para compartir, con las advertencias de calidad incluidas. |
+| **Ingesta y auditoría** | Importación de lluvia diaria y catálogo de estaciones por CSV con auditoría previa (qué se acepta y qué se rechaza) y confirmación con clave de administración. Historial de cargas. Registro de limpieza en `docs/entrega/registro-de-limpieza.md`. |
+| **Mapa provincial** | Mapa con los departamentos y los acumulados por período, con trazo discontinuo donde no hay dato. |
+| **Estación** | Ficha con acumulado, cobertura, días «sin dato» / «fila sin valor», advertencias de calidad y gráfico diario. |
+| **Parte pluvial** | Resumen de hasta 20 estaciones con fuente, categoría, fecha de corte y advertencias. |
+| **Comparador** | La API compara estaciones y devuelve las advertencias de comparabilidad (`/api/rainfall/compare`). **La pantalla todavía dice «en construcción».** |
+| **Salud de la red** y **Ayuda** | Pantallas **en construcción**. |
 
 ## Principios de rigor
 
@@ -34,12 +36,11 @@ Un sistema web que reúne las series de lluvia de toda la provincia y permite **
 
 ## Fuentes de datos
 
-- Series diarias de estaciones INTA (SIGA).
-- Datos provistos en el kit del AI LAB.
-- CHIRPS v3 como referencia estimada (CC BY 4.0), siempre separada de los datos medidos.
-- Otras fuentes en evaluación (por ejemplo, la API del INA), sujetas a verificación.
+- **Datos reales de la demo:** series diarias de 3 estaciones del SIGA/INTA (7.648 días en `docs/datos/`) y, aparte, la normal mensual 1991-2020 de Formosa Aero del SMN como referencia climática (CC BY 2.5 AR), que se carga con `python -m app.cli import-normals` (no la trae `reset-demo`).
+- **Conector preparado, sin datos cargados:** CHIRPS v3 como lluvia estimada, siempre separada de lo medido.
+- **Sin verificar:** red provincial, UPCA, SNIH y la API del INA (licencia y series sin confirmar). No se cargó nada de ellas.
 
-El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes en `docs/fuentes/README.md` y registro de limpieza).
+El detalle de cada una (licencia, horario de corte, pendientes) está en `docs/fuentes/README.md`.
 
 ## Alcance
 
@@ -47,10 +48,41 @@ El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes en `
 
 **Requiere fundamento** (puede sumarse si se justifica cómo ayuda a la solución; ver `AGENTS.md`): alturas de ríos y riachos, predicción de afectaciones, zonas de riesgo, evacuaciones, identificación de atajaderos.
 
+## Cómo correrlo
+
+Hace falta Git, Python 3.12 o superior y Node.js 22 o superior. La guía completa, con Windows y macOS, está en `docs/ENTORNO.md`. En resumen, desde la raíz del repositorio y con dos terminales:
+
+```bash
+cp .env.example .env                       # Windows: copy .env.example .env
+
+# Terminal 1 · API (http://localhost:8000/health)
+cd apps/backend
+python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+python -m app.cli reset-demo --yes         # crea la base y carga los datos de demo (sin internet)
+uvicorn app.main:app --reload
+
+# Terminal 2 · Interfaz (http://localhost:5173)
+cd apps/frontend
+npm ci
+npm run dev
+```
+
+**Variables de entorno** (solo nombres; los valores van en `.env`, que Git ignora): `DATABASE_URL` (SQLite por defecto), `DATA_CUTOFF_DATE` (2026-10-31), `CORS_ORIGINS`, `ADMIN_API_KEY` (sin ella, importar y confirmar cargas queda deshabilitado), `MAX_REQUEST_BYTES`, `MAX_UPLOAD_BYTES`, `RATE_LIMIT_PER_MINUTE`, `RATE_LIMIT_IMPORT_PER_MINUTE` y `VITE_API_URL`. Ver `.env.example` y `docs/seguridad-secretos.md`.
+
+## Pruebas
+
+```bash
+cd apps/backend  && pytest && ruff check . && ruff format --check .
+cd apps/frontend && npm test && npm run lint && npm run format:check && npm run build
+```
+
+Al 19/11/2026: 331 pruebas de backend y 119 de frontend en verde. Los planes y resultados de QA están en `docs/qa/`.
+
 ## Tecnología
 
-- **Backend:** FastAPI, Pydantic, SQLAlchemy, SQLite (con opción de migrar a PostgreSQL/PostGIS).
-- **Frontend:** React, Vite, Recharts, Leaflet.
+- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy y Alembic sobre SQLite (PostgreSQL por `DATABASE_URL`: ver `docs/ENTORNO.md`).
+- **Frontend:** React 19, TypeScript, Vite, Recharts y Leaflet.
 - **Capas geográficas:** GeoJSON de departamentos y cursos de agua (IGN), incluidas en el repositorio.
 - **Diseño por conectores:** cada fuente de datos se agrega sin tocar el resto del sistema.
 
@@ -59,16 +91,24 @@ El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes en `
 ```
 pluvifor/
 ├── apps/
-│   ├── backend/    # API y reglas de calidad
+│   ├── backend/    # API, reglas de calidad, importación
 │   └── frontend/   # Interfaz web
-├── docs/           # Ficha técnica, fuentes, registro de limpieza
-├── README.md
+├── docs/           # Ficha técnica, fuentes, datos, QA, entrega
+├── scripts/        # Verificación del entorno
+├── AGENTS.md       # Reglas del proyecto para asistentes de IA
 └── .env.example
 ```
 
-## Estado
+## Límites conocidos
 
-En desarrollo durante la Misión: Código Formosa (noviembre de 2026). Las instrucciones de instalación y uso se agregarán a medida que el prototipo esté listo.
+Es un prototipo. Lo que **no** hay, dicho de frente:
+
+- No hay despliegue en línea: corre en la computadora local.
+- No hay API en Go: toda la API es Python (FastAPI).
+- Hay series reales de solo 3 estaciones del SIGA/INTA. La lista de las 34 estaciones provinciales no está disponible.
+- Las pantallas Comparador, Salud de la red y Ayuda están en construcción.
+- No se probó en celulares reales; el análisis responsive es simulado.
+- Los datos tienen fecha de corte 31/10/2026 y no se actualizan solos.
 
 ## Equipo
 
