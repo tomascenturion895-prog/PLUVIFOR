@@ -45,3 +45,18 @@ func TestSinDriverAbrirDevuelveErrorClaro(t *testing.T) {
 		t.Fatalf("err = %v", err)
 	}
 }
+
+func TestSqliteURIAceptaRutasDeWindowsYUnix(t *testing.T) {
+	casos := map[string]string{
+		`C:\laragon\www\PLUVIFOR\apps\backend\pluvifor.db`: "file:///C:/laragon/www/PLUVIFOR/apps/backend/pluvifor.db?mode=ro",
+		"C:/Mis datos/lluvia #1.db":                        "file:///C:/Mis%20datos/lluvia%20%231.db?mode=ro",
+		"/tmp/demo.db":                                     "file:///tmp/demo.db?mode=ro",
+		"./pluvifor.db":                                    "file:./pluvifor.db?mode=ro",
+		"/tmp/a?b.db":                                      "file:///tmp/a%3fb.db?mode=ro",
+	}
+	for in, want := range casos {
+		if got := sqliteURI(in); got != want {
+			t.Errorf("sqliteURI(%q) = %q, quería %q", in, got, want)
+		}
+	}
+}

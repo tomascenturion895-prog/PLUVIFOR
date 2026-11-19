@@ -44,7 +44,7 @@ func OpenSQLite(path string) (*Store, error) {
 	if DriverName == "" {
 		return nil, ErrNoDriver
 	}
-	db, err := sql.Open(DriverName, "file:"+path+"?mode=ro")
+	db, err := sql.Open(DriverName, sqliteURI(path))
 	if err != nil {
 		return nil, errors.New("no se pudo abrir la base")
 	}
@@ -295,4 +295,20 @@ func optDate(v any) (*civil.Date, error) {
 		return nil, err
 	}
 	return &d, nil
+}
+
+var uriEscaper = strings.NewReplacer("%", "%25", " ", "%20", "?", "%3f", "#", "%23")
+
+// sqliteURI arma la dirección de un archivo SQLite en solo lectura. Acepta rutas de Windows (con
+// letra de unidad y barras de cualquier sentido), con espacios, y rutas relativas.
+func sqliteURI(path string) string {
+	p := uriEscaper.Replace(strings.ReplaceAll(path, "\\", "/"))
+	switch {
+	case len(path) >= 2 && path[1] == ':': // C:/carpeta/base.db
+		return "file:///" + p + "?mode=ro"
+	case strings.HasPrefix(p, "/"): // /var/base.db
+		return "file://" + p + "?mode=ro"
+	default: // ./base.db
+		return "file:" + p + "?mode=ro"
+	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -15,12 +16,14 @@ const (
 	defaultDatabaseURL = "sqlite:///./pluvifor.db"
 	defaultCutoff      = "2026-10-31"
 	defaultPort        = "8080"
+	defaultHost        = "127.0.0.1"
 	defaultBackendURL  = "http://127.0.0.1:8000"
 )
 
 // Config es la configuración de la API. La base es la misma que usa Python (DATABASE_URL).
 type Config struct {
 	Env        string
+	Host       string // dirección donde escucha; por defecto solo esta computadora
 	Port       string
 	CutoffDate string // AAAA-MM-DD: fecha de corte de los datos
 	Database   Database
@@ -56,11 +59,15 @@ func Load(lookup Lookup) (Config, error) {
 
 	cfg := Config{
 		Env:        get("APP_ENV", "development"),
+		Host:       get("API_GO_HOST", defaultHost),
 		Port:       get("API_GO_PORT", defaultPort),
 		CutoffDate: get("DATA_CUTOFF_DATE", defaultCutoff),
 	}
 	if _, err := time.Parse("2006-01-02", cfg.CutoffDate); err != nil {
 		return Config{}, errors.New("DATA_CUTOFF_DATE debe tener el formato AAAA-MM-DD")
+	}
+	if strings.ContainsAny(cfg.Host, " /\\:@") && !strings.Contains(cfg.Host, "::") {
+		return Config{}, errors.New("API_GO_HOST debe ser una dirección sin puerto ni ruta (por ejemplo 127.0.0.1 o 0.0.0.0)")
 	}
 	dbURL := get("DATABASE_URL", defaultDatabaseURL)
 	engine, err := engineOf(dbURL)
@@ -130,4 +137,26 @@ func nonNegative(raw, name string) (int, error) {
 		return 0, fmt.Errorf("%s debe ser un entero entre 0 y 1000000", name)
 	}
 	return n, nil
+}
+
+// ResolveSQLitePath encuentra el archivo de una ruta relativa. Python resuelve `./pluvifor.db` desde
+// apps/backend y Go corre desde apps/api-go: se prueba primero desde donde corre Go y después en la
+// carpeta del backend. Una ruta absoluta (también con letra de unidad) queda como está. Si no
+// encuentra el archivo devuelve la ruta original, para que el error sea claro al abrirla.
+func ResolveSQLitePath(path string, exists func(string) bool) string {
+	if path == "" || filepath.IsAbs(path) || strings.HasPrefix(path, "/") || (len(path) >= 2 && path[1] == ':') {
+		return path
+	}
+	for _, candidate := range []string{path, filepath.Join("..", "backend", path), filepath.Join("apps", "backend", path), filepath.Join("..", "..", "apps", "backend", path)} {
+		if exists(candidate) {
+			return candidate
+		}
+	}
+	return path
+}
+
+// FileExists dice si existe un archivo (no una carpeta).
+func FileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
 }
