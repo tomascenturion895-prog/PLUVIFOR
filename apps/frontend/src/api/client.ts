@@ -3,6 +3,7 @@ import type {
   ImportKind,
   ImportLog,
   ImportReport,
+  Report,
   Series,
   Station,
   StationList,
@@ -138,6 +139,20 @@ export const commitImport = (
 export function getImportLogs(apiKey: string, signal?: AbortSignal): Promise<ImportLog[]> {
   return request<ImportLog[]>(`/api/import/logs${query({ limit: 20 })}`, {
     headers: conClave(apiKey),
+    signal,
+  })
+}
+
+/** Parte pluvial de una o más estaciones. Los acumulados de estaciones distintas no se suman. */
+export function getReport(
+  params: { stationIds: number[]; from: string; to: string; category?: DataCategory },
+  signal?: AbortSignal,
+): Promise<Report> {
+  const { stationIds, from, to, category } = params
+  return request<Report>('/api/reports/summary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ station_ids: stationIds, from, to, category }),
     signal,
   })
 }

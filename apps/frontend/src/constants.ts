@@ -19,3 +19,6 @@ export const FECHA_CORTE = '2026-10-31'
 
 /** Tamaño máximo de un archivo a importar (igual que el de la API: 5 MB). */
 export const MAX_ARCHIVO_BYTES = 5 * 1024 * 1024
+
+/** Cantidad máxima de estaciones por parte (igual que la API). */
+export const MAX_ESTACIONES_PARTE = 20

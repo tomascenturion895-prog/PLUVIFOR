@@ -36,9 +36,6 @@ export const Mapa = () => (
 export const Comparador = () => (
   <Pendiente titulo="Comparador">Compará estaciones y períodos con sus advertencias.</Pendiente>
 )
-export const Parte = () => (
-  <Pendiente titulo="Parte pluvial">Resumen listo para copiar o imprimir.</Pendiente>
-)
 export const Salud = () => (
   <Pendiente titulo="Salud de la red">
     Qué estaciones reportan y cuáles están en silencio.
