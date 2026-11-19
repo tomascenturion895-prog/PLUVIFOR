@@ -16,11 +16,18 @@ describe('Inicio', () => {
     expect(screen.getByText(/nunca como 0 mm/)).toBeInTheDocument()
   })
 
-  it('tiene accesos rápidos a maqueta, mapa, comparador, parte y reporte', () => {
+  it('tiene accesos rápidos a la vista 3D, maqueta, mapa, comparador, parte y reporte', () => {
     enRouter(<Home />)
     const accesos = within(screen.getByRole('list', { name: 'Accesos rápidos' }))
     const destinos = accesos.getAllByRole('link').map((a) => a.getAttribute('href'))
-    expect(destinos).toEqual(['/maqueta', '/mapa', '/comparador', '/parte', '/reporte'])
+    expect(destinos).toEqual([
+      '/vista-3d',
+      '/maqueta',
+      '/mapa',
+      '/comparador',
+      '/parte',
+      '/reporte',
+    ])
   })
 
   it('enlaza a la ayuda y avisa el corte de datos', () => {

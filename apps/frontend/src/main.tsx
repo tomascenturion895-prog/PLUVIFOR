@@ -6,10 +6,15 @@ import './theme.css'
 import './maqueta3d.css'
 import './vista3d.css'
 import './pulido.css'
+import './material/registro'
 import './material.css'
+import { instalarOndas } from './material/ondas'
 import App from './App.tsx'
 
-createRoot(document.getElementById('root')!).render(
+const raiz = document.getElementById('root')!
+instalarOndas(raiz)
+
+createRoot(raiz).render(
   <StrictMode>
     <BrowserRouter>
       <App />
