@@ -188,7 +188,7 @@ Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`au
 
 ### `climate_references` — normales climáticas
 
-Normal mensual (`month` 1–12) en mm, con período de cálculo y nota de fuente. Categoría siempre `referencia`. **Solo se carga con fuente verificada**; si no hay, la tabla queda vacía y se documenta.
+Normal mensual (`month` 1–12) en mm, con período de cálculo y nota de fuente. Categoría siempre `referencia`. **Solo se carga con fuente verificada**; si no hay, la tabla queda vacía y se documenta. Hoy hay una sola normal: la de **Formosa Aero (SMN, 1991-2020)**, ver `docs/fuentes/smn-normales.md`. No hay normales para las demás estaciones.
 
 ## 4. Reglas que se aplican al cargar y al consultar
 

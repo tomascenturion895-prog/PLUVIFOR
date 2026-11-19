@@ -10,10 +10,12 @@ from app.db.session import get_session
 from app.errors import ApiError
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
+from app.repositories.references import SqlReferenceRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
 from app.services.importer import ImportService
 from app.services.quality import QualityService
+from app.services.references import ReferenceService
 from app.services.report import ReportService
 from app.services.series import SeriesService
 from app.services.stations import StationService
@@ -72,3 +74,7 @@ def get_quality_service(
     session: Session = Depends(get_session),  # noqa: B008
 ) -> QualityService:
     return QualityService(SqlQualityRepository(session))
+
+
+def get_reference_service(session: Session = Depends(get_session)) -> ReferenceService:  # noqa: B008
+    return ReferenceService(SqlReferenceRepository(session))
