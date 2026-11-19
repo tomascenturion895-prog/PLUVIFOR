@@ -1,6 +1,7 @@
 import { getNetworkHealth } from '../api/client'
 import type { NetworkState, StationHealth } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
+import LecturasSimuladas from '../components/LecturasSimuladas'
 import { useAsync } from '../hooks/useAsync'
 import { fechaLegible, formatoMm, TEXTO_ESTADO } from './network-health-datos'
 
@@ -85,6 +86,7 @@ export default function NetworkHealth() {
             </table>
           </>
         ))}
+      <LecturasSimuladas />
     </section>
   )
 }

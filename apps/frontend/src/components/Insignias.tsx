@@ -54,6 +54,14 @@ const CATEGORIAS: Record<DataCategory, Definicion> = {
   },
 }
 
+const SIMULADO: Definicion = {
+  clase: 'simulado',
+  simbolo: '⚙',
+  texto: 'Simulado',
+  descripcion:
+    'Lectura inventada por un simulador, no de un sensor real. Nunca se suma a lo observado.',
+}
+
 function Insignia({ definicion, tipo }: { definicion: Definicion; tipo: string }) {
   return (
     <span
@@ -82,6 +90,11 @@ export function InsigniaCategoria({ categoria }: { categoria: DataCategory }) {
  * Advertencia de comparabilidad. Si llega un código que no conocemos se muestra con el mensaje de
  * la API (o el código) en lugar de ocultarla: una advertencia nunca se pierde en silencio.
  */
+/** Rótulo de las lecturas del simulador de dispositivos (SCRUM-94). */
+export function InsigniaSimulado() {
+  return <Insignia definicion={SIMULADO} tipo="categoria" />
+}
+
 export function InsigniaAdvertencia({ codigo, mensaje }: { codigo: string; mensaje?: string }) {
   const conocida = ADVERTENCIAS[codigo as CodigoAdvertencia] as
     { texto: string; descripcion: string } | undefined

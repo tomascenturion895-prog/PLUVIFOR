@@ -10,6 +10,7 @@ from app.api import (
     rainfall,
     references,
     reports,
+    sensor_readings,
     stations,
 )
 from app.config import Settings, get_settings
@@ -60,6 +61,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(network_health.router)
     app.include_router(rainfall.router)
     app.include_router(field_reports.router)
+    app.include_router(sensor_readings.router)
     app.include_router(imports.router)
     app.include_router(reports.router)
     app.include_router(references.router)

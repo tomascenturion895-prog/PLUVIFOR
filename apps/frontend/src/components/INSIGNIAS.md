@@ -20,6 +20,10 @@ Componentes en `Insignias.tsx`; códigos de advertencia y `textoMm` en `insignia
 | `referencia` | ◆ **Referencia** | nunca se suma a lo observado |
 | `estimado`   | ≈ **Estimado**   | calculado; borde de puntos   |
 
+## Simulado: `<InsigniaSimulado />`
+
+⚙ **Simulado**, con borde de guiones. Rotula las lecturas del simulador de dispositivos (SCRUM-94): no son de un sensor real y nunca se suman a lo observado, lo de referencia ni lo estimado.
+
 ## Advertencia: `<InsigniaAdvertencia codigo="…" mensaje="…" />`
 
 Usa los `code` que devuelve la API. `mensaje` (opcional) es el texto de la API y pasa a ser la descripción.
