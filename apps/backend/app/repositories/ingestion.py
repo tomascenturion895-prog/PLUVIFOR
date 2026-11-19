@@ -26,6 +26,8 @@ class IngestionRepository(Protocol):
         self, source_id: int, report: ImportReport, cutoff: date, started_at: datetime
     ) -> int: ...
 
+    def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]: ...
+
     def upsert_rainfall(
         self, rows: list[RainRow], station_ids: dict[str, int], import_id: int
     ) -> tuple[int, int]: ...
@@ -112,6 +114,16 @@ class SqlIngestionRepository:
         self._session.add(log)
         self._session.flush()
         return log.id
+
+    def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]:
+        """Las últimas cargas, la más nueva primero, con el código de su fuente."""
+        rows = self._session.execute(
+            select(ImportLog, Source.code)
+            .join(Source, Source.id == ImportLog.source_id)
+            .order_by(ImportLog.started_at.desc(), ImportLog.id.desc())
+            .limit(limit)
+        )
+        return [(log, code) for log, code in rows]
 
     def upsert_rainfall(
         self, rows: list[RainRow], station_ids: dict[str, int], import_id: int

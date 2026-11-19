@@ -10,7 +10,7 @@ from app.config import Settings, get_settings
 from app.domain.enums import ImportMode
 from app.errors import ApiError
 from app.ingestion.types import ImportReport, InvalidFileError, UploadTooLargeError
-from app.schemas.imports import ImportReportOut
+from app.schemas.imports import ImportLogOut, ImportReportOut
 from app.services.importer import ImportService
 
 router = APIRouter(
@@ -100,3 +100,15 @@ async def commit(
     filename: Filename = "archivo.csv",
 ) -> ImportReportOut:
     return await _run(request, service, settings, ImportMode.COMMIT, kind, source, filename)
+
+
+@router.get(
+    "/logs",
+    response_model=list[ImportLogOut],
+    summary="Historial de cargas registradas (la más nueva primero)",
+)
+def logs(
+    service: Annotated[ImportService, Depends(get_import_service)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+) -> list[ImportLogOut]:
+    return [ImportLogOut.from_entry(entry) for entry in service.recent_imports(limit)]

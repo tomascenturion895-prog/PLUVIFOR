@@ -1,8 +1,9 @@
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel
 
-from app.ingestion.types import ImportReport, RejectionReason
+from app.ingestion.types import ImportLogEntry, ImportReport, RejectionReason
 
 MAX_REJECTIONS_LISTED = 200
 
@@ -63,3 +64,22 @@ class ImportReportOut(BaseModel):
             inserted=report.inserted,
             updated=report.updated,
         )
+
+
+class ImportLogOut(BaseModel):
+    id: int
+    source: str
+    mode: str
+    status: str
+    filename: str
+    sha256: str
+    rows_read: int
+    rows_accepted: int
+    rows_rejected: int
+    rejections_by_reason: dict[str, int]
+    cutoff_applied: date
+    started_at: datetime
+
+    @classmethod
+    def from_entry(cls, entry: ImportLogEntry) -> "ImportLogOut":
+        return cls(**entry.__dict__)
