@@ -50,7 +50,7 @@ El detalle de cada una (licencia, horario de corte, pendientes) está en `docs/f
 
 ## Cómo correrlo
 
-Hace falta Git, Python 3.12 o superior y Node.js 22 o superior. La guía completa, con Windows y macOS, está en `docs/ENTORNO.md`. En resumen, desde la raíz del repositorio y con dos terminales:
+Hace falta Git, Python 3.12 o superior y Node.js 22 o superior (y Go 1.24 o superior solo si vas a trabajar en la API en Go). La guía completa, con Windows y macOS, está en `docs/ENTORNO.md`. En resumen, desde la raíz del repositorio y con dos terminales:
 
 ```bash
 cp .env.example .env                       # Windows: copy .env.example .env
@@ -61,6 +61,9 @@ python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\A
 pip install -r requirements-dev.txt
 python -m app.cli reset-demo --yes         # crea la base y carga los datos de demo (sin internet)
 uvicorn app.main:app --reload
+
+# Opcional · API en Go (http://localhost:8080/health): hoy es un esqueleto, sin datos
+cd apps/api-go && go run ./cmd/api
 
 # Terminal 2 · Interfaz (http://localhost:5173)
 cd apps/frontend
@@ -73,6 +76,7 @@ npm run dev
 ## Pruebas
 
 ```bash
+cd apps/api-go   && go vet ./... && go test ./...
 cd apps/backend  && pytest && ruff check . && ruff format --check .
 cd apps/frontend && npm test && npm run lint && npm run format:check && npm run build
 ```
@@ -81,7 +85,8 @@ Al 19/11/2026: 331 pruebas de backend y 119 de frontend en verde. Los planes y r
 
 ## Tecnología
 
-- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy y Alembic sobre SQLite (PostgreSQL por `DATABASE_URL`: ver `docs/ENTORNO.md`).
+- **API:** Go (`apps/api-go`, solo biblioteca estándar), por rapidez. Hoy es un esqueleto: `/health`, errores y contrato `openapi.yaml`.
+- **Procesamiento y API de datos:** Python, FastAPI, Pydantic, SQLAlchemy y Alembic sobre SQLite (PostgreSQL por `DATABASE_URL`: ver `docs/ENTORNO.md`). Es quien hoy responde todas las rutas `/api/*`, y donde irán el procesamiento y la predicción con IA.
 - **Frontend:** React 19, TypeScript, Vite, Recharts y Leaflet.
 - **Capas geográficas:** GeoJSON de departamentos y cursos de agua (IGN), incluidas en el repositorio.
 - **Diseño por conectores:** cada fuente de datos se agrega sin tocar el resto del sistema.
@@ -91,7 +96,8 @@ Al 19/11/2026: 331 pruebas de backend y 119 de frontend en verde. Los planes y r
 ```
 pluvifor/
 ├── apps/
-│   ├── backend/    # API, reglas de calidad, importación
+│   ├── api-go/     # API en Go (esqueleto)
+│   ├── backend/    # Procesamiento, reglas de calidad, importación y API de datos
 │   └── frontend/   # Interfaz web
 ├── docs/           # Ficha técnica, fuentes, datos, QA, entrega
 ├── scripts/        # Verificación del entorno
@@ -104,7 +110,8 @@ pluvifor/
 Es un prototipo. Lo que **no** hay, dicho de frente:
 
 - No hay despliegue en línea: corre en la computadora local.
-- No hay API en Go: toda la API es Python (FastAPI).
+- La API en Go es un esqueleto (`/health` y errores): todavía no tiene driver de base de datos ni sirve estaciones o lluvia. Esas rutas responden desde Python.
+- No hay predicción con IA todavía: es parte del plan para la parte de Python.
 - Hay series reales de solo 3 estaciones del SIGA/INTA. La lista de las 34 estaciones provinciales no está disponible.
 - Las pantallas Comparador, Salud de la red y Ayuda están en construcción.
 - No se probó en celulares reales; el análisis responsive es simulado.

@@ -37,7 +37,8 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 
 | Parte | Tecnología |
 |---|---|
-| Backend | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff |
+| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Hoy implementa `/health` y el formato de errores; el contrato está en `apps/api-go/openapi.yaml`. Todavía no tiene driver de base de datos (decisión pendiente) |
+| Procesamiento (datos, importación, IA) | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff, en `apps/backend`. Hoy responde **todas** las rutas `/api/*` reales |
 | Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, Oxlint + Prettier |
 | Capas geográficas | GeoJSON del IGN dentro del repositorio |
 | CI | GitHub Actions |
@@ -45,7 +46,8 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 ## Estructura
 
 ```
-apps/backend/     API (FastAPI)
+apps/api-go/      API en Go (esqueleto: /health, errores, contrato OpenAPI)
+apps/backend/     Procesamiento y API de datos (FastAPI)
 apps/frontend/    Interfaz web (React + Vite)
 docs/             Documentación, datos y QA
 .github/          Plantilla de PR y flujos de CI
@@ -53,7 +55,15 @@ docs/             Documentación, datos y QA
 
 ## Comandos
 
-Backend (desde `apps/backend`):
+API en Go (desde `apps/api-go`):
+
+```
+go run ./cmd/api                                       # http://localhost:8080/health
+go vet ./... && go test ./...
+gofmt -l .                                             # no debe listar ningún archivo
+```
+
+Backend en Python (desde `apps/backend`):
 
 ```
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
@@ -72,6 +82,13 @@ npm test
 npm run lint && npm run format:check
 npm run build
 ```
+
+## Reparto entre Go y Python
+
+- **Go** (`apps/api-go`): puerta de entrada de las consultas. Mismo formato de errores `{"error": {"code", "message"}}` y mismas reglas que Python; el contrato es `openapi.yaml`.
+- **Python** (`apps/backend`): reglas de calidad, importación, procesamiento y predicción con IA. Mientras Go no implemente una ruta, esa ruta responde desde Python.
+- Las reglas de integridad del dato valen igual en las dos partes. Las dos leen la misma base (`DATABASE_URL`).
+- Nada de dependencias nuevas sin acordarlo, tampoco en Go: el driver de base de datos está pendiente de decisión.
 
 ## Cómo trabajar
 

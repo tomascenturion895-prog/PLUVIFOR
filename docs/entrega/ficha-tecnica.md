@@ -39,7 +39,7 @@ flowchart LR
     A --> P3
 ```
 
-**Importante para quien lea el plan original:** el plan hablaba de una API en **Go** y un procesamiento en Python. **En el repositorio no hay una API en Go**: toda la API y el procesamiento están en Python (FastAPI). El diagrama del Plan v2 no está en el repositorio, por eso no se reprodujo; el de arriba refleja lo implementado. Si el equipo decide que Go es obligatorio, es una tarea nueva, no un detalle pendiente.
+**Reparto del stack (decisión del 19/11/2026):** la API va en **Go** (`apps/api-go`) por rapidez y Python (FastAPI, `apps/backend`) hace el procesamiento de datos, la importación y la predicción con IA. **Hoy la API en Go es solo un esqueleto**: tiene `/health`, el formato de errores y el contrato `openapi.yaml`, pero todavía no se conecta a la base (falta elegir el driver) ni sirve estaciones o lluvia. **Todas las rutas `/api/*` reales siguen respondiendo desde Python.** El diagrama del Plan v2 no está en el repositorio, por eso no se reprodujo; el de arriba refleja lo implementado.
 
 ### Capas del backend (`apps/backend/app/`)
 

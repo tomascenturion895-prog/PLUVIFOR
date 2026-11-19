@@ -8,5 +8,6 @@ Resumen de lo que no se negocia:
 2. Observado, referencia y estimado van separados, siempre con su fuente.
 3. Fecha de corte de los datos: **31/10/2026**.
 4. No se inventan datos, coordenadas, endpoints ni dependencias.
-5. Alcance: solo reporte pluvial. Nada de ríos, riesgo, evacuaciones ni atajaderos.
-6. Nunca se escriben secretos en el código.
+5. Alcance: el núcleo es la lluvia y su calidad. Ríos, riesgo, evacuaciones, atajaderos y otros temas requieren fundamento escrito en el PR (ver `AGENTS.md`).
+6. Stack: API en Go (`apps/api-go`) y procesamiento en Python (`apps/backend`). Los comandos están en `AGENTS.md`.
+7. Nunca se escriben secretos en el código.
