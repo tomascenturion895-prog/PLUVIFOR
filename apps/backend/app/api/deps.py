@@ -12,6 +12,7 @@ from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
 from app.services.importer import ImportService
+from app.services.report import ReportService
 from app.services.series import SeriesService
 from app.services.stations import StationService
 
@@ -55,3 +56,11 @@ def get_import_service(
         settings.data_cutoff_date,
         max_upload_bytes=settings.max_upload_bytes,
     )
+
+
+def get_report_service(
+    session: Session = Depends(get_session),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> ReportService:
+    series = SeriesService(SqlSeriesRepository(session), settings.data_cutoff_date)
+    return ReportService(series, settings.data_cutoff_date)
