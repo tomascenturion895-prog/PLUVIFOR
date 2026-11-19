@@ -14,10 +14,18 @@ import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer, useMap } from 'r
 import type { GeoJSONProps } from 'react-leaflet'
 import { Link } from 'react-router-dom'
 import type { FeatureCollection } from 'geojson'
-import { ApiError, getAccumulated, getStations } from '../api/client'
+import { ApiError, getAccumulated, getNetworkHealth, getStations } from '../api/client'
 import type { AccumulatedOut, AccumulatedStation, DataCategory, Station } from '../api/types'
 import { Cargando, ErrorEstado } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria } from '../components/Insignias'
+import PanelCapas from '../components/layers/PanelCapas'
+import {
+  alternar,
+  CAPAS_INICIALES,
+  categoriasActivas,
+  totalesPorCapa,
+  type CapaId,
+} from '../components/layers/capas'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
 import { colorMm, radiusMm, textoMmMapa } from './map-helpers'
@@ -339,17 +347,19 @@ function MapaLeyenda() {
 // Pantalla principal
 // ---------------------------------------------------------------------------
 
-const CATEGORIAS: DataCategory[] = ['observado', 'referencia', 'estimado']
-const LABEL_CATEGORIA: Record<DataCategory, string> = {
-  observado: 'Observado',
-  referencia: 'Referencia',
-  estimado: 'Estimado',
+/** Cada categoría se dibuja distinto: no solo por color, también por el tipo de trazo. */
+const ESTILO_CAPA: Record<DataCategory, { color: string; dashArray?: string; extra: number }> = {
+  observado: { color: '#37474f', extra: 0 },
+  referencia: { color: '#5b3a8e', dashArray: '8 4', extra: 5 },
+  estimado: { color: '#b45309', dashArray: '2 4', extra: 9 },
 }
+
+const SIN_CAPAS_DE_LLUVIA: Map<DataCategory, AccumulatedOut> = new Map()
 
 export function Mapa() {
   const [desde, setDesde] = useState(DESDE_INICIAL)
   const [hasta, setHasta] = useState(FECHA_CORTE)
-  const [category, setCategory] = useState<DataCategory>('observado')
+  const [capasActivas, setCapasActivas] = useState<CapaId[]>([...CAPAS_INICIALES])
   const [capasConError, setCapasConError] = useState<string[]>([])
   const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState<string | null>(null)
   const informarErrorGeoJson = useCallback((path: string) => {
@@ -371,19 +381,54 @@ export function Mapa() {
   )
 
   const rangoValido = desde !== '' && hasta !== '' && desde <= hasta && hasta <= FECHA_CORTE
-  const { estado: estadoAcum, reintentar: reintAcum } = useAsync<AccumulatedOut | null>(
-    (signal) =>
-      rangoValido
-        ? getAccumulated({ from: desde, to: hasta, category }, signal)
-        : Promise.resolve(null),
-    [desde, hasta, category],
+  const categorias = useMemo(() => categoriasActivas(capasActivas), [capasActivas])
+  const categoriasClave = categorias.join(',')
+  // Una consulta por categoría: nunca se pide ni se combina más de una a la vez.
+  const { estado: estadoAcum, reintentar: reintAcum } = useAsync<Map<DataCategory, AccumulatedOut>>(
+    async (signal) => {
+      if (!rangoValido) return SIN_CAPAS_DE_LLUVIA
+      const pares = await Promise.all(
+        categorias.map(
+          async (c) =>
+            [c, await getAccumulated({ from: desde, to: hasta, category: c }, signal)] as const,
+        ),
+      )
+      return new Map(pares)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [desde, hasta, categoriasClave, rangoValido],
   )
 
-  const acumulados = estadoAcum.tipo === 'listo' ? estadoAcum.datos : null
-  const acumPorId = useMemo(
+  const { estado: estadoSilencio } = useAsync(
+    (signal) =>
+      capasActivas.includes('silencio') ? getNetworkHealth({}, signal) : Promise.resolve(null),
+    [capasActivas.includes('silencio')],
+  )
+
+  const porCategoria = estadoAcum.tipo === 'listo' ? estadoAcum.datos : SIN_CAPAS_DE_LLUVIA
+  // La capa principal alimenta el popup, el resumen y el color de los departamentos.
+  const category: DataCategory = categorias[0] ?? 'observado'
+  const acumulados = categorias.length > 0 ? (porCategoria.get(category) ?? null) : null
+  const acumPorCategoria = useMemo(
     () =>
-      new Map<number, AccumulatedStation>(acumulados?.stations.map((s) => [s.station_id, s]) ?? []),
-    [acumulados],
+      new Map(
+        [...porCategoria].map(
+          ([c, datos]) =>
+            [
+              c,
+              new Map<number, AccumulatedStation>(datos.stations.map((s) => [s.station_id, s])),
+            ] as const,
+        ),
+      ),
+    [porCategoria],
+  )
+  const acumPorId = useMemo(
+    () => acumPorCategoria.get(category) ?? new Map<number, AccumulatedStation>(),
+    [acumPorCategoria, category],
+  )
+  const totales = useMemo(
+    () => totalesPorCapa(new Map([...porCategoria].map(([c, d]) => [c, d.stations])), capasActivas),
+    [porCategoria, capasActivas],
   )
 
   const listaEstaciones = estadoEstaciones.tipo === 'listo' ? estadoEstaciones.datos : null
@@ -451,21 +496,13 @@ export function Mapa() {
             aria-label="Fecha hasta"
           />
         </label>
-        <label>
-          Categoría
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as DataCategory)}
-            aria-label="Categoría de dato"
-          >
-            {CATEGORIAS.map((c) => (
-              <option key={c} value={c}>
-                {LABEL_CATEGORIA[c]}
-              </option>
-            ))}
-          </select>
-        </label>
       </form>
+
+      <PanelCapas
+        activas={capasActivas}
+        totales={totales}
+        alCambiar={(id) => setCapasActivas((actuales) => alternar(actuales, id))}
+      />
 
       {!rangoValido && (
         <ErrorEstado
@@ -511,29 +548,58 @@ export function Mapa() {
           />
 
           {rangoValido &&
-            conCoordenadas.map((station) => {
-              const acum = acumPorId.get(station.id)
-              const mm = acum?.accumulated_mm
-              return (
+            categorias.map((cat) => {
+              const estilo = ESTILO_CAPA[cat]
+              const delaCapa = acumPorCategoria.get(cat)
+              return conCoordenadas.map((station) => {
+                const acum = delaCapa?.get(station.id)
+                const mm = acum?.accumulated_mm
+                const principal = cat === category
+                return (
+                  <CircleMarker
+                    key={`${cat}-${station.id}`}
+                    center={[station.lat, station.lon]}
+                    radius={radiusMm(mm) + estilo.extra}
+                    pathOptions={{
+                      color: estilo.color,
+                      weight: principal ? (mm == null ? 2 : 1) : 2,
+                      dashArray: principal ? (mm == null ? '2 4' : undefined) : estilo.dashArray,
+                      fillColor: colorMm(mm),
+                      fillOpacity: principal ? (mm == null ? 0.35 : 0.85) : 0,
+                    }}
+                    aria-label={`Estación ${station.name}${principal ? '' : ` (${cat})`}: ${textoMmMapa(mm)}`}
+                  >
+                    <Popup>
+                      <PopupEstacion station={station} acumulado={acum} category={cat} />
+                    </Popup>
+                  </CircleMarker>
+                )
+              })
+            })}
+          {capasActivas.includes('silencio') &&
+            estadoSilencio.tipo === 'listo' &&
+            estadoSilencio.datos?.stations
+              .filter((h) => h.state === 'en_silencio')
+              .flatMap((h) => {
+                const est = conCoordenadas.find((s) => s.id === h.station_id)
+                return est ? [{ h, est }] : []
+              })
+              .map(({ h, est }) => (
                 <CircleMarker
-                  key={station.id}
-                  center={[station.lat, station.lon]}
-                  radius={radiusMm(mm)}
-                  pathOptions={{
-                    color: '#37474f',
-                    weight: mm == null ? 2 : 1,
-                    dashArray: mm == null ? '2 4' : undefined,
-                    fillColor: colorMm(mm),
-                    fillOpacity: mm == null ? 0.35 : 0.85,
-                  }}
-                  aria-label={`Estación ${station.name}: ${textoMmMapa(mm)}`}
+                  key={`silencio-${h.station_id}`}
+                  center={[est.lat, est.lon]}
+                  radius={16}
+                  pathOptions={{ color: '#9b1c1c', weight: 4, dashArray: '1 0', fillOpacity: 0 }}
+                  aria-label={`Estación ${est.name} en silencio`}
                 >
                   <Popup>
-                    <PopupEstacion station={station} acumulado={acum} category={category} />
+                    <strong>{est.name}</strong>
+                    <br />
+                    En silencio: último dato {h.last_reading_date ?? 'ninguno'}
+                    {h.days_since_last != null ? ` (hace ${h.days_since_last} días)` : ''}.
                   </Popup>
                 </CircleMarker>
-              )
-            })}
+              ))}
         </MapContainer>
       </div>
 

@@ -395,11 +395,10 @@ describe('Mapa provincial', () => {
     })
   })
 
-  it('el selector de categoría cambia la categoría mostrada', async () => {
+  it('el panel de capas prende cada categoría con su propia consulta', async () => {
     const user = userEvent.setup()
     renderMapa()
-    const selector = screen.getByLabelText(/categoría de dato/i)
-    await user.selectOptions(selector, 'estimado')
+    await user.click(screen.getByRole('checkbox', { name: /estimado/i }))
     await waitFor(() => {
       expect(vi.mocked(getAccumulated)).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'estimado' }),
@@ -408,18 +407,30 @@ describe('Mapa provincial', () => {
     })
   })
 
-  it('no mezcla observado con estimado en la misma consulta', async () => {
+  it('no mezcla categorías: cada consulta pide una sola', async () => {
     const user = userEvent.setup()
     renderMapa()
-    const selector = screen.getByLabelText(/categoría de dato/i)
-    await user.selectOptions(selector, 'referencia')
+    await user.click(screen.getByRole('checkbox', { name: /referencia/i }))
     await waitFor(() => {
-      const llamadas = vi.mocked(getAccumulated).mock.calls
-      llamadas.forEach(([params]) => {
-        // Cada llamada usa una sola categoría, nunca mezclada
-        expect(typeof params.category).toBe('string')
-      })
+      const categorias = vi.mocked(getAccumulated).mock.calls.map(([p]) => p.category)
+      expect(categorias).toContain('referencia')
+      categorias.forEach((c) => expect(typeof c).toBe('string'))
     })
+  })
+
+  it('apagar la capa observada la quita del mapa y de los totales', async () => {
+    const user = userEvent.setup()
+    renderMapa()
+    expect(await screen.findByText(/con dato,/)).toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: /lluvia observada/i }))
+    await waitFor(() => expect(screen.queryByText(/con dato,/)).not.toBeInTheDocument())
+  })
+
+  it('los reportes policiales figuran como pendientes y no se pueden prender', () => {
+    renderMapa()
+    const caja = screen.getByRole('checkbox', { name: /reportes policiales/i })
+    expect(caja).toBeDisabled()
+    expect(screen.getByText(/Pendiente: todavía no hay una fuente/)).toBeInTheDocument()
   })
 })
 
