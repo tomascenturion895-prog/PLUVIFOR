@@ -146,3 +146,62 @@ class TestTamano:
             headers={"X-API-Key": "clave-larga-de-prueba", "Content-Type": "text/csv"},
         )
         assert response.status_code == 413
+
+
+class TestLimiteDePeticiones:
+    def test_superar_el_limite_devuelve_429_en_espanol(self, tmp_path):
+        client = make_client(tmp_path, rate_limit_per_minute=3)
+        assert [client.get("/api/stations").status_code for _ in range(3)] == [200, 200, 200]
+        response = client.get("/api/stations")
+        assert response.status_code == 429
+        assert response.json()["error"]["code"] == "too_many_requests"
+        assert "Esperá" in response.json()["error"]["message"]
+        assert int(response.headers["retry-after"]) >= 1
+        assert response.headers["x-content-type-options"] == "nosniff"
+
+    def test_el_limite_es_por_direccion(self, tmp_path):
+        client = make_client(tmp_path, rate_limit_per_minute=1)
+        assert client.get("/api/stations").status_code == 200
+        assert client.get("/api/stations").status_code == 429
+        otro = TestClient(client.app, client=("10.9.8.7", 5000))
+        assert otro.get("/api/stations").status_code == 200
+
+    def test_la_importacion_tiene_un_limite_mas_estricto(self, tmp_path):
+        client = make_client(
+            tmp_path,
+            rate_limit_per_minute=100,
+            rate_limit_import_per_minute=2,
+            admin_api_key="clave-larga-de-prueba",
+        )
+        cabeceras = {"X-API-Key": "clave-larga-de-prueba", "Content-Type": "text/csv"}
+        codigos = [client.get("/api/import/logs", headers=cabeceras).status_code for _ in range(3)]
+        assert codigos == [200, 200, 429]
+        assert client.get("/api/stations").status_code == 200  # el resto sigue libre
+
+    def test_cero_desactiva_el_limite(self, tmp_path):
+        client = make_client(tmp_path, rate_limit_per_minute=0)
+        assert all(client.get("/api/stations").status_code == 200 for _ in range(20))
+
+    def test_la_salud_nunca_se_limita(self, tmp_path):
+        client = make_client(tmp_path, rate_limit_per_minute=1)
+        assert all(client.get("/health").status_code == 200 for _ in range(5))
+
+    def test_pasada_la_ventana_se_puede_volver_a_pedir(self):
+        from app.security import RateLimitMiddleware
+
+        ahora = [0.0]
+        limiter = RateLimitMiddleware(lambda *a: None, default=2, clock=lambda: ahora[0])
+        key = ("1.1.1.1", "")
+        assert limiter._allow(key, 2) is None
+        assert limiter._allow(key, 2) is None
+        assert limiter._allow(key, 2) is not None
+        ahora[0] = 61.0
+        assert limiter._allow(key, 2) is None
+
+    def test_no_se_confia_en_x_forwarded_for(self, tmp_path):
+        client = make_client(tmp_path, rate_limit_per_minute=1)
+        assert (
+            client.get("/api/stations", headers={"X-Forwarded-For": "1.1.1.1"}).status_code == 200
+        )
+        falso = client.get("/api/stations", headers={"X-Forwarded-For": "2.2.2.2"})
+        assert falso.status_code == 429

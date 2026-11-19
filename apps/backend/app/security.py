@@ -3,6 +3,9 @@
 Son middlewares ASGI puros (no dependen de FastAPI), cada uno con una sola responsabilidad.
 """
 
+import math
+import time
+from collections import deque
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import Any
 
@@ -130,6 +133,93 @@ class BodySizeLimitMiddleware:
                 "headers": [
                     (b"content-type", b"application/json"),
                     (b"content-length", str(len(body)).encode()),
+                ],
+            }
+        )
+        await send({"type": "http.response.body", "body": body})
+
+
+class RateLimitMiddleware:
+    """Limita los pedidos por dirección en una ventana deslizante de un minuto.
+
+    `limits` es una lista de (prefijo de ruta, máximo por minuto); gana el prefijo más largo y
+    `default` aplica al resto. Un máximo de 0 desactiva ese límite. El estado vive en memoria de
+    cada proceso: alcanza para un prototipo con un solo servidor; con varios habría que moverlo
+    a un almacén compartido (o al balanceador). Se usa la dirección que ve el servidor: detrás de
+    un proxy hay que configurarlo para que pase la dirección real, porque acá no se confía en
+    encabezados que el cliente puede falsear.
+    """
+
+    WINDOW_SECONDS = 60.0
+    EXEMPT_PATHS = ("/health",)
+
+    def __init__(
+        self,
+        app: Callable,
+        *,
+        default: int,
+        limits: tuple[tuple[str, int], ...] = (),
+        clock: Callable[[], float] = time.monotonic,
+    ):
+        self._app = app
+        self._default = default
+        self._limits = sorted(limits, key=lambda item: len(item[0]), reverse=True)
+        self._clock = clock
+        self._hits: dict[tuple[str, str], deque[float]] = {}
+
+    def _rule_for(self, path: str) -> tuple[str, int]:
+        for prefix, limit in self._limits:
+            if path.startswith(prefix):
+                return prefix, limit
+        return "", self._default
+
+    def _allow(self, key: tuple[str, str], limit: int) -> float | None:
+        """None si pasa; si no, los segundos que faltan para poder reintentar."""
+        now = self._clock()
+        window = self._hits.setdefault(key, deque())
+        while window and now - window[0] >= self.WINDOW_SECONDS:
+            window.popleft()
+        if len(window) >= limit:
+            return self.WINDOW_SECONDS - (now - window[0])
+        window.append(now)
+        return None
+
+    def _prune(self) -> None:
+        now = self._clock()
+        stale = [k for k, w in self._hits.items() if not w or now - w[-1] >= self.WINDOW_SECONDS]
+        for key in stale:
+            del self._hits[key]
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http" or scope["path"].startswith(self.EXEMPT_PATHS):
+            await self._app(scope, receive, send)
+            return
+        prefix, limit = self._rule_for(scope["path"])
+        if limit <= 0:
+            await self._app(scope, receive, send)
+            return
+        client = scope.get("client")
+        address = client[0] if client else "desconocida"
+        if len(self._hits) > 10_000:
+            self._prune()
+        retry_after = self._allow((address, prefix), limit)
+        if retry_after is None:
+            await self._app(scope, receive, send)
+            return
+        wait = max(1, math.ceil(retry_after))
+        body = (
+            '{"error":{"code":"too_many_requests",'
+            f'"message":"Hiciste demasiados pedidos seguidos. '
+            f'Esperá {wait} segundos e intentá de nuevo."}}}}'
+        ).encode()
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 429,
+                "headers": [
+                    (b"content-type", b"application/json"),
+                    (b"content-length", str(len(body)).encode()),
+                    (b"retry-after", str(wait).encode()),
                 ],
             }
         )
