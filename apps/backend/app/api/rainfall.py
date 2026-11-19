@@ -157,7 +157,7 @@ def get_rainfall(
 @router.get(
     "/accumulated",
     response_model=AccumulatedOut,
-    summary="Acumulado por estación de una estación o de una zona (sin sumar entre estaciones)",
+    summary="Acumulado separado por estación de toda la red, una estación o una zona",
 )
 def get_accumulated(
     date_from: Annotated[date, Query(alias="from")],

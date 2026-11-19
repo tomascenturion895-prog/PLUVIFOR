@@ -324,3 +324,133 @@ button:disabled {
     border-top: 1px solid #000;
   }
 }
+
+/* Pantalla Mapa provincial */
+.mapa-controles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mapa-controles label {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.mapa-controles input,
+.mapa-controles select {
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font: inherit;
+}
+
+.mapa-contenedor {
+  margin: 1rem 0;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-contenedor .leaflet-container {
+  font: inherit;
+}
+
+.mapa-popup dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.mapa-popup dt {
+  color: var(--texto-suave);
+}
+
+.mapa-popup dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.mapa-popup a {
+  display: inline-block;
+  min-height: 44px;
+  padding-top: 0.6rem;
+}
+
+.mapa-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.mapa-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.mapa-leyenda-color {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  border: 1px solid #37474f;
+  border-radius: 50%;
+}
+
+.mapa-leyenda-color-sin-dato {
+  border-style: dashed;
+}
+
+.mapa-pendientes {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-pendientes summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.mapa-pendientes ul {
+  margin-bottom: 0;
+}
+
+.mapa-resumen-departamento {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-resumen-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mapa-resumen-encabezado h3 {
+  margin: 0;
+}
+
+.mapa-resumen-encabezado button {
+  min-height: 44px;
+  padding: 0 0.75rem;
+}
+
+.mapa-resumen-departamento ul {
+  padding-left: 1.25rem;
+}
+
+.mapa-resumen-departamento li {
+  margin: 0.5rem 0;
+}

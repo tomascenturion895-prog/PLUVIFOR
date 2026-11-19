@@ -1,4 +1,5 @@
 import type {
+  AccumulatedOut,
   DataCategory,
   ImportKind,
   ImportLog,
@@ -141,6 +142,24 @@ export function getImportLogs(apiKey: string, signal?: AbortSignal): Promise<Imp
     headers: conClave(apiKey),
     signal,
   })
+}
+
+/** Acumulado por estación. Los acumulados de estaciones distintas no se suman. */
+export function getAccumulated(
+  params: {
+    from: string
+    to: string
+    zone?: string
+    station_id?: number
+    category?: DataCategory
+  },
+  signal?: AbortSignal,
+): Promise<AccumulatedOut> {
+  const { from, to, zone, station_id, category } = params
+  return request<AccumulatedOut>(
+    `/api/rainfall/accumulated${query({ from, to, zone, station_id, category })}`,
+    { signal },
+  )
 }
 
 /** Parte pluvial de una o más estaciones. Los acumulados de estaciones distintas no se suman. */

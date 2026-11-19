@@ -139,6 +139,30 @@ export interface StationReport {
   warnings: Warning[]
 }
 
+export interface AccumulatedStation {
+  station_id: number
+  station_name: string
+  /** null = ningún día con dato. Nunca es 0 para un hueco. */
+  accumulated_mm: number | null
+  days_with_data: number
+  days_without_data: number
+  coverage: number
+  warnings: Warning[]
+}
+
+export interface AccumulatedOut {
+  /** Los acumulados de estaciones distintas no se suman. */
+  category: DataCategory
+  date_from: string
+  date_to: string
+  data_cutoff_date: string
+  clipped_to_cutoff: boolean
+  days_in_period: number
+  stations: AccumulatedStation[]
+  not_evaluated: string[]
+  notice: string
+}
+
 export interface Report {
   category: DataCategory
   date_from: string

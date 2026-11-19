@@ -30,9 +30,7 @@ export function Inicio() {
   )
 }
 
-export const Mapa = () => (
-  <Pendiente titulo="Mapa">Lluvia acumulada por departamento y estación.</Pendiente>
-)
+export { Mapa } from './Map'
 export const Comparador = () => (
   <Pendiente titulo="Comparador">Compará estaciones y períodos con sus advertencias.</Pendiente>
 )
