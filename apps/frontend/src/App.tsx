@@ -1,11 +1,12 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
+import Comparador from './pages/Compare'
 import FieldReport from './pages/FieldReport'
 import Importar from './pages/Importar'
 import NetworkHealth from './pages/NetworkHealth'
 import Parte from './pages/Parte'
-import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada } from './pages/Paginas'
+import { Ayuda, Inicio, Mapa, NoEncontrada } from './pages/Paginas'
 
 export default function App() {
   return (

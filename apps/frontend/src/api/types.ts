@@ -176,6 +176,28 @@ export interface Report {
   notice: string
 }
 
+export interface SeriesCompareStation {
+  station_id: number
+  station_name: string
+  source: Source
+  category: DataCategory
+  summary: Summary
+  warnings: Warning[]
+  days: Day[]
+}
+
+export interface SeriesCompare {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  data_cutoff_date: string
+  clipped_to_cutoff: boolean
+  stations: SeriesCompareStation[]
+  comparability_warnings: Warning[]
+  not_evaluated: { code: string; reason: string }[]
+  notice: string
+}
+
 export type LocationSource = 'dispositivo' | 'manual'
 
 export interface FieldReportIn {

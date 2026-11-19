@@ -23,3 +23,6 @@ export const MAX_ARCHIVO_BYTES = 5 * 1024 * 1024
 
 /** Cantidad máxima de estaciones por parte (igual que la API). */
 export const MAX_ESTACIONES_PARTE = 20
+
+/** Cantidad máxima de estaciones del comparador. */
+export const MAX_ESTACIONES_COMPARADOR = 4

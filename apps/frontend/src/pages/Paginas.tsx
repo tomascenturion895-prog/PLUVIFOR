@@ -31,9 +31,6 @@ export function Inicio() {
 }
 
 export { Mapa } from './Map'
-export const Comparador = () => (
-  <Pendiente titulo="Comparador">Compará estaciones y períodos con sus advertencias.</Pendiente>
-)
 export const Ayuda = () => (
   <Pendiente titulo="Ayuda">Qué significa cada estado y cada advertencia.</Pendiente>
 )
