@@ -6,6 +6,7 @@ from app.api import health, imports, rainfall, reports, stations
 from app.config import Settings, get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.errors import register_error_handlers
+from app.security import BodySizeLimitMiddleware, SecurityHeadersMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -31,6 +32,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type", "X-API-Key"],
     )
+    # Lo último que se agrega es lo más externo: primero se limita el tamaño y las
+    # respuestas, incluidos los errores, salen con los encabezados de seguridad.
+    app.add_middleware(
+        BodySizeLimitMiddleware,
+        default=settings.max_request_bytes,
+        limits=(("/api/import", settings.max_upload_bytes + 1024),),
+    )
+    app.add_middleware(SecurityHeadersMiddleware, hsts=settings.app_env == "production")
     register_error_handlers(app)
     app.include_router(health.router)
     app.include_router(stations.router)
