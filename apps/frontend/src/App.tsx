@@ -1,9 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
+import Comparador from './pages/Compare'
 import Importar from './pages/Importar'
 import Parte from './pages/Parte'
-import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada, Salud } from './pages/Paginas'
+import { Ayuda, Inicio, Mapa, NoEncontrada, Salud } from './pages/Paginas'
 
 export default function App() {
   return (

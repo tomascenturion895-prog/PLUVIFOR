@@ -6,6 +6,7 @@ import type {
   ImportReport,
   Report,
   Series,
+  SeriesCompare,
   Station,
   StationList,
 } from './types'
@@ -174,4 +175,16 @@ export function getReport(
     body: JSON.stringify({ station_ids: stationIds, from, to, category }),
     signal,
   })
+}
+
+/** Series de 2 o más estaciones con las advertencias de comparabilidad de la API. */
+export function getCompare(
+  params: { stationIds: number[]; from: string; to: string; category?: DataCategory },
+  signal?: AbortSignal,
+): Promise<SeriesCompare> {
+  const { stationIds, from, to, category } = params
+  return request<SeriesCompare>(
+    `/api/rainfall/compare${query({ station_ids: stationIds.join(','), from, to, category })}`,
+    { signal },
+  )
 }
