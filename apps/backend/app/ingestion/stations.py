@@ -7,6 +7,15 @@ from datetime import date
 from app.ingestion.types import InvalidFileError, Rejection, RejectionReason, StationRow
 
 REQUIRED_COLUMNS = {"estacion_id", "nombre", "lat", "lon"}
+TEXT_COLUMNS = ("estacion_id", "id_interno", "nombre", "tipo", "localidad")
+# Un texto que empieza así se interpreta como fórmula al abrir el CSV en una planilla.
+_FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _has_formula(row: dict) -> bool:
+    return any(
+        (row.get(column) or "").lstrip().startswith(_FORMULA_START) for column in TEXT_COLUMNS
+    )
 
 
 def _optional_float(text: str) -> float | None:
@@ -28,6 +37,9 @@ def read_stations(text: str) -> tuple[list[StationRow], list[Rejection]]:
     rows: list[StationRow] = []
     rejections: list[Rejection] = []
     for line, row in enumerate(reader, start=2):
+        if _has_formula(row):
+            rejections.append(Rejection(line, RejectionReason.TEXTO_CON_FORMULA))
+            continue
         code = (row["estacion_id"] or "").strip()
         if not code or not (row["nombre"] or "").strip():
             rejections.append(Rejection(line, RejectionReason.CODIGO_VACIO))

@@ -7,6 +7,7 @@ from app.domain.enums import ImportMode
 from app.ingestion.registry import DEFAULT_CONNECTORS
 from app.ingestion.sources import SourceConnector
 from app.ingestion.types import ImportReport, InvalidFileError, RainRow, Rejection
+from app.ingestion.upload import DEFAULT_MAX_UPLOAD_BYTES, check_upload
 from app.ingestion.validation import RowValidator
 from app.repositories.ingestion import IngestionRepository
 
@@ -33,11 +34,13 @@ class ImportService:
         cutoff: date,
         clock: Callable[[], datetime] = lambda: datetime.now(UTC),
         connectors: Mapping[str, SourceConnector] | None = None,
+        max_upload_bytes: int = DEFAULT_MAX_UPLOAD_BYTES,
     ):
         self._repository = repository
         self._cutoff = cutoff
         self._clock = clock
         self._connectors = DEFAULT_CONNECTORS if connectors is None else connectors
+        self._max_upload_bytes = max_upload_bytes
 
     def _connector(self, source_code: str) -> SourceConnector:
         connector = self._connectors.get(source_code)
@@ -47,6 +50,7 @@ class ImportService:
 
     def import_stations(self, source_code: str, filename: str, content: bytes) -> ImportReport:
         connector = self._connector(source_code)
+        check_upload(filename, content, self._max_upload_bytes)
         definition = connector.definition
         rows, rejections = connector.read_stations(_decode(content))
         report = ImportReport(
@@ -71,6 +75,7 @@ class ImportService:
     ) -> ImportReport:
         started_at = self._clock()
         connector = self._connector(source_code)
+        check_upload(filename, content, self._max_upload_bytes)
         source_id = self._repository.find_source_id(source_code)
         if source_id is None:
             raise InvalidFileError("La fuente no existe: importar primero el catálogo.")

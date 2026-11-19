@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
     data_cutoff_date: date = date(2026, 10, 31)
     admin_api_key: SecretStr | None = None
+    # Tamaño máximo de un archivo a importar (el CSV real del SIGA pesa ~0,6 MB).
+    max_upload_bytes: int = 5 * 1024 * 1024
 
     @field_validator("cors_origins", mode="before")
     @classmethod
