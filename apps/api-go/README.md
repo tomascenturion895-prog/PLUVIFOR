@@ -6,13 +6,19 @@ Puerta de entrada de la API de PLUVIFOR. El reparto del stack: **esta API en Go*
 
 ## Estado real
 
-Es un **esqueleto**. Hoy implementa:
+Es la **puerta de entrada**. Hoy:
 
-- `GET /health` (estado, versión, entorno y fecha de corte).
+- `GET /health` lo responde Go (estado, versión, entorno y fecha de corte).
+- **Todo lo que empieza con `/api/` lo reenvía al backend en Python** (`BACKEND_URL`, por defecto `http://127.0.0.1:8000`) sin cambiar nada: mismo estado, mismo cuerpo, mismos encabezados y la misma clave de administración. Se comprobó que estaciones, series, acumulados, comparador y errores dan exactamente lo mismo por Go que directo a Python. Si el backend no está, Go responde 502 en español (sin mostrar su dirección); si tarda, 504; un cuerpo de más de 6 MiB, 413.
+- Una ruta propia de Go, cuando exista, gana sobre el reenvío: se van portando de a una (SCRUM-84 y SCRUM-85) sin romper nada.
 - El formato único de errores `{"error": {"code", "message"}}`, en español y sin detalles internos (404, 405 y fallos inesperados).
-- Lectura de la configuración del entorno (`APP_ENV`, `API_GO_PORT`, `DATA_CUTOFF_DATE`, `DATABASE_URL`). De `DATABASE_URL` solo se toma el motor (SQLite o PostgreSQL); la URL, que puede llevar la clave, nunca se guarda ni se imprime.
+- Lectura de la configuración del entorno (`APP_ENV`, `API_GO_PORT`, `DATA_CUTOFF_DATE`, `DATABASE_URL`, `BACKEND_URL`). De `DATABASE_URL` solo se toma el motor (SQLite o PostgreSQL); la URL, que puede llevar la clave, nunca se guarda ni se imprime.
 
-**Todavía no** hay conexión a la base ni las rutas de estaciones y lluvia: esas siguen respondiendo desde Python. Para sumarlas hace falta elegir un driver de base de datos, y esa decisión queda para el equipo (ver abajo).
+**Todavía no** hay conexión a la base ni rutas de datos propias de Go: esas siguen respondiendo desde Python a través del reenvío. Portarlas necesita un driver de base de datos, y esa decisión queda para el equipo (ver abajo).
+
+## Usarla con la interfaz
+
+Con el backend en Python corriendo en el 8000, levantá Go (`go run ./cmd/api`, puerto 8080) y apuntá la interfaz a Go: `VITE_API_URL=http://localhost:8080 npm run dev` desde `apps/frontend`.
 
 ## Requisitos
 
@@ -36,6 +42,7 @@ cmd/api/             arranque del servidor
 internal/config/     configuración del entorno (sin secretos)
 internal/apierror/   formato único de errores
 internal/httpapi/    rutas, 404/405 en JSON y recuperación de fallos
+internal/proxy/      reenvío de /api/* al backend en Python
 openapi.yaml         contrato (health implementado; estaciones y lluvia como referencia)
 ```
 

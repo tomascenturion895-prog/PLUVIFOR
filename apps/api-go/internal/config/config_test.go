@@ -46,3 +46,18 @@ func TestElErrorNoRepiteLaClaveDeLaBase(t *testing.T) {
 		t.Fatalf("el error no puede incluir la clave: %v", err)
 	}
 }
+
+func TestBackendURLPorDefectoYValidacion(t *testing.T) {
+	cfg, err := Load(env(nil))
+	if err != nil || cfg.BackendURL.String() != "http://127.0.0.1:8000" {
+		t.Fatalf("valor por defecto inesperado: %v %v", cfg.BackendURL, err)
+	}
+	for _, malo := range []string{"127.0.0.1:8000", "ftp://host/", "http://", "http://u:SECRETO@host:8000"} {
+		_, err := Load(env(map[string]string{"BACKEND_URL": malo}))
+		if err == nil {
+			t.Errorf("%q debía rechazarse", malo)
+		} else if strings.Contains(err.Error(), "SECRETO") {
+			t.Errorf("el error repite la clave: %v", err)
+		}
+	}
+}
