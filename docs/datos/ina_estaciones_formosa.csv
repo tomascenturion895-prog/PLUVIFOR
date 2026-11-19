@@ -1,0 +1,16 @@
+nombre,lon,lat,ubicacion,p_diaria_serie_id,p_diaria_disp,p_diaria_desde,p_diaria_hasta,p_diaria_filas,p_horaria_serie_id,p_horaria_disp,p_horaria_desde,p_horaria_hasta,p_horaria_filas
+Bermejo - El Colorado,-59.3625,-26.3342,sobre el límite provincial (verificar),7040,NRT,2019-07-14,2026-11-17,2617,,,,,
+Bermejo - Puerto Lavalle,-60.1281,-25.6511,sobre el límite provincial (verificar),7045,NRT,2019-07-14,2026-11-17,1751,,,,,
+Bermejo - Puerto Velaz,-58.6339,-26.6606,sobre el límite provincial (verificar),7046,NRT,2019-07-14,2026-11-16,2288,,,,,
+PN Pilcomayo - Piquete del 8,-58.1753,-25.1233,dentro de Formosa,9511,NRT,2019-11-21,2026-11-17,2500,,,,,
+Las Lomitas,-60.5828,-24.7119,dentro de Formosa,33893,NRT,2023-01-11,2026-11-17,1237,,,,,
+Laguna Yema,-61.2419,-24.2564,dentro de Formosa,39383,NRT,2024-07-03,2026-11-17,861,38837,RT,2024-09-13,2026-11-18,18838
+RMA03_IBA - Ibarreta,-59.8694,-25.2042,dentro de Formosa,39458,C,2024-07-04,2026-09-01,519,39553,C,2024-09-16,2026-09-01,11533
+RMA03_PIR - Pirané,-59.1172,-25.7558,dentro de Formosa,39459,C,2024-07-18,2026-09-01,740,39554,C,2024-09-16,2026-09-01,16619
+RMA03_PZL - Posta Zalazar,-60.1972,-24.2119,dentro de Formosa,39461,C,2024-07-03,2026-09-01,783,39556,C,2024-09-16,2026-09-01,16774
+RMA3_IJU - Ingeniero Juarez,-61.8408,-23.9025,dentro de Formosa,39506,H,2024-09-15,2025-12-17,395,39592,H,2024-09-16,2025-12-17,9293
+El Aybal - Formosa,-61.6847,-24.3675,dentro de Formosa,43802,NRT,2025-11-26,2026-11-17,357,,,,,
+Pozo del Tigre - Formosa,-60.3228,-24.9044,dentro de Formosa,43812,NRT,2025-11-26,2026-11-17,348,,,,,
+RMET– Belgrano– Formosa,-59.0189,-24.9369,dentro de Formosa,43819,NRT,2025-11-26,2026-11-17,357,,,,,
+RMET –Guadalcazar –Formosa,-61.1639,-23.6747,dentro de Formosa,43867,NRT,2025-11-26,2026-11-17,357,,,,,
+San Martín N°2 - Formosa,-59.6692,-24.4536,dentro de Formosa,43893,NRT,2025-11-26,2026-11-17,357,,,,,

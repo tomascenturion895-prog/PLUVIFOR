@@ -6,6 +6,10 @@
 
 <!-- Ejemplo: SCRUM-12 -->
 
+## Por qué suma a la solución
+
+<!-- Solo si el cambio sale del núcleo de lluvia (ríos, caudales, riesgo, predicción, etc.): cómo ayuda a responder cuánto llovió, dónde y en qué período. Si no aplica, escribí «No aplica». -->
+
 ## Cómo probarlo
 
 <!-- Pasos concretos para que quien revisa pueda verificarlo. -->
@@ -18,5 +22,5 @@
 - [ ] Lo observado, lo de referencia y lo estimado siguen separados
 - [ ] No hay secretos, claves ni archivos `.env` en el cambio
 - [ ] La leyenda «PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial» sigue visible (si toca la interfaz)
-- [ ] No se agregó nada que corresponda a otros desafíos de la misión
+- [ ] Si el cambio sale del núcleo de lluvia, está fundamentado arriba (ver «Requiere fundamento» en `AGENTS.md`)
 - [ ] La documentación se actualizó si cambió algo que otros usan
