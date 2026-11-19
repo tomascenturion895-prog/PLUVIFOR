@@ -87,6 +87,15 @@ describe('insignias de advertencia', () => {
     },
   )
 
+  it('la cobertura baja muestra un texto corto y deja el mensaje de la API como descripción', () => {
+    const mensaje =
+      'Solo 40% de los días tiene dato: el acumulado puede quedar por debajo de lo que llovió.'
+    const { container } = render(<InsigniaAdvertencia codigo="cobertura_baja" mensaje={mensaje} />)
+    expect(screen.getByText('Cobertura baja')).toBeInTheDocument()
+    expect(screen.queryByText(mensaje)).not.toBeInTheDocument()
+    expect(container.querySelector('.insignia')).toHaveAttribute('title', mensaje)
+  })
+
   it('si la API manda un mensaje, ese es el que se describe', () => {
     const { container } = render(
       <InsigniaAdvertencia codigo="ceros_prolongados" mensaje="281 días seguidos en 0 mm." />,
