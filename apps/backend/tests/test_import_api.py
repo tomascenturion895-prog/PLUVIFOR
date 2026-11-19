@@ -159,3 +159,45 @@ def test_source_with_strange_characters_is_a_validation_error(client):
         "/api/import/audit", params={"source": "x'; DROP TABLE a;--"}, content=b"", headers=AUTH
     )
     assert response.status_code == 422
+
+
+class TestHistorial:
+    def test_sin_cargas_devuelve_lista_vacia(self, client):
+        response = client.get("/api/import/logs", headers=AUTH)
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_lista_las_cargas_confirmadas_la_mas_nueva_primero(self, client):
+        load_stations(client)
+        post(client, "commit", HEADER + GOOD + BAD, name="primera.csv")
+        post(client, "commit", HEADER + GAP, name="segunda.csv")
+        items = client.get("/api/import/logs", headers=AUTH).json()
+        assert [i["filename"] for i in items][:2] == ["segunda.csv", "primera.csv"]
+        primera = items[1]
+        assert primera["rows_read"] == 2
+        assert primera["rows_accepted"] == 1
+        assert primera["rows_rejected"] == 1
+        assert primera["rejections_by_reason"] == {"mm_negativo": 1}
+        assert primera["source"] == "siga_inta"
+        assert primera["mode"] == "commit"
+
+    def test_una_auditoria_no_deja_registro(self, client):
+        load_stations(client)
+        before = len(client.get("/api/import/logs", headers=AUTH).json())
+        post(client, "audit", HEADER + GOOD, name="solo_auditoria.csv")
+        assert len(client.get("/api/import/logs", headers=AUTH).json()) == before
+
+    def test_respeta_el_limite(self, client):
+        load_stations(client)
+        for n in range(3):
+            post(client, "commit", HEADER + GOOD, name=f"c{n}.csv")
+        assert len(client.get("/api/import/logs", params={"limit": 2}, headers=AUTH).json()) == 2
+
+    @pytest.mark.parametrize("limit", [0, 101, "abc"])
+    def test_limite_invalido_se_rechaza(self, client, limit):
+        response = client.get("/api/import/logs", params={"limit": limit}, headers=AUTH)
+        assert response.status_code == 422
+
+    def test_exige_la_clave_de_administracion(self, client):
+        assert client.get("/api/import/logs").status_code == 401
+        assert client.get("/api/import/logs", headers={"X-API-Key": "otra"}).status_code == 401

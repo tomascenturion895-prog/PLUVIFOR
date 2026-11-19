@@ -1,7 +1,7 @@
 """Tipos que circulan entre las etapas de la importación (sin dependencias externas)."""
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from enum import StrEnum
 
 from app.domain.enums import DataCategory, RainState, Validation
@@ -106,3 +106,21 @@ class ImportReport:
         for rejection in self.rejections:
             counts[rejection.reason.value] = counts.get(rejection.reason.value, 0) + 1
         return counts
+
+
+@dataclass(frozen=True)
+class ImportLogEntry:
+    """Una carga ya registrada, tal como se muestra en el historial."""
+
+    id: int
+    source: str
+    mode: str
+    status: str
+    filename: str
+    sha256: str
+    rows_read: int
+    rows_accepted: int
+    rows_rejected: int
+    rejections_by_reason: dict[str, int]
+    cutoff_applied: date
+    started_at: datetime

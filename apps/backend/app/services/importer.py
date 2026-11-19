@@ -1,4 +1,5 @@
 import hashlib
+import json
 from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime
 from pathlib import PurePath
@@ -6,7 +7,13 @@ from pathlib import PurePath
 from app.domain.enums import ImportMode
 from app.ingestion.registry import DEFAULT_CONNECTORS
 from app.ingestion.sources import SourceConnector
-from app.ingestion.types import ImportReport, InvalidFileError, RainRow, Rejection
+from app.ingestion.types import (
+    ImportLogEntry,
+    ImportReport,
+    InvalidFileError,
+    RainRow,
+    Rejection,
+)
 from app.ingestion.upload import DEFAULT_MAX_UPLOAD_BYTES, check_upload
 from app.ingestion.validation import RowValidator
 from app.repositories.ingestion import IngestionRepository
@@ -124,3 +131,23 @@ class ImportService:
             self._repository.rollback()
             raise
         return report
+
+    def recent_imports(self, limit: int = 20) -> list[ImportLogEntry]:
+        """Historial de cargas (import_logs), de la más nueva a la más vieja."""
+        return [
+            ImportLogEntry(
+                id=log.id,
+                source=source_code,
+                mode=log.mode.value,
+                status=log.status.value,
+                filename=log.filename,
+                sha256=log.sha256,
+                rows_read=log.rows_read,
+                rows_accepted=log.rows_accepted,
+                rows_rejected=log.rows_rejected,
+                rejections_by_reason=json.loads(log.rejections) if log.rejections else {},
+                cutoff_applied=log.cutoff_applied,
+                started_at=log.started_at,
+            )
+            for log, source_code in self._repository.recent_imports(limit)
+        ]
