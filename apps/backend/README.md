@@ -55,3 +55,44 @@ Todos los errores tienen la misma forma y nunca incluyen detalles internos ni el
 ## Reglas del proyecto
 
 Un hueco de datos no es 0 mm. Ver `AGENTS.md` y `docs/CONTRIBUTING.md`.
+
+## Base de datos
+
+```
+alembic upgrade head      # crea/actualiza las tablas (usa DATABASE_URL)
+alembic revision --autogenerate -m "descripcion"   # tras cambiar un modelo
+```
+
+Las reglas de calidad (un hueco no es 0 mm, categorías, unidad) son restricciones de la base; ver `docs/modelo-datos.md`.
+
+## Importar series
+
+```
+python -m app.cli import-stations ../../docs/datos/estaciones_siga_formosa.csv
+python -m app.cli import-rainfall ../../docs/datos/lluvia_diaria_siga_formosa.csv           # audita: no guarda
+python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_formosa.csv  # guarda
+```
+
+Cada corrida deja una fila en `import_logs` (huella sha256, filas leídas/aceptadas/rechazadas y motivos). Volver a cargar el mismo archivo no duplica filas. Se rechazan fechas posteriores al corte (31/10/2026), valores negativos, estaciones inexistentes y estados incoherentes.
+
+## Banderas de calidad
+
+```
+python -m app.cli recompute-flags   # recalcula rachas de ceros (60 días o más)
+```
+
+Un hueco (`sin_fila`, `fila_sin_valor`) corta la racha: no se afirma que no llovió un día sin dato. Las banderas se reemplazan en cada corrida y guardan la versión de la regla.
+
+## Series diarias
+
+```
+GET /api/rainfall?station_id=1&from=2016-01-01&to=2016-01-31&category=observado
+```
+
+Devuelve un valor por día del período (`mm` es `null` en un hueco, nunca 0), el resumen (días con dato, huecos por tipo, cobertura, acumulado) y las advertencias. El acumulado es `null` si no hay ningún día con dato. Una consulta pide una sola categoría: observado, referencia y estimado no se mezclan. Las fechas posteriores al corte (31/10/2026) se recortan y se avisa. El umbral de cobertura baja (80 %) es provisional y está pendiente de confirmar.
+
+## Advertencias de comparabilidad
+
+`app/domain/warnings.py` es un módulo puro (sin base de datos) con las seis advertencias: horario de corte distinto, observado vs. estimado, cobertura despareja, dato sin validar, racha de ceros (60 días o más) e inconsistencia con estaciones vecinas. Cada una es una regla independiente; `evaluate_warnings(serie, otras_series)` devuelve las advertencias y, aparte, las reglas que no se pudieron aplicar (por ejemplo, una estación sin coordenadas) para no hacer pasar un «no sé» por «está bien».
+
+Provisionales, pendientes de confirmar: diferencia de cobertura de 20 %, radio de vecindad de 150 km y 50 mm en la vecina para marcar la inconsistencia.
