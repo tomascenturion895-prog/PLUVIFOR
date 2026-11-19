@@ -97,3 +97,16 @@ export function textoDepartamento(nombre: string, r: ResumenDepto | undefined): 
   }
   return `${nombre}: mayor acumulado individual ${textoMmMapa(r.maximoMm)}, ${r.conDato} de ${r.estaciones} estaciones con dato.`
 }
+
+export const ALTURA_BASE = 3
+export const ALTURA_MAXIMA = 36
+
+/**
+ * Altura del bloque: repite el mayor acumulado individual del departamento (no suma nada nuevo).
+ * Sin dato queda a ras (ALTURA_BASE) y rayado: nunca se lee como una lluvia baja.
+ * `exageracion` solo estira la escala vertical; no cambia los valores.
+ */
+export function alturaBloque(mm: number | null | undefined, exageracion = 1): number {
+  const base = mm == null || mm <= 0 ? 0 : Math.min(1, Math.sqrt(mm / 100)) * ALTURA_MAXIMA
+  return (ALTURA_BASE + base) * exageracion
+}

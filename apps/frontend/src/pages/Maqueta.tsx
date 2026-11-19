@@ -24,6 +24,22 @@ import { useAsync } from '../hooks/useAsync'
 import { colorMm, textoMmMapa } from './map-helpers'
 
 const DEPARTAMENTOS = '/geo/formosa_departamentos.geojson'
+const RIOS = '/geo/formosa_cursos_agua_perennes.geojson'
+const RIOS_INTERMITENTES = '/geo/formosa_cursos_agua_intermitentes.geojson'
+
+/** Los cursos de agua son de adorno cartográfico: si no cargan, la maqueta sigue sin ellos. */
+async function cargarOpcional(url: string, signal: AbortSignal): Promise<FeatureCollection | null> {
+  try {
+    const respuesta = await fetch(url, { signal })
+    if (!respuesta.ok) return null
+    const valor = (await respuesta.json()) as { type?: unknown; features?: unknown }
+    return valor.type === 'FeatureCollection' && Array.isArray(valor.features)
+      ? (valor as FeatureCollection)
+      : null
+  } catch {
+    return null
+  }
+}
 
 function hace(dias: number): string {
   return ultimosDias(FECHA_CORTE, dias).desde
@@ -69,6 +85,14 @@ function Leyenda() {
       <li className="mapa-leyenda-item">
         <span aria-hidden="true">◐</span> Estación en silencio (apagada)
       </li>
+      <li className="mapa-leyenda-item">
+        <span className="mapa-leyenda-rio" aria-hidden="true" /> Cursos de agua (IGN, referencia
+        cartográfica)
+      </li>
+      <li className="nota">
+        La altura repite el mayor acumulado individual del departamento; sin dato queda a ras y
+        rayado. Relieve del terreno: pendiente, todavía no hay una fuente de altitud verificada.
+      </li>
     </ul>
   )
 }
@@ -76,6 +100,10 @@ function Leyenda() {
 export default function Maqueta() {
   const geo = useAsync(cargarDepartamentos, [])
   const catalogo = useAsync((signal) => getStations({ limit: 200 }, signal), [])
+  const rios = useAsync((signal) => cargarOpcional(RIOS, signal), [])
+  const intermitentes = useAsync((signal) => cargarOpcional(RIOS_INTERMITENTES, signal), [])
+  const [verIntermitentes, setVerIntermitentes] = useState(false)
+  const [exageracion, setExageracion] = useState(1)
   const [sel, setSel] = useState<SeleccionValor>({
     desde: hace(30),
     hasta: FECHA_CORTE,
@@ -250,9 +278,37 @@ export default function Maqueta() {
               salud={salud}
               resumen={resumen}
               seleccionado={seleccionado}
+              rios={rios.estado.tipo === 'listo' ? rios.estado.datos : null}
+              intermitentes={
+                intermitentes.estado.tipo === 'listo' ? intermitentes.estado.datos : null
+              }
+              mostrarIntermitentes={verIntermitentes}
+              exageracion={exageracion}
               onSeleccionar={elegirDepartamento}
             />
           )}
+          <div className="maqueta-vista">
+            <label>
+              Altura de los bloques
+              <input
+                type="range"
+                min={0.5}
+                max={2}
+                step={0.25}
+                value={exageracion}
+                onChange={(e) => setExageracion(Number(e.target.value))}
+                aria-valuetext={`${exageracion} veces`}
+              />
+            </label>
+            <label className="opcion">
+              <input
+                type="checkbox"
+                checked={verIntermitentes}
+                onChange={(e) => setVerIntermitentes(e.target.checked)}
+              />
+              Mostrar cursos de agua intermitentes
+            </label>
+          </div>
           <Leyenda />
           {seleccionado && (
             <section

@@ -1,3 +1,4 @@
+import { alturaBloque, ALTURA_BASE, ALTURA_MAXIMA } from './maqueta-datos'
 import { describe, expect, it } from 'vitest'
 import type { AccumulatedStation, Station } from '../../api/types'
 import {
@@ -125,5 +126,22 @@ describe('proyección isométrica', () => {
 
   it('una capa vacía no rompe', () => {
     expect(crearProyeccion({ type: 'FeatureCollection', features: [] } as never).ancho).toBe(1)
+  })
+})
+
+describe('alturaBloque', () => {
+  it('sin dato y 0 mm quedan a ras, y más lluvia es más alto', () => {
+    expect(alturaBloque(null)).toBe(ALTURA_BASE)
+    expect(alturaBloque(0)).toBe(ALTURA_BASE)
+    expect(alturaBloque(25)).toBeGreaterThan(alturaBloque(5))
+    expect(alturaBloque(400)).toBe(ALTURA_BASE + ALTURA_MAXIMA)
+  })
+
+  it('la exageración solo estira la escala', () => {
+    expect(alturaBloque(50, 2)).toBeCloseTo(alturaBloque(50) * 2)
+  })
+
+  it('un valor negativo (entrada inválida) no baja del suelo', () => {
+    expect(alturaBloque(-5)).toBe(ALTURA_BASE)
   })
 })

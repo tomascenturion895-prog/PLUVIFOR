@@ -1,14 +1,18 @@
 /** Helpers de presentación de lluvia para el Mapa. Separados para fast-refresh. */
 
 /** Devuelve un color CSS según mm acumulados. null/undefined = sin dato. */
+/**
+ * Escala secuencial amarillo-verde-azul (ColorBrewer YlGnBu, Apache 2.0), apta para daltonismo:
+ * más lluvia = más oscuro y más azul. El 0 mm real es el tono más claro; sin dato no usa esta escala.
+ */
 export function colorMm(mm: number | null | undefined): string {
   if (mm == null) return '#9e9e9e' // gris: sin dato (nunca confundir con 0)
-  if (mm === 0) return '#e3f2fd' // azul muy claro: dato real de 0 mm
-  if (mm < 10) return '#90caf9'
-  if (mm < 30) return '#42a5f5'
-  if (mm < 60) return '#1e88e5'
-  if (mm < 100) return '#1565c0'
-  return '#0d47a1'
+  if (mm === 0) return '#ffffd9' // dato real de 0 mm
+  if (mm < 10) return '#c7e9b4'
+  if (mm < 30) return '#7fcdbb'
+  if (mm < 60) return '#41b6c4'
+  if (mm < 100) return '#1d91c0'
+  return '#0c2c84'
 }
 
 export function radiusMm(mm: number | null | undefined): number {
