@@ -32,6 +32,11 @@ func newParityServer(t testing.TB, store *memStore) http.Handler {
 // TestParidadConPython compara cada consulta con lo que respondió la API de Python con los mismos
 // datos. El JSON se compara por valor (0 y 0.0 son el mismo número), no por texto.
 func TestParidadConPython(t *testing.T) {
+	runParity(t, newParityServer(t, loadMemStore(t)))
+}
+
+func runParity(t *testing.T, srv http.Handler) {
+	t.Helper()
 	raw, err := os.ReadFile("../../testdata/parity/cases.json")
 	if err != nil {
 		t.Fatalf("falta testdata/parity/cases.json (se genera con generate.py): %v", err)
@@ -43,8 +48,6 @@ func TestParidadConPython(t *testing.T) {
 	if len(cases) < 40 {
 		t.Fatalf("se esperaban al menos 40 casos, hay %d", len(cases))
 	}
-	srv := newParityServer(t, loadMemStore(t))
-
 	for _, c := range cases {
 		t.Run(c.Path, func(t *testing.T) {
 			rec := httptest.NewRecorder()

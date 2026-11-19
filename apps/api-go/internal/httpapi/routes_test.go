@@ -104,3 +104,77 @@ func TestRutasPropiasGananAlReenvioYElRestoSeReenvia(t *testing.T) {
 		t.Fatalf("se reenviaron %d rutas, quería 4: %v", len(reenviadas), reenviadas)
 	}
 }
+
+func TestRutasPropiasLlevanLosEncabezadosDeSeguridadDePython(t *testing.T) {
+	srv := newParityServer(t, loadMemStore(t))
+	for _, path := range []string{"/api/stations", "/api/stations/4242", "/health", "/no-existe"} {
+		h := get(t, srv, path).Header()
+		for k, want := range map[string]string{
+			"X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer",
+			"Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+		} {
+			if got := h.Get(k); got != want || len(h.Values(k)) != 1 {
+				t.Errorf("%s %s = %v, quería %q una sola vez", path, k, h.Values(k), want)
+			}
+		}
+	}
+}
+
+func TestLimiteDePedidosPorClienteDevuelve429ConEspera(t *testing.T) {
+	cfg := testConfig()
+	cfg.RateLimitPerMinute = 3
+	store := loadMemStore(t)
+	logger := newParityLogger()
+	srv := New(cfg, logger, WithStations(store, logger))
+
+	pedir := func(remote string) *httptest.ResponseRecorder {
+		req := httptest.NewRequest(http.MethodGet, "/api/stations/1", nil)
+		req.RemoteAddr = remote
+		rec := httptest.NewRecorder()
+		srv.ServeHTTP(rec, req)
+		return rec
+	}
+	for i := 1; i <= 3; i++ {
+		if rec := pedir("10.0.0.1:5000"); rec.Code != 200 {
+			t.Fatalf("pedido %d → %d", i, rec.Code)
+		}
+	}
+	rec := pedir("10.0.0.1:5001") // otro puerto, mismo cliente
+	if rec.Code != 429 || rec.Header().Get("Retry-After") == "" || !strings.Contains(rec.Body.String(), "too_many_requests") ||
+		!strings.Contains(rec.Body.String(), "Esperá") {
+		t.Fatalf("%d %v %s", rec.Code, rec.Header(), rec.Body.String())
+	}
+	if rec.Header().Get("X-Frame-Options") != "DENY" {
+		t.Error("el 429 también debe llevar los encabezados de seguridad")
+	}
+	if other := pedir("10.0.0.2:5000"); other.Code != 200 {
+		t.Fatalf("otro cliente no debe verse afectado: %d", other.Code)
+	}
+	// /health no cuenta para el límite
+	req := httptest.NewRequest(http.MethodGet, "/health", nil)
+	req.RemoteAddr = "10.0.0.1:5000"
+	hrec := httptest.NewRecorder()
+	srv.ServeHTTP(hrec, req)
+	if hrec.Code != 200 {
+		t.Fatalf("/health → %d", hrec.Code)
+	}
+}
+
+func TestLaImportacionTieneSuPropioMaximo(t *testing.T) {
+	cfg := testConfig()
+	cfg.RateLimitPerMinute = 100
+	cfg.RateLimitImportPerMinute = 1
+	backend := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) })
+	srv := New(cfg, newParityLogger(), WithBackend(backend))
+	codes := []int{}
+	for i := 0; i < 2; i++ {
+		req := httptest.NewRequest(http.MethodPost, "/api/import/audit", nil)
+		req.RemoteAddr = "10.0.0.1:1"
+		rec := httptest.NewRecorder()
+		srv.ServeHTTP(rec, req)
+		codes = append(codes, rec.Code)
+	}
+	if codes[0] != 204 || codes[1] != 429 {
+		t.Fatalf("códigos = %v, quería [204 429]", codes)
+	}
+}

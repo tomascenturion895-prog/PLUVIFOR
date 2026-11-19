@@ -61,3 +61,62 @@ func TestBackendURLPorDefectoYValidacion(t *testing.T) {
 		}
 	}
 }
+
+func TestRutaDeSQLite(t *testing.T) {
+	casos := map[string]string{
+		"sqlite:///./pluvifor.db":      "./pluvifor.db",
+		"sqlite:////tmp/demo.db":       "/tmp/demo.db",
+		"sqlite+pysqlite:////tmp/a.db": "/tmp/a.db",
+		"sqlite:////tmp/a.db?mode=ro":  "/tmp/a.db",
+	}
+	for url, want := range casos {
+		cfg, err := Load(func(k string) (string, bool) {
+			if k == "DATABASE_URL" {
+				return url, true
+			}
+			return "", false
+		})
+		if err != nil || cfg.Database.SQLitePath != want {
+			t.Errorf("%s → %q (%v), quería %q", url, cfg.Database.SQLitePath, err, want)
+		}
+	}
+}
+
+func TestPostgreSQLNoGuardaRutaNiClave(t *testing.T) {
+	cfg, err := Load(func(k string) (string, bool) {
+		if k == "DATABASE_URL" {
+			return "postgresql://usuario:secreto@host/db", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.Database.SQLitePath != "" || cfg.Database.Engine != "postgresql" {
+		t.Fatalf("cfg = %+v err = %v", cfg.Database, err)
+	}
+}
+
+func TestLimitesDePedidosPorDefectoYValidacion(t *testing.T) {
+	cfg, err := Load(func(string) (string, bool) { return "", false })
+	if err != nil || cfg.RateLimitPerMinute != 120 || cfg.RateLimitImportPerMinute != 10 {
+		t.Fatalf("cfg = %+v err = %v", cfg, err)
+	}
+	for _, malo := range []string{"-1", "abc", "1000001", "1.5"} {
+		_, err := Load(func(k string) (string, bool) {
+			if k == "API_GO_RATE_LIMIT_PER_MINUTE" {
+				return malo, true
+			}
+			return "", false
+		})
+		if err == nil {
+			t.Errorf("%q debía rechazarse", malo)
+		}
+	}
+	cfg, err = Load(func(k string) (string, bool) {
+		if k == "API_GO_RATE_LIMIT_PER_MINUTE" {
+			return "0", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.RateLimitPerMinute != 0 {
+		t.Fatalf("0 debe desactivar el límite: %+v %v", cfg, err)
+	}
+}
