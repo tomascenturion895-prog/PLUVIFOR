@@ -14,6 +14,7 @@ import (
 
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/civil"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/config"
+	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/dotenv"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/httpapi"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/proxy"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/sqlstore"
@@ -21,12 +22,16 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+	envFile, envCount := dotenv.LoadNearest() // el entorno real gana sobre el archivo
 	cfg, err := config.FromEnv()
 	if err != nil {
 		logger.Error("configuración inválida", "error", err)
 		os.Exit(1)
 	}
 
+	if envFile != "" {
+		logger.Info("variables leídas de .env", "archivo", envFile, "nuevas", envCount)
+	}
 	opts := []httpapi.Option{httpapi.WithBackend(proxy.New(cfg.BackendURL, logger))}
 	if store := openStore(cfg, logger); store != nil {
 		defer store.Close()
@@ -67,7 +72,7 @@ func openStore(cfg config.Config, logger *slog.Logger) *sqlstore.Store {
 		logger.Warn("Go todavía lee solo SQLite: estaciones y lluvia se reenvían a Python", "base", cfg.Database.Engine)
 		return nil
 	}
-	store, err := sqlstore.OpenSQLite(cfg.Database.SQLitePath)
+	store, err := sqlstore.OpenSQLite(config.ResolveSQLitePath(cfg.Database.SQLitePath, config.FileExists))
 	if err != nil {
 		logger.Warn("estaciones y lluvia se reenvían a Python", "motivo", err.Error())
 		return nil

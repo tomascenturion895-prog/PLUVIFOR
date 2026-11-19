@@ -1,6 +1,7 @@
 package config
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -143,6 +144,36 @@ func TestEscuchaSoloEnLocalhostPorDefecto(t *testing.T) {
 			return "", false
 		}); err == nil {
 			t.Errorf("%q debía rechazarse", malo)
+		}
+	}
+}
+
+func TestResolveSQLitePathBuscaLaBaseDePython(t *testing.T) {
+	existe := func(set ...string) func(string) bool {
+		return func(p string) bool {
+			for _, s := range set {
+				if filepath.ToSlash(filepath.Clean(p)) == s {
+					return true
+				}
+			}
+			return false
+		}
+	}
+	casos := []struct {
+		nombre, ruta string
+		hay          []string
+		want         string
+	}{
+		{"absoluta Unix", "/tmp/a.db", nil, "/tmp/a.db"},
+		{"absoluta Windows", "C:/datos/a.db", nil, "C:/datos/a.db"},
+		{"relativa donde corre Go", "./pluvifor.db", []string{"pluvifor.db"}, "pluvifor.db"},
+		{"relativa en el backend (desde apps/api-go)", "./pluvifor.db", []string{"../backend/pluvifor.db"}, "../backend/pluvifor.db"},
+		{"relativa en el backend (desde la raíz)", "./pluvifor.db", []string{"apps/backend/pluvifor.db"}, "apps/backend/pluvifor.db"},
+		{"no existe: queda la original", "./pluvifor.db", nil, "./pluvifor.db"},
+	}
+	for _, c := range casos {
+		if got := filepath.ToSlash(filepath.Clean(ResolveSQLitePath(c.ruta, existe(c.hay...)))); got != filepath.ToSlash(filepath.Clean(c.want)) {
+			t.Errorf("%s: %q, quería %q", c.nombre, got, c.want)
 		}
 	}
 }

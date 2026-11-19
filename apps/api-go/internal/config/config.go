@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -136,4 +137,26 @@ func nonNegative(raw, name string) (int, error) {
 		return 0, fmt.Errorf("%s debe ser un entero entre 0 y 1000000", name)
 	}
 	return n, nil
+}
+
+// ResolveSQLitePath encuentra el archivo de una ruta relativa. Python resuelve `./pluvifor.db` desde
+// apps/backend y Go corre desde apps/api-go: se prueba primero desde donde corre Go y después en la
+// carpeta del backend. Una ruta absoluta (también con letra de unidad) queda como está. Si no
+// encuentra el archivo devuelve la ruta original, para que el error sea claro al abrirla.
+func ResolveSQLitePath(path string, exists func(string) bool) string {
+	if path == "" || filepath.IsAbs(path) || strings.HasPrefix(path, "/") || (len(path) >= 2 && path[1] == ':') {
+		return path
+	}
+	for _, candidate := range []string{path, filepath.Join("..", "backend", path), filepath.Join("apps", "backend", path), filepath.Join("..", "..", "apps", "backend", path)} {
+		if exists(candidate) {
+			return candidate
+		}
+	}
+	return path
+}
+
+// FileExists dice si existe un archivo (no una carpeta).
+func FileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
 }
