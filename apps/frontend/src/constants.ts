@@ -13,3 +13,6 @@ export const SECCIONES = [
   { ruta: '/salud', nombre: 'Salud de la red' },
   { ruta: '/ayuda', nombre: 'Ayuda' },
 ] as const
+
+/** Fecha de corte de los datos: no se consultan ni muestran días posteriores. */
+export const FECHA_CORTE = '2026-10-31'
