@@ -182,6 +182,15 @@ Una racha de ceros no es una propiedad de un día sino de un tramo. Por eso las 
 
 Las banderas se **recalculan** a partir de los registros; no son un dato de la fuente.
 
+### `field_reports` — lluvia anotada por la policía donde no hay estación
+
+Un reporte por fila: fecha (`obs_date`), `mm` (≥ 0), lugar, quién reporta, ubicación (`lat`/`lon`, ambas o ninguna), `location_status` (`informada` o `pendiente`), `location_source` (`dispositivo` o `manual`, vacío si no hay ubicación), `category` (siempre `observado`), `validation` (siempre `sin_validar` al entrar), `source` (`reporte_policial`) y `created_at`.
+
+- **No es una lectura de estación:** va en su propia tabla y **nunca se suma** a las series ni a los acumulados. Se distingue por su fuente y porque no tiene estación.
+- **Sin ubicación queda pendiente:** no se inventa ni se completa con la del lugar.
+- Se rechaza `mm` negativo o mayor a 1000 (freno a errores de tipeo, no una regla meteorológica), fechas posteriores al corte (31/10/2026), textos vacíos o con caracteres de control y coordenadas fuera de rango.
+- Cargar (`POST /api/field-reports`) y listar (`GET`) piden la clave de administración, igual que la importación: el listado incluye el nombre de quien reporta, un dato personal.
+
 ### `import_logs` — registro de cada carga (auditoría)
 
 Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`audit` si solo se simuló, `commit` si se guardó), estado, filas leídas, aceptadas y rechazadas, motivos de rechazo agrupados (JSON), fecha de corte aplicada y cuándo se hizo. Es la base del **registro de limpieza** que pide la entrega.

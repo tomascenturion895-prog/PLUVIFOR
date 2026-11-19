@@ -9,6 +9,7 @@ export const SECCIONES = [
   { ruta: '/estacion', nombre: 'Estación' },
   { ruta: '/comparador', nombre: 'Comparador' },
   { ruta: '/parte', nombre: 'Parte pluvial' },
+  { ruta: '/reporte', nombre: 'Reporte de campo' },
   { ruta: '/importar', nombre: 'Importar y auditar' },
   { ruta: '/salud', nombre: 'Salud de la red' },
   { ruta: '/ayuda', nombre: 'Ayuda' },
