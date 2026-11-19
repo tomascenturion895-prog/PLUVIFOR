@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AccumulatedOut, NetworkHealth, StationList } from '../api/types'
@@ -210,5 +210,123 @@ describe('Maqueta', () => {
     vi.mocked(getStations).mockRejectedValue(new Error('x'))
     render(<Maqueta />)
     expect(await screen.findByRole('alert')).toBeInTheDocument()
+  })
+})
+
+describe('Atajos y reproducción', () => {
+  const CASO = {
+    ...CATALOGO,
+    items: [
+      { ...estacion(10, 'El Colorado EMC', 'Pirané', -25.5, -59.5), code: '424' },
+      { ...estacion(11, 'El Colorado EEA', 'Pirané', -25.6, -59.6), code: '425' },
+    ],
+    total: 2,
+  } as unknown as StationList
+
+  beforeEach(() => {
+    vi.mocked(getStations).mockResolvedValue(CASO)
+    vi.mocked(getAccumulated).mockResolvedValue(acumulado({ 10: 0, 11: 120 }))
+  })
+
+  it('el atajo 424 contra 425 muestra la advertencia de racha de ceros', async () => {
+    vi.mocked(getAccumulated).mockResolvedValue({
+      ...acumulado({ 10: 0, 11: 1265 }),
+      stations: [
+        {
+          ...acumulado({ 10: 0 }).stations[0],
+          station_id: 10,
+          station_name: 'El Colorado EMC',
+          warnings: [
+            {
+              code: 'ceros_prolongados',
+              message: 'La estación marca 0 mm durante 281 días seguidos.',
+              severity: 'alerta',
+              start_date: '2015-09-20',
+              end_date: '2016-06-26',
+            },
+          ],
+        },
+        { ...acumulado({ 11: 1265 }).stations[0], station_id: 11 },
+      ],
+    })
+    render(<Maqueta />)
+    await screen.findByRole('button', { name: /Caso 424 contra 425/ })
+    fireEvent.click(screen.getByRole('button', { name: /Caso 424 contra 425/ }))
+    const tabla = await screen.findByRole('table')
+    expect(await within(tabla).findByText('Racha de ceros')).toBeInTheDocument()
+    expect(getAccumulated).toHaveBeenLastCalledWith(
+      { from: '2015-09-20', to: '2016-06-26', category: 'observado' },
+      expect.any(AbortSignal),
+    )
+  })
+
+  it('si el catálogo no tiene la 424 o la 425, lo dice y no inventa nada', async () => {
+    vi.mocked(getStations).mockResolvedValue(CATALOGO)
+    render(<Maqueta />)
+    await screen.findByRole('button', { name: /Pirané/ })
+    fireEvent.click(screen.getByRole('button', { name: /Caso 424 contra 425/ }))
+    expect(
+      await screen.findByText(/faltan en el catálogo las estaciones 424, 425/),
+    ).toBeInTheDocument()
+  })
+
+  it('El Niño 2015/16 pide un mes por vez y se puede mover con la barra', async () => {
+    render(<Maqueta />)
+    await screen.findByRole('button', { name: /Pirané/ })
+    fireEvent.click(screen.getByRole('button', { name: /El Niño 2015\/16/ }))
+    await waitFor(() =>
+      expect(getAccumulated).toHaveBeenLastCalledWith(
+        { from: '2015-09-01', to: '2015-09-30', category: 'observado' },
+        expect.any(AbortSignal),
+      ),
+    )
+    fireEvent.change(screen.getByRole('slider'), { target: { value: '1' } })
+    await waitFor(() =>
+      expect(getAccumulated).toHaveBeenLastCalledWith(
+        { from: '2015-10-01', to: '2015-10-31', category: 'observado' },
+        expect.any(AbortSignal),
+      ),
+    )
+    expect(screen.getByText(/2015-10 \(2 de 10\)/)).toBeInTheDocument()
+  })
+
+  it('un mes sin dato se ve como sin dato, nunca como 0 mm', async () => {
+    vi.mocked(getAccumulated).mockResolvedValue(acumulado({ 10: null, 11: null }))
+    render(<Maqueta />)
+    await screen.findByRole('button', { name: /Pirané/ })
+    fireEvent.click(screen.getByRole('button', { name: /El Niño 2015\/16/ }))
+    const pirane = await screen.findByRole('button', { name: /Pirané/ })
+    await waitFor(() => expect(pirane.getAttribute('aria-label')).toContain('sin dato'))
+    expect(pirane.getAttribute('aria-label')).not.toContain('0.0 mm')
+  })
+
+  it('reproduce mes a mes y se detiene en el último', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      render(<Maqueta />)
+      await screen.findByRole('button', { name: /Pirané/ })
+      fireEvent.click(screen.getByRole('button', { name: /El Niño 2015\/16/ }))
+      await screen.findByText(/2015-09 \(1 de 10\)/)
+      fireEvent.click(screen.getByRole('button', { name: 'Reproducir' }))
+      expect(screen.getByRole('button', { name: 'Pausar' })).toBeInTheDocument()
+      for (let i = 0; i < 12; i++) {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1300)
+        })
+      }
+      expect(screen.getByText(/2016-06 \(10 de 10\)/)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Reproducir' })).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('cambiar la selección a mano apaga la reproducción', async () => {
+    render(<Maqueta />)
+    await screen.findByRole('button', { name: /Pirané/ })
+    fireEvent.click(screen.getByRole('button', { name: /El Niño 2015\/16/ }))
+    await screen.findByRole('slider')
+    fireEvent.change(screen.getByLabelText(/^Desde/), { target: { value: '2026-10-01' } })
+    await waitFor(() => expect(screen.queryByRole('slider')).not.toBeInTheDocument())
   })
 })
