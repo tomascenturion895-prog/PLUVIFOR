@@ -5,6 +5,7 @@ import type {
   ImportLog,
   FieldReport,
   FieldReportIn,
+  GapEstimateList,
   SensorReadingList,
   ImportReport,
   NetworkHealth,
@@ -214,6 +215,17 @@ export function getSensorReadings(
 ): Promise<SensorReadingList> {
   return request<SensorReadingList>(
     `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit })}`,
+    { signal },
+  )
+}
+
+/** Días sin dato rellenados con un valor ESTIMADO. Se muestran aparte: nunca entran en lo observado. */
+export function getEstimates(
+  params: { stationId?: number; from?: string; to?: string; limit?: number } = {},
+  signal?: AbortSignal,
+): Promise<GapEstimateList> {
+  return request<GapEstimateList>(
+    `/api/estimates${query({ station_id: params.stationId, from: params.from, to: params.to, limit: params.limit })}`,
     { signal },
   )
 }

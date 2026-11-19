@@ -5,6 +5,7 @@ import type { Series } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria, InsigniaEstado } from '../components/Insignias'
 import { textoMm } from '../components/insignias-datos'
+import EstimacionesHuecos from '../components/EstimacionesHuecos'
 import SerieDiaria from '../components/SerieDiaria'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
@@ -47,7 +48,7 @@ export function Resumen({ serie }: { serie: Series }) {
   )
 }
 
-function Serie({ serie }: { serie: Series }) {
+function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: string }) {
   return (
     <>
       <h3>{serie.station_name}</h3>
@@ -100,6 +101,7 @@ function Serie({ serie }: { serie: Series }) {
           </tbody>
         </table>
       </details>
+      <EstimacionesHuecos stationId={serie.station_id} desde={desde} hasta={hasta} />
     </>
   )
 }
@@ -176,7 +178,7 @@ export default function Estacion() {
         <ErrorEstado mensaje={serie.estado.mensaje} onReintentar={serie.reintentar} />
       )}
       {rangoValido && stationId !== null && serie.estado.tipo === 'listo' && serie.estado.datos && (
-        <Serie serie={serie.estado.datos} />
+        <Serie serie={serie.estado.datos} desde={desde} hasta={hasta} />
       )}
     </section>
   )

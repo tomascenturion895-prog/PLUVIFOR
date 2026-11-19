@@ -148,6 +148,51 @@ paths:
                   total: { type: integer }
                   notice: { type: string }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/estimates:
+    get:
+      summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado
+      description: |
+        Cada ítem rellena un día que en la serie observada sigue siendo `sin_fila` o `fila_sin_valor`:
+        la estimación no cambia ese estado ni entra en ningún acumulado. La categoría es siempre
+        `estimado`. `method` y `detail` dicen cómo se calculó y con qué estaciones vecinas.
+        Solo se usan vecinas con coordenadas verificadas, del mismo tipo y con el mismo corte del día.
+        Los parámetros del método son una propuesta, todavía sin validar.
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 200 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200':
+          description: Estimaciones por fecha, con el aviso de que no son datos medidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [category, notice, items, total, limit, offset]
+                properties:
+                  category: { type: string, enum: [estimado] }
+                  notice: { type: string }
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [station_id, obs_date, mm, category, gap_state, method, detail, created_at]
+                      properties:
+                        station_id: { type: integer }
+                        obs_date: { type: string, format: date }
+                        mm: { type: number, minimum: 0 }
+                        category: { type: string, enum: [estimado] }
+                        gap_state: { type: string, enum: [sin_fila, fila_sin_valor] }
+                        method: { type: string, example: vecinas_idw_v1 }
+                        detail: { type: object }
+                        created_at: { type: string, format: date-time }
+                  total: { type: integer }
+                  limit: { type: integer }
+                  offset: { type: integer }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/network/health:
     get:
       summary: Salud de la red, estaciones activas, en silencio y sin datos
