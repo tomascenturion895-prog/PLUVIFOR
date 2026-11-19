@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 5 * 1024 * 1024
     # Tamaño máximo del cuerpo de cualquier otro pedido (los JSON de la API pesan pocos bytes).
     max_request_bytes: int = 64 * 1024
+    # Pedidos por minuto y por dirección. 0 desactiva el límite.
+    rate_limit_per_minute: int = 120
+    rate_limit_import_per_minute: int = 10
 
     @field_validator("cors_origins", mode="before")
     @classmethod

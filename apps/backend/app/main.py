@@ -6,7 +6,7 @@ from app.api import health, imports, rainfall, reports, stations
 from app.config import Settings, get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.errors import register_error_handlers
-from app.security import BodySizeLimitMiddleware, SecurityHeadersMiddleware
+from app.security import BodySizeLimitMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -38,6 +38,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         BodySizeLimitMiddleware,
         default=settings.max_request_bytes,
         limits=(("/api/import", settings.max_upload_bytes + 1024),),
+    )
+    app.add_middleware(
+        RateLimitMiddleware,
+        default=settings.rate_limit_per_minute,
+        limits=(("/api/import", settings.rate_limit_import_per_minute),),
     )
     app.add_middleware(SecurityHeadersMiddleware, hsts=settings.app_env == "production")
     register_error_handlers(app)
