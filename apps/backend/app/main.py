@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
-from app.api import health, rainfall, stations
+from app.api import health, imports, rainfall, stations
 from app.config import Settings, get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.errors import register_error_handlers
@@ -35,6 +35,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(stations.router)
     app.include_router(rainfall.router)
+    app.include_router(imports.router)
     return app
 
 
