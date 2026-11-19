@@ -83,30 +83,39 @@ export default function ProbaCambio({
       {cargando && <Cargando texto="Calculando la diferencia…" />}
       {error && <ErrorEstado mensaje={error} />}
       {variante && varianteDatos && !cargando && (
-        <table className="tabla-dias">
-          <caption className="nota">
-            Con el cambio: {variante.etiqueta} ({variante.desde} al {variante.hasta}). La diferencia
-            resta dos valores de la API; si a alguno le falta el dato, no se compara.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Estación</th>
-              <th scope="col">Antes</th>
-              <th scope="col">Con el cambio</th>
-              <th scope="col">Diferencia</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filas.map((f) => (
-              <tr key={f.stationId}>
-                <th scope="row">{nombre(f.stationId)}</th>
-                <td>{f.stationId === variante.extra ? '—' : textoMm(f.base)}</td>
-                <td>{textoMm(f.variante)}</td>
-                <td>{f.stationId === variante.extra ? 'estación nueva' : formatoDelta(f.delta)}</td>
+        <div
+          className="tabla-scroll"
+          role="region"
+          aria-label="Tabla de la diferencia con el cambio"
+          tabIndex={0}
+        >
+          <table className="tabla-dias">
+            <caption className="nota">
+              Con el cambio: {variante.etiqueta} ({variante.desde} al {variante.hasta}). La
+              diferencia resta dos valores de la API; si a alguno le falta el dato, no se compara.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Estación</th>
+                <th scope="col">Antes</th>
+                <th scope="col">Con el cambio</th>
+                <th scope="col">Diferencia</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filas.map((f) => (
+                <tr key={f.stationId}>
+                  <th scope="row">{nombre(f.stationId)}</th>
+                  <td>{f.stationId === variante.extra ? '—' : textoMm(f.base)}</td>
+                  <td>{textoMm(f.variante)}</td>
+                  <td>
+                    {f.stationId === variante.extra ? 'estación nueva' : formatoDelta(f.delta)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   )
