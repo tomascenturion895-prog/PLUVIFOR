@@ -9,16 +9,16 @@ from app.domain.enums import DataCategory
 from app.schemas.series import SeriesOut
 from app.services.series import SeriesService
 
-router = APIRouter(prefix="/stations", tags=["series"])
+router = APIRouter(prefix="/api/rainfall", tags=["lluvia"])
 
 
 @router.get(
-    "/{station_id}/series",
+    "",
     response_model=SeriesOut,
     summary="Serie diaria de una estación con cobertura y advertencias",
 )
-def get_series(
-    station_id: int,
+def get_rainfall(
+    station_id: Annotated[int, Query(ge=1)],
     date_from: Annotated[date, Query(alias="from")],
     date_to: Annotated[date, Query(alias="to")],
     service: Annotated[SeriesService, Depends(get_series_service)],
@@ -37,5 +37,19 @@ def get_series(
         clipped_to_cutoff=result.clipped_to_cutoff,
         summary=result.summary,
         warnings=result.warnings,
-        days=[{"obs_date": d.obs_date, "state": d.state, "mm": d.mm} for d in result.days],
+        days=[
+            {
+                "obs_date": d.obs_date,
+                "state": d.state,
+                "mm": d.mm,
+                "category": result.category,
+                "source": result.station.source.code,
+                "flags": [
+                    w.code
+                    for w in result.warnings
+                    if w.start_date and w.end_date and w.start_date <= d.obs_date <= w.end_date
+                ],
+            }
+            for d in result.days
+        ],
     )

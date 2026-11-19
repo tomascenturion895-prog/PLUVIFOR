@@ -86,7 +86,7 @@ Un hueco (`sin_fila`, `fila_sin_valor`) corta la racha: no se afirma que no llov
 ## Series diarias
 
 ```
-GET /stations/{id}/series?from=2016-01-01&to=2016-01-31&category=observado
+GET /api/rainfall?station_id=1&from=2016-01-01&to=2016-01-31&category=observado
 ```
 
 Devuelve un valor por día del período (`mm` es `null` en un hueco, nunca 0), el resumen (días con dato, huecos por tipo, cobertura, acumulado) y las advertencias. El acumulado es `null` si no hay ningún día con dato. Una consulta pide una sola categoría: observado, referencia y estimado no se mezclan. Las fechas posteriores al corte (31/10/2026) se recortan y se avisa. El umbral de cobertura baja (80 %) es provisional y está pendiente de confirmar.
