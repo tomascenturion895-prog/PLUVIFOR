@@ -1,4 +1,11 @@
-import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson'
+import type {
+  Feature,
+  FeatureCollection,
+  LineString,
+  MultiLineString,
+  MultiPolygon,
+  Polygon,
+} from 'geojson'
 
 /** Un punto sobre el plano ya proyectado en isométrico. */
 export interface Punto {
@@ -79,4 +86,27 @@ export function centroDe(feature: Feature, proyeccion: Proyeccion): Punto {
   const xs = ps.map((p) => p.x)
   const ys = ps.map((p) => p.y)
   return { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 }
+}
+
+/** Camino SVG con todos los cursos de agua de una capa; ignora lo que no sea línea. */
+export function caminoLineas(capa: FeatureCollection, proyeccion: Proyeccion): string {
+  const partes: string[] = []
+  for (const f of capa.features) {
+    const g = f.geometry as LineString | MultiLineString | null
+    if (!g) continue
+    const lineas =
+      g.type === 'LineString' ? [g.coordinates] : g.type === 'MultiLineString' ? g.coordinates : []
+    for (const linea of lineas) {
+      if (linea.length < 2) continue
+      partes.push(
+        linea
+          .map((p, i) => {
+            const { x, y } = proyeccion.proyectar(p[0], p[1])
+            return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`
+          })
+          .join(' '),
+      )
+    }
+  }
+  return partes.join(' ')
 }

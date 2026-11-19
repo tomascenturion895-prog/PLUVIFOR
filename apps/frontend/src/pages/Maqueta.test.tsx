@@ -280,7 +280,7 @@ describe('Atajos y reproducción', () => {
         expect.any(AbortSignal),
       ),
     )
-    fireEvent.change(screen.getByRole('slider'), { target: { value: '1' } })
+    fireEvent.change(screen.getByRole('slider', { name: 'Mes' }), { target: { value: '1' } })
     await waitFor(() =>
       expect(getAccumulated).toHaveBeenLastCalledWith(
         { from: '2015-10-01', to: '2015-10-31', category: 'observado' },
@@ -325,8 +325,10 @@ describe('Atajos y reproducción', () => {
     render(<Maqueta />)
     await screen.findByRole('button', { name: /Pirané/ })
     fireEvent.click(screen.getByRole('button', { name: /El Niño 2015\/16/ }))
-    await screen.findByRole('slider')
+    await screen.findByRole('slider', { name: 'Mes' })
     fireEvent.change(screen.getByLabelText(/^Desde/), { target: { value: '2026-10-01' } })
-    await waitFor(() => expect(screen.queryByRole('slider')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByRole('slider', { name: 'Mes' })).not.toBeInTheDocument(),
+    )
   })
 })

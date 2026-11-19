@@ -460,18 +460,18 @@ describe('colorMm', () => {
   })
 
   it('devuelve azul muy claro para 0 mm real', () => {
-    expect(colorMm(0)).toBe('#e3f2fd')
+    expect(colorMm(0)).toBe('#ffffd9')
   })
 
   it('devuelve color azul intenso para ≥ 100 mm', () => {
-    expect(colorMm(150)).toBe('#0d47a1')
+    expect(colorMm(150)).toBe('#0c2c84')
   })
 
   it('devuelve color proporcional para rangos intermedios', () => {
-    expect(colorMm(5)).toBe('#90caf9')
-    expect(colorMm(20)).toBe('#42a5f5')
-    expect(colorMm(45)).toBe('#1e88e5')
-    expect(colorMm(80)).toBe('#1565c0')
+    expect(colorMm(5)).toBe('#c7e9b4')
+    expect(colorMm(20)).toBe('#7fcdbb')
+    expect(colorMm(45)).toBe('#41b6c4')
+    expect(colorMm(80)).toBe('#1d91c0')
   })
 })
 
