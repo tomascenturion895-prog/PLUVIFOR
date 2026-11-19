@@ -66,6 +66,69 @@ paths:
               schema: { $ref: '#/components/schemas/Station' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/events:
+    get:
+      summary: Días de lluvia intensa (50 y 100 mm) y rachas secas, de forma descriptiva (SCRUM-63)
+      description: |
+        Cuenta lo que pasó; no predice ni es una alerta de riesgo. Se indica `station_id` o `zone`,
+        pero no los dos. `days_50mm_or_more` incluye los días de 100 mm o más, que figuran también
+        en `days_100mm_or_more`. **Un día sin dato no es un día seco:** corta la racha seca y no la
+        extiende. Una racha que toca la advertencia de ceros prolongados viene con
+        `zero_run_warning: true` y no se da por buena. `min_dry_days` (valor provisional, 7) solo
+        filtra la lista; `longest_dry_streak` se informa siempre. Implementada solo en Go: sin el
+        driver de SQLite responde 404 por el reenvío a Python.
+      x-implemented-in: go
+      parameters:
+        - { name: station_id, in: query, schema: { $ref: '#/components/schemas/Id' } }
+        - { name: zone, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+        - { name: category, in: query, schema: { type: string, enum: [observado, referencia, estimado], default: observado } }
+        - { name: min_dry_days, in: query, schema: { type: integer, minimum: 1, maximum: 3660, default: 7 } }
+      responses:
+        '200':
+          description: Una entrada por estación analizada (hasta 100 si se pide por zona).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [category, date_from, date_to, data_cutoff_date, clipped_to_cutoff, min_dry_days, stations, notice, description]
+                properties:
+                  category: { type: string }
+                  date_from: { type: string, format: date }
+                  date_to: { type: string, format: date }
+                  data_cutoff_date: { type: string, format: date }
+                  clipped_to_cutoff: { type: boolean }
+                  min_dry_days: { type: integer }
+                  notice: { type: string }
+                  description: { type: string }
+                  stations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        station_id: { type: integer }
+                        station_name: { type: string }
+                        summary: { type: object }
+                        days_50mm_or_more:
+                          type: array
+                          items: { type: object, properties: { obs_date: { type: string, format: date }, mm: { type: number } } }
+                        days_100mm_or_more:
+                          type: array
+                          items: { type: object, properties: { obs_date: { type: string, format: date }, mm: { type: number } } }
+                        dry_streaks:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              start_date: { type: string, format: date }
+                              end_date: { type: string, format: date }
+                              days: { type: integer }
+                              zero_run_warning: { type: boolean }
+                        longest_dry_streak: { type: object, nullable: true }
+                        warnings: { type: array, items: { type: object } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/rainfall:
     get:
       summary: Serie diaria de una estación con cobertura y advertencias

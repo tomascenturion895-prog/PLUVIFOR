@@ -261,3 +261,8 @@ func FlagsOnDay(ws []Warning, d civil.Date) []string {
 	}
 	return out
 }
+
+// CheckRange valida el período como lo hace Series y devuelve el fin ya recortado al corte.
+func (s *Service) CheckRange(from, to civil.Date) (civil.Date, bool, error) {
+	return s.normalizeRange(from, to)
+}
