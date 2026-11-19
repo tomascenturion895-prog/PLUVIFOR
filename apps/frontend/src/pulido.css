@@ -128,3 +128,81 @@ select:focus-visible,
   outline: 3px solid #b45309;
   outline-offset: 2px;
 }
+
+/* ---- Formularios (Reporte de campo, Importar) ---- */
+/* Cada campo toma su alto natural: antes se estiraban hasta igualar al grupo más alto de la fila. */
+.filtros {
+  align-items: start;
+}
+
+fieldset {
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+fieldset > legend {
+  padding: 0 0.4rem;
+  font-weight: 600;
+}
+
+/* Botones secundarios de formularios: mismo lenguaje que el resto. Los primarios (.acciones) ya son azules. */
+form button,
+fieldset button {
+  padding: 0 1rem;
+  color: var(--tinta);
+  background: #fff;
+  border: 1px solid #8fa3a8;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+form button:hover:not(:disabled),
+fieldset button:hover:not(:disabled) {
+  background: var(--azul-claro);
+  border-color: var(--azul);
+}
+
+input[type='file'] {
+  padding: 0.55rem 0.5rem;
+  font: inherit;
+}
+
+input[type='file']::file-selector-button {
+  min-height: 32px;
+  margin-right: 0.75rem;
+  padding: 0 0.9rem;
+  color: var(--tinta);
+  font: inherit;
+  background: var(--azul-claro);
+  border: 1px solid var(--azul);
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #5d6f75;
+  font-weight: 400;
+}
+
+/* Las tarjetas de la Ayuda respiran como el resto. */
+.ayuda-lista {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.ayuda-lista li {
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+/* Objetivo táctil mínimo de 24 px (WCAG 2.5.8) también en los deslizadores. */
+input[type='range'] {
+  height: 1.5rem;
+}
