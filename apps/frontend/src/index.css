@@ -158,6 +158,8 @@ body {
 /* Pantalla Estación */
 .filtros {
   display: grid;
+  /* minmax(0, 1fr): sin el 0, el ancho natural de un select o un input ensancha toda la página. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
@@ -165,11 +167,15 @@ body {
 .filtros label {
   display: grid;
   gap: 0.25rem;
+  min-width: 0;
   font-weight: 600;
 }
 
 .filtros select,
 .filtros input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: 44px;
   padding: 0 0.5rem;
   font: inherit;
@@ -270,6 +276,11 @@ body {
   min-height: 44px;
   padding: 0 1rem;
   font: inherit;
+}
+
+/* Objetivo táctil de al menos 44 px de alto (WCAG 2.5.5), pensado para usar con el pulgar. */
+button {
+  min-height: 44px;
 }
 
 button:disabled {
