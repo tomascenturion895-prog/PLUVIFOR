@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     admin_api_key: SecretStr | None = None
     # Tamaño máximo de un archivo a importar (el CSV real del SIGA pesa ~0,6 MB).
     max_upload_bytes: int = 5 * 1024 * 1024
+    # Tamaño máximo del cuerpo de cualquier otro pedido (los JSON de la API pesan pocos bytes).
+    max_request_bytes: int = 64 * 1024
 
     @field_validator("cors_origins", mode="before")
     @classmethod
