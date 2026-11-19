@@ -245,6 +245,31 @@ export interface SensorReadingList {
   notice: string
 }
 
+/** Cómo se calculó un día estimado y con qué vecinas. El objeto `detail` depende del método. */
+export interface GapEstimate {
+  station_id: number
+  obs_date: string
+  mm: number
+  category: 'estimado'
+  /** Cómo era el día original: sin fila o fila sin valor. Sigue siendo un hueco en lo observado. */
+  gap_state: 'sin_fila' | 'fila_sin_valor'
+  method: string
+  detail: {
+    vecinas?: { station_id: number; name: string; distance_km: number; mm: number }[]
+    parametros?: { max_km?: number }
+  }
+  created_at: string
+}
+
+export interface GapEstimateList {
+  category: 'estimado'
+  notice: string
+  items: GapEstimate[]
+  total: number
+  limit: number
+  offset: number
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {

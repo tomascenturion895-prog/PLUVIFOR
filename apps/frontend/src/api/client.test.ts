@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, getRainfall, getSensorReadings, getStations, request } from './client'
+import {
+  ApiError,
+  getEstimates,
+  getRainfall,
+  getSensorReadings,
+  getStations,
+  request,
+} from './client'
 
 function responder(status: number, cuerpo?: unknown, texto?: string) {
   vi.stubGlobal(
@@ -38,6 +45,17 @@ describe('cliente de la API', () => {
     expect(llamadas).toEqual([
       '/api/sensor-readings?device_id=SIM-001&limit=10',
       '/api/sensor-readings',
+    ])
+  })
+
+  it('pide las estimaciones de una estación y período sin parámetros vacíos', async () => {
+    responder(200, { items: [], total: 0 })
+    await getEstimates({ stationId: 3, from: '2020-01-01', to: '2020-01-31', limit: 200 })
+    await getEstimates()
+    const llamadas = (fetch as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0] as string)
+    expect(llamadas).toEqual([
+      '/api/estimates?station_id=3&from=2020-01-01&to=2020-01-31&limit=200',
+      '/api/estimates',
     ])
   })
 
