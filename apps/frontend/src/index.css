@@ -582,3 +582,28 @@ button:disabled {
   position: relative;
   overflow-x: auto;
 }
+
+/* ---- Atajos y reproducción (SCRUM-99) ---- */
+.atajos ul {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.atajos button[aria-pressed='true'] {
+  border-width: 3px;
+  font-weight: 700;
+}
+
+.barra-tiempo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.barra-tiempo input[type='range'] {
+  min-width: 12rem;
+}
