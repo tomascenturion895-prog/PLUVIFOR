@@ -13,7 +13,14 @@ type body struct {
 }
 
 type detail struct {
-	Code    string `json:"code"`
+	Code    string       `json:"code"`
+	Message string       `json:"message"`
+	Details []FieldError `json:"details,omitempty"`
+}
+
+// FieldError dice qué parámetro falló y por qué. Nunca incluye el valor recibido.
+type FieldError struct {
+	Field   string `json:"field"`
 	Message string `json:"message"`
 }
 
@@ -48,3 +55,13 @@ func Write(w http.ResponseWriter, status int, code, message string) {
 
 // Status escribe el error estándar de un código HTTP.
 func Status(w http.ResponseWriter, status int) { Write(w, status, "", "") }
+
+// Validation responde 422 con el mismo formato que la API de Python: código validation_error y la
+// lista de parámetros inválidos.
+func Validation(w http.ResponseWriter, fields []FieldError) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusUnprocessableEntity)
+	_ = json.NewEncoder(w).Encode(body{Error: detail{
+		Code: "validation_error", Message: "Los datos enviados no son válidos.", Details: fields,
+	}})
+}

@@ -5,9 +5,13 @@ info:
   description: |
     Contrato de la API. **PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial.**
 
-    - Hoy la API en Go implementa solo `GET /health`. Las rutas de estaciones y lluvia están
-      descritas como **referencia**: ya existen en la API de Python (`apps/backend`), que es la que
-      responde hoy, y el contrato de Go tiene que dar lo mismo.
+    - La API en Go implementa `GET /health`. Las rutas de estaciones y de la serie diaria
+      (`/api/stations`, `/api/stations/{station_id}`, `/api/rainfall`) **ya están escritas y probadas
+      en Go** (`x-implemented-in: go`), con las mismas respuestas que Python para los mismos datos
+      (pruebas de paridad en `testdata/parity`). Se activan cuando el servidor recibe un lector de la
+      base; hasta que se elija el driver de base de datos (ver `README.md`), esas rutas las sigue
+      respondiendo Python a través del reenvío, con el mismo contrato.
+    - Las demás rutas de `/api` (comparador, acumulados, informes, importación) siguen en Python.
     - Un hueco no es 0 mm: en la serie, un día sin dato lleva `state` = `sin_fila` o `fila_sin_valor`
       y `mm` = `null`, nunca 0.
     - Observado, referencia y estimado van separados (`category`) y nunca se suman.
@@ -32,7 +36,7 @@ paths:
   /api/stations:
     get:
       summary: Catálogo de estaciones
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: source, in: query, schema: { type: string, maxLength: 64 }, description: Código de la fuente }
         - { name: network, in: query, schema: { type: string, maxLength: 100 } }
@@ -52,7 +56,7 @@ paths:
   /api/stations/{station_id}:
     get:
       summary: Ficha de una estación
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: station_id, in: path, required: true, schema: { $ref: '#/components/schemas/Id' } }
       responses:
@@ -66,7 +70,7 @@ paths:
   /api/rainfall:
     get:
       summary: Serie diaria de una estación con cobertura y advertencias
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: station_id, in: query, required: true, schema: { $ref: '#/components/schemas/Id' } }
         - { name: from, in: query, required: true, schema: { type: string, format: date } }
