@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from app.api.deps import get_station_service
 from app.domain.enums import CoordsStatus
 from app.repositories.stations import Page, StationFilters
+from app.schemas.ids import StationIdPath
 from app.schemas.stations import StationList, StationOut
 from app.services.stations import StationService
 
@@ -40,5 +41,5 @@ def list_stations(
 
 
 @router.get("/{station_id}", response_model=StationOut, summary="Ficha de una estación")
-def get_station(station_id: int, service: Service) -> StationOut:
+def get_station(station_id: StationIdPath, service: Service) -> StationOut:
     return service.get(station_id)

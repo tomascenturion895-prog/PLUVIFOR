@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from app.api.deps import get_series_service
 from app.config import Settings, get_settings
 from app.domain.enums import DataCategory
+from app.schemas.ids import StationIdQuery
 from app.schemas.series import AccumulatedOut, AccumulatedStationOut, SeriesOut, WarningOut
 from app.services.series import SeriesService
 
@@ -18,7 +19,7 @@ router = APIRouter(prefix="/api/rainfall", tags=["lluvia"])
     summary="Serie diaria de una estación con cobertura y advertencias",
 )
 def get_rainfall(
-    station_id: Annotated[int, Query(ge=1)],
+    station_id: StationIdQuery,
     date_from: Annotated[date, Query(alias="from")],
     date_to: Annotated[date, Query(alias="to")],
     service: Annotated[SeriesService, Depends(get_series_service)],
@@ -65,7 +66,7 @@ def get_accumulated(
     date_to: Annotated[date, Query(alias="to")],
     service: Annotated[SeriesService, Depends(get_series_service)],
     settings: Annotated[Settings, Depends(get_settings)],
-    station_id: Annotated[int | None, Query(ge=1)] = None,
+    station_id: StationIdQuery | None = None,
     zone: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
     category: DataCategory = DataCategory.OBSERVADO,
 ) -> AccumulatedOut:
