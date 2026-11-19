@@ -39,7 +39,7 @@ Un sistema web que reúne las series de lluvia de toda la provincia y permite **
 - CHIRPS v3 como referencia estimada (CC BY 4.0), siempre separada de los datos medidos.
 - Otras fuentes en evaluación (por ejemplo, la API del INA), sujetas a verificación.
 
-El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes y registro de limpieza).
+El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes en `docs/fuentes/README.md` y registro de limpieza).
 
 ## Alcance
 

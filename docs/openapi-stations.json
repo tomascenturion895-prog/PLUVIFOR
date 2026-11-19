@@ -1,0 +1,869 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PLUVIFOR · API",
+    "description": "Reporte pluvial de Formosa. PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "sistema"
+        ],
+        "summary": "Estado del servicio",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stations": {
+      "get": {
+        "tags": [
+          "estaciones"
+        ],
+        "summary": "Catálogo de estaciones",
+        "operationId": "list_stations_api_stations_get",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Código de la fuente",
+              "title": "Source"
+            },
+            "description": "Código de la fuente"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Red de medición",
+              "title": "Network"
+            },
+            "description": "Red de medición"
+          },
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          },
+          {
+            "name": "zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Zone"
+            }
+          },
+          {
+            "name": "coords_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/CoordsStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Coords Status"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Texto en nombre o localidad",
+              "title": "Q"
+            },
+            "description": "Texto en nombre o localidad"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stations/{station_id}": {
+      "get": {
+        "tags": [
+          "estaciones"
+        ],
+        "summary": "Ficha de una estación",
+        "operationId": "get_station_api_stations__station_id__get",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Station Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rainfall": {
+      "get": {
+        "tags": [
+          "lluvia"
+        ],
+        "summary": "Serie diaria de una estación con cobertura y advertencias",
+        "operationId": "get_rainfall_api_rainfall_get",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Station Id"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "To"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataCategory",
+              "default": "observado"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CoordsStatus": {
+        "type": "string",
+        "enum": [
+          "verificada",
+          "pendiente"
+        ],
+        "title": "CoordsStatus"
+      },
+      "DataCategory": {
+        "type": "string",
+        "enum": [
+          "observado",
+          "referencia",
+          "estimado"
+        ],
+        "title": "DataCategory",
+        "description": "Observado, referencia y estimado nunca se suman ni se promedian entre sí."
+      },
+      "DayOut": {
+        "properties": {
+          "obs_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Obs Date"
+          },
+          "state": {
+            "$ref": "#/components/schemas/RainState"
+          },
+          "mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mm"
+          },
+          "category": {
+            "$ref": "#/components/schemas/DataCategory"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "obs_date",
+          "state",
+          "mm",
+          "category",
+          "source",
+          "flags"
+        ],
+        "title": "DayOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "env": {
+            "type": "string",
+            "title": "Env"
+          },
+          "data_cutoff_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Data Cutoff Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "env",
+          "data_cutoff_date"
+        ],
+        "title": "HealthResponse"
+      },
+      "RainState": {
+        "type": "string",
+        "enum": [
+          "dato",
+          "fila_sin_valor",
+          "sin_fila"
+        ],
+        "title": "RainState",
+        "description": "Estado de un día de una estación. Solo `DATO` lleva milímetros."
+      },
+      "SeriesOut": {
+        "properties": {
+          "station_id": {
+            "type": "integer",
+            "title": "Station Id"
+          },
+          "station_name": {
+            "type": "string",
+            "title": "Station Name"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceOut"
+          },
+          "category": {
+            "$ref": "#/components/schemas/DataCategory"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "data_cutoff_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Data Cutoff Date"
+          },
+          "clipped_to_cutoff": {
+            "type": "boolean",
+            "title": "Clipped To Cutoff"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/SummaryOut"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/WarningOut"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayOut"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice",
+            "default": "PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial"
+          }
+        },
+        "type": "object",
+        "required": [
+          "station_id",
+          "station_name",
+          "source",
+          "category",
+          "date_from",
+          "date_to",
+          "data_cutoff_date",
+          "clipped_to_cutoff",
+          "summary",
+          "warnings",
+          "days"
+        ],
+        "title": "SeriesOut"
+      },
+      "Severity": {
+        "type": "string",
+        "enum": [
+          "aviso",
+          "alerta"
+        ],
+        "title": "Severity",
+        "description": "Descriptiva: no es una alerta de riesgo."
+      },
+      "SourceOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "network": {
+            "type": "string",
+            "title": "Network"
+          },
+          "category": {
+            "$ref": "#/components/schemas/DataCategory"
+          },
+          "day_cutoff_local": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day Cutoff Local"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "network",
+          "category",
+          "day_cutoff_local"
+        ],
+        "title": "SourceOut",
+        "description": "Toda estación informa su fuente y la categoría de sus datos."
+      },
+      "StationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StationOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "StationList"
+      },
+      "StationOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "internal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Internal Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locality"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "elevation_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation M"
+          },
+          "coords_status": {
+            "$ref": "#/components/schemas/CoordsStatus"
+          },
+          "active_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active From"
+          },
+          "active_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active To"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "internal_code",
+          "name",
+          "kind",
+          "locality",
+          "department",
+          "zone",
+          "lat",
+          "lon",
+          "elevation_m",
+          "coords_status",
+          "active_from",
+          "active_to",
+          "source"
+        ],
+        "title": "StationOut"
+      },
+      "SummaryOut": {
+        "properties": {
+          "days_in_period": {
+            "type": "integer",
+            "title": "Days In Period"
+          },
+          "days_with_data": {
+            "type": "integer",
+            "title": "Days With Data"
+          },
+          "days_sin_fila": {
+            "type": "integer",
+            "title": "Days Sin Fila"
+          },
+          "days_fila_sin_valor": {
+            "type": "integer",
+            "title": "Days Fila Sin Valor"
+          },
+          "coverage": {
+            "type": "number",
+            "title": "Coverage"
+          },
+          "accumulated_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accumulated Mm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days_in_period",
+          "days_with_data",
+          "days_sin_fila",
+          "days_fila_sin_valor",
+          "coverage",
+          "accumulated_mm"
+        ],
+        "title": "SummaryOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WarningOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "severity",
+          "start_date",
+          "end_date"
+        ],
+        "title": "WarningOut"
+      }
+    }
+  }
+}

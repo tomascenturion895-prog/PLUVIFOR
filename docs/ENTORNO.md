@@ -75,6 +75,50 @@ uvicorn app.main:app --reload      # http://localhost:8000/docs
 
 En Windows puede que `python` no responda y haga falta `py -3.12 -m venv .venv`.
 
+### Reiniciar la base de demo
+
+Para dejar la demo en un estado conocido, sin internet, desde `apps/backend`:
+
+```bash
+python -m app.cli reset-demo          # pide confirmación
+python -m app.cli reset-demo --yes    # sin preguntar (scripts)
+```
+
+Borra el archivo SQLite de `DATABASE_URL`, corre las migraciones y recarga las series del SIGA que están versionadas en `docs/datos/` (3 estaciones, 7.648 días), y recalcula las advertencias de racha de ceros. Se puede correr las veces que haga falta: siempre termina en el mismo estado.
+
+Cuidados que ya tiene el comando:
+
+- **Avisa antes de borrar** y dice qué archivo es. Sin una terminal para confirmar y sin `--yes`, no hace nada.
+- **Solo toca un archivo SQLite local.** Con PostgreSQL o una base en memoria se niega sin borrar nada.
+- **Revisa que estén los datos antes de borrar:** si falta un archivo de `docs/datos/`, no toca la base.
+
+### Usar PostgreSQL en lugar de SQLite (opcional)
+
+La demo corre con SQLite. Cambiar de motor es cambiar `DATABASE_URL`, y se comprobó el 19/11/2026 con PostgreSQL 16:
+
+```bash
+# 1. Una base vacía (ejemplo local)
+createdb pluvifor
+# 2. El controlador (no está en requirements.txt: ver «Diferencias»)
+pip install "psycopg[binary]"
+# 3. En .env
+DATABASE_URL=postgresql+psycopg://usuario:clave@localhost:5432/pluvifor
+# 4. Migraciones y datos, igual que con SQLite
+alembic upgrade head
+python -m app.cli import-stations ../../docs/datos/estaciones_siga_formosa.csv
+python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_formosa.csv
+python -m app.cli recompute-flags
+```
+
+**Qué se verificó:** las migraciones corren hasta la última; la importación real (3 estaciones y 7.648 días, 0 rechazos) da lo mismo que en SQLite; la estación 424 sale con acumulado 0,0 mm y la advertencia de racha de ceros, y la 425 con 1.265,0 mm; el parte pluvial responde 200; y 88 pruebas de la API (lluvia, estaciones, parte, calidad, modelos, salud y errores) pasan contra PostgreSQL.
+
+**Diferencias y límites:**
+
+- El controlador `psycopg` **no está en `requirements.txt`**: sumarlo es una dependencia nueva y no se agregó sin acordarlo. Hoy hay que instalarlo a mano.
+- No se encontraron diferencias de comportamiento en lo probado. No hay tipos propios de un motor (enumeraciones como texto con restricciones).
+- **No verificado:** la suite completa no corre contra PostgreSQL de forma automática (las pruebas de importación y de migraciones crean su propia base SQLite), no hay PostGIS y las capas geográficas siguen siendo archivos GeoJSON.
+- Se probó con Python 3.13 y PostgreSQL 16 en una máquina de trabajo, sin concurrencia ni volumen.
+
 ## 6. Frontend
 
 Desde `apps/frontend`:
