@@ -7,6 +7,7 @@ import Comparador from './pages/Compare'
 import FieldReport from './pages/FieldReport'
 import Importar from './pages/Importar'
 import NetworkHealth from './pages/NetworkHealth'
+import Maqueta from './pages/Maqueta'
 import Parte from './pages/Parte'
 import { Mapa, NoEncontrada } from './pages/Paginas'
 
@@ -15,6 +16,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="maqueta" element={<Maqueta />} />
         <Route path="mapa" element={<Mapa />} />
         <Route path="estacion" element={<Estacion />} />
         <Route path="estacion/:id" element={<Estacion />} />
