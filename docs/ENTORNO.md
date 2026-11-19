@@ -131,6 +131,8 @@ npm run dev                         # http://localhost:5173
 
 Se ejecutan los dos a la vez, cada uno en su terminal.
 
+Pruebas de extremo a extremo en navegador real (escritorio, tableta y celular): `npm run test:e2e`. Detalles en `docs/qa/analisis-responsive.md`.
+
 ## 7. Revisión automática antes de cada commit (recomendado)
 
 ```bash
