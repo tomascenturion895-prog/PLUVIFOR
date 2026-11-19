@@ -3,9 +3,13 @@ import type {
   DataCategory,
   ImportKind,
   ImportLog,
+  FieldReport,
+  FieldReportIn,
   ImportReport,
+  NetworkHealth,
   Report,
   Series,
+  SeriesCompare,
   Station,
   StationList,
 } from './types'
@@ -174,4 +178,41 @@ export function getReport(
     body: JSON.stringify({ station_ids: stationIds, from, to, category }),
     signal,
   })
+}
+
+/** Series de 2 o más estaciones con las advertencias de comparabilidad de la API. */
+export function getCompare(
+  params: { stationIds: number[]; from: string; to: string; category?: DataCategory },
+  signal?: AbortSignal,
+): Promise<SeriesCompare> {
+  const { stationIds, from, to, category } = params
+  return request<SeriesCompare>(
+    `/api/rainfall/compare${query({ station_ids: stationIds.join(','), from, to, category })}`,
+    { signal },
+  )
+}
+
+/** Carga un reporte de campo (policial). Entra como observado y sin validar. */
+export function postFieldReport(
+  apiKey: string,
+  reporte: FieldReportIn,
+  signal?: AbortSignal,
+): Promise<FieldReport> {
+  return request<FieldReport>('/api/field-reports', {
+    method: 'POST',
+    headers: { ...conClave(apiKey), 'Content-Type': 'application/json' },
+    body: JSON.stringify(reporte),
+    signal,
+  })
+}
+
+/** Estaciones activas, en silencio y sin datos, calculadas contra la fecha de corte. */
+export function getNetworkHealth(
+  params: { silentAfterDays?: number } = {},
+  signal?: AbortSignal,
+): Promise<NetworkHealth> {
+  return request<NetworkHealth>(
+    `/api/network/health${query({ silent_after_days: params.silentAfterDays })}`,
+    { signal },
+  )
 }

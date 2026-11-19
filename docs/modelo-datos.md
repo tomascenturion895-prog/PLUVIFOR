@@ -180,7 +180,18 @@ Una racha de ceros no es una propiedad de un día sino de un tramo. Por eso las 
 | `detail` | texto (JSON) | datos que explican la advertencia (por ejemplo, acumulado de la estación vecina en el mismo tramo) |
 | `rule_version` | texto | versión de la regla que la generó, para poder recalcular |
 
-Las banderas se **recalculan** a partir de los registros; no son un dato de la fuente.
+Las banderas se **recalculan** a partir de los registros; no son un dato de la fuente. Se recalculan solas después de cada carga confirmada (API y línea de comandos) y a mano con `python -m app.cli recompute-flags`; correrlo dos veces no duplica nada (se reemplaza el conjunto de la estación y la regla).
+
+**Qué columnas lee Go:** Go no calcula banderas, solo las lee. Usa `station_id`, `code`, `start_date`, `end_date`, `severity`, `detail` y `rule_version`. Los umbrales viven en Python (`app/domain/quality.py`) y se guardan en `detail` (por ejemplo `min_days`); no se cambian sin avisar.
+
+### `field_reports` — lluvia anotada por la policía donde no hay estación
+
+Un reporte por fila: fecha (`obs_date`), `mm` (≥ 0), lugar, quién reporta, ubicación (`lat`/`lon`, ambas o ninguna), `location_status` (`informada` o `pendiente`), `location_source` (`dispositivo` o `manual`, vacío si no hay ubicación), `category` (siempre `observado`), `validation` (siempre `sin_validar` al entrar), `source` (`reporte_policial`) y `created_at`.
+
+- **No es una lectura de estación:** va en su propia tabla y **nunca se suma** a las series ni a los acumulados. Se distingue por su fuente y porque no tiene estación.
+- **Sin ubicación queda pendiente:** no se inventa ni se completa con la del lugar.
+- Se rechaza `mm` negativo o mayor a 1000 (freno a errores de tipeo, no una regla meteorológica), fechas posteriores al corte (31/10/2026), textos vacíos o con caracteres de control y coordenadas fuera de rango.
+- Cargar (`POST /api/field-reports`) y listar (`GET`) piden la clave de administración, igual que la importación: el listado incluye el nombre de quien reporta, un dato personal.
 
 ### `import_logs` — registro de cada carga (auditoría)
 
@@ -210,6 +221,18 @@ Para una estación y un período de `N` días:
 | Cobertura | días con dato / `N` |
 
 Un acumulado con cobertura baja **siempre** se muestra con su advertencia.
+
+### Salud de la red (`GET /api/network/health`)
+
+Para cada estación se toma su **última lectura observada con valor** (estado `dato`, categoría `observado`, hasta la fecha de corte) y se cuentan los días desde entonces **hasta el corte, no hasta hoy**.
+
+| Estado | Cuándo |
+|---|---|
+| `activa` | la última lectura está a 30 días o menos del corte |
+| `en_silencio` | la última lectura está a más de 30 días del corte |
+| `sin_datos` | nunca tuvo una lectura con valor (solo huecos, nada, o solo referencias) |
+
+El umbral de **30 días es una propuesta a confirmar con el equipo**; se puede pedir otro con `silent_after_days` (1 a 365). Un silencio nunca devuelve `0 mm`: muestra la fecha y los milímetros de su última lectura real, y una estación sin datos devuelve todo vacío. Un `0` medido (lluvia cero) sí es una lectura y la estación sigue activa.
 
 ## 6. Cómo se cargan las series del SIGA
 

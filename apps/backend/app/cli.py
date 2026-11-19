@@ -107,6 +107,12 @@ def _reset_demo(args: argparse.Namespace) -> int:
     return 0
 
 
+def _recompute_flags(session) -> None:
+    """Tras guardar lluvia se recalculan las banderas: así no quedan desactualizadas."""
+    counts = QualityService(SqlQualityRepository(session)).recompute_zero_streaks()
+    print(f"Banderas recalculadas · tramos de ceros prolongados: {sum(counts.values())}")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "reset-demo":
@@ -143,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 mode = ImportMode.COMMIT if args.commit else ImportMode.AUDIT
                 result = live.run(args.station, args.date_from, args.date_to, mode)
+                if mode is ImportMode.COMMIT:
+                    _recompute_flags(session)
             if result.origin == "respaldo_csv":
                 print(f"AVISO: el SIGA en vivo no respondió ({result.reason}).")
                 print("Se usó el CSV versionado de docs/datos/, no datos en vivo.")
@@ -158,6 +166,8 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 mode = ImportMode.COMMIT if args.commit else ImportMode.AUDIT
                 report = service.import_rainfall(args.source, args.file.name, content, mode)
+                if mode is ImportMode.COMMIT:
+                    _recompute_flags(session)
             _print_report(report)
     except (InvalidFileError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)

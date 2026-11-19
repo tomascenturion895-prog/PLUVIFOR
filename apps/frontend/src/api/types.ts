@@ -175,3 +175,80 @@ export interface Report {
   text: string
   notice: string
 }
+
+export interface SeriesCompareStation {
+  station_id: number
+  station_name: string
+  source: Source
+  category: DataCategory
+  summary: Summary
+  warnings: Warning[]
+  days: Day[]
+}
+
+export interface SeriesCompare {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  data_cutoff_date: string
+  clipped_to_cutoff: boolean
+  stations: SeriesCompareStation[]
+  comparability_warnings: Warning[]
+  not_evaluated: { code: string; reason: string }[]
+  notice: string
+}
+
+export type LocationSource = 'dispositivo' | 'manual'
+
+export interface FieldReportIn {
+  obs_date: string
+  mm: number
+  place: string
+  reporter: string
+  lat?: number
+  lon?: number
+  location_source?: LocationSource
+}
+
+export interface FieldReport {
+  id: number
+  obs_date: string
+  mm: number
+  place: string
+  reporter: string
+  lat: number | null
+  lon: number | null
+  location_status: 'informada' | 'pendiente'
+  location_source: LocationSource | null
+  category: DataCategory
+  validation: 'validado' | 'sin_validar'
+  source: string
+  created_at: string
+}
+
+export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
+
+export interface StationHealth {
+  station_id: number
+  code: string
+  name: string
+  zone: string | null
+  department: string | null
+  source: string
+  network: string
+  state: NetworkState
+  last_reading_date: string | null
+  /** Milímetros de la última lectura con valor. Vacío si la estación nunca tuvo datos. */
+  last_reading_mm: number | null
+  days_since_last: number | null
+}
+
+export interface NetworkHealth {
+  category: DataCategory
+  data_cutoff_date: string
+  silent_after_days: number
+  active: number
+  silent: number
+  no_data: number
+  stations: StationHealth[]
+}
