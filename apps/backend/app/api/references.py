@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.api.deps import get_reference_service
 from app.domain.enums import DataCategory
+from app.schemas.ids import StationIdQuery
 from app.services.references import ReferenceService
 
 router = APIRouter(prefix="/api/climate-reference", tags=["referencia climática"])
@@ -39,7 +40,7 @@ class ClimateReferenceOut(BaseModel):
     summary="Normal mensual de una estación (referencia, separada de lo observado)",
 )
 def get_reference(
-    station_id: Annotated[int, Query(ge=1)],
+    station_id: StationIdQuery,
     service: Annotated[ReferenceService, Depends(get_reference_service)],
 ) -> ClimateReferenceOut:
     result = service.for_station(station_id)

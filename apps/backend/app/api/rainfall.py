@@ -7,6 +7,7 @@ from app.api.deps import get_report_service, get_series_service
 from app.config import Settings, get_settings
 from app.domain.enums import DataCategory
 from app.errors import ApiError
+from app.schemas.ids import MAX_ID, StationIdQuery
 from app.schemas.series import (
     AccumulatedOut,
     AccumulatedStationOut,
@@ -49,7 +50,7 @@ def compare_rainfall(
                 continue
             try:
                 val = int(part)
-                if val < 1:
+                if val < 1 or val > MAX_ID:
                     raise ValueError
                 parsed_ids.append(val)
             except ValueError:
@@ -117,7 +118,7 @@ def compare_rainfall(
     summary="Serie diaria de una estación con cobertura y advertencias",
 )
 def get_rainfall(
-    station_id: Annotated[int, Query(ge=1)],
+    station_id: StationIdQuery,
     date_from: Annotated[date, Query(alias="from")],
     date_to: Annotated[date, Query(alias="to")],
     service: Annotated[SeriesService, Depends(get_series_service)],
@@ -164,7 +165,7 @@ def get_accumulated(
     date_to: Annotated[date, Query(alias="to")],
     service: Annotated[SeriesService, Depends(get_series_service)],
     settings: Annotated[Settings, Depends(get_settings)],
-    station_id: Annotated[int | None, Query(ge=1)] = None,
+    station_id: StationIdQuery | None = None,
     zone: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
     category: DataCategory = DataCategory.OBSERVADO,
 ) -> AccumulatedOut:
