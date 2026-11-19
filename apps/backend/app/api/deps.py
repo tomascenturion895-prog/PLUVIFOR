@@ -9,9 +9,11 @@ from app.config import Settings, get_settings
 from app.db.session import get_session
 from app.errors import ApiError
 from app.repositories.ingestion import SqlIngestionRepository
+from app.repositories.quality import SqlQualityRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
 from app.services.importer import ImportService
+from app.services.quality import QualityService
 from app.services.report import ReportService
 from app.services.series import SeriesService
 from app.services.stations import StationService
@@ -64,3 +66,9 @@ def get_report_service(
 ) -> ReportService:
     series = SeriesService(SqlSeriesRepository(session), settings.data_cutoff_date)
     return ReportService(series, settings.data_cutoff_date)
+
+
+def get_quality_service(
+    session: Session = Depends(get_session),  # noqa: B008
+) -> QualityService:
+    return QualityService(SqlQualityRepository(session))

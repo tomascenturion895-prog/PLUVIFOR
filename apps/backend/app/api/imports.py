@@ -5,13 +5,14 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, Query, Request
 from starlette.concurrency import run_in_threadpool
 
-from app.api.deps import get_import_service, require_admin
+from app.api.deps import get_import_service, get_quality_service, require_admin
 from app.config import Settings, get_settings
 from app.domain.enums import ImportMode
 from app.errors import ApiError
 from app.ingestion.types import ImportReport, InvalidFileError, UploadTooLargeError
 from app.schemas.imports import ImportLogOut, ImportReportOut
 from app.services.importer import ImportService
+from app.services.quality import QualityService
 
 router = APIRouter(
     prefix="/api/import", tags=["importación"], dependencies=[Depends(require_admin)]
@@ -46,6 +47,7 @@ def _too_large(max_bytes: int) -> ApiError:
 async def _run(
     request: Request,
     service: ImportService,
+    quality: QualityService,
     settings: Settings,
     mode: ImportMode,
     kind: Kind,
@@ -57,9 +59,14 @@ async def _run(
     def work() -> ImportReport:
         if kind == "stations":
             return service.import_stations(source, filename, content, mode)
-        return service.import_rainfall(
+        report = service.import_rainfall(
             source, filename, content, mode, record_audit=mode is ImportMode.COMMIT
         )
+        if mode is ImportMode.COMMIT:
+            # Sin esto, la racha de ceros de lo recién cargado no se advertiría hasta correr
+            # `recompute-flags` a mano.
+            quality.recompute_zero_streaks()
+        return report
 
     try:
         report = await run_in_threadpool(work)
@@ -78,12 +85,13 @@ async def _run(
 async def audit(
     request: Request,
     service: Annotated[ImportService, Depends(get_import_service)],
+    quality: Annotated[QualityService, Depends(get_quality_service)],
     settings: Annotated[Settings, Depends(get_settings)],
     source: Source = "siga_inta",
     kind: Kind = "rainfall",
     filename: Filename = "archivo.csv",
 ) -> ImportReportOut:
-    return await _run(request, service, settings, ImportMode.AUDIT, kind, source, filename)
+    return await _run(request, service, quality, settings, ImportMode.AUDIT, kind, source, filename)
 
 
 @router.post(
@@ -94,12 +102,15 @@ async def audit(
 async def commit(
     request: Request,
     service: Annotated[ImportService, Depends(get_import_service)],
+    quality: Annotated[QualityService, Depends(get_quality_service)],
     settings: Annotated[Settings, Depends(get_settings)],
     source: Source = "siga_inta",
     kind: Kind = "rainfall",
     filename: Filename = "archivo.csv",
 ) -> ImportReportOut:
-    return await _run(request, service, settings, ImportMode.COMMIT, kind, source, filename)
+    return await _run(
+        request, service, quality, settings, ImportMode.COMMIT, kind, source, filename
+    )
 
 
 @router.get(

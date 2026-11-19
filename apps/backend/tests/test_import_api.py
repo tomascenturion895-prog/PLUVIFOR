@@ -201,3 +201,36 @@ class TestHistorial:
     def test_exige_la_clave_de_administracion(self, client):
         assert client.get("/api/import/logs").status_code == 401
         assert client.get("/api/import/logs", headers={"X-API-Key": "otra"}).status_code == 401
+
+
+class TestBanderasTrasImportar:
+    def _csv_de_ceros(self, dias: int) -> str:
+        from datetime import date, timedelta
+
+        filas = "".join(
+            f"424,x,{date(2016, 1, 1) + timedelta(days=i)},0,,mm,dato,,OBSERVADO,SIGA\n"
+            for i in range(dias)
+        )
+        return HEADER + filas
+
+    def _advertencias(self, client) -> list[str]:
+        r = client.get(
+            "/api/rainfall",
+            params={"station_id": 1, "from": "2016-01-01", "to": "2016-03-30"},
+        )
+        return [w["code"] for w in r.json()["warnings"]]
+
+    def test_confirmar_una_racha_de_ceros_la_advierte_sin_pasos_manuales(self, client):
+        load_stations(client)
+        post(client, "commit", self._csv_de_ceros(70), name="ceros.csv")
+        assert "ceros_prolongados" in self._advertencias(client)
+
+    def test_una_auditoria_no_calcula_banderas(self, client):
+        load_stations(client)
+        post(client, "audit", self._csv_de_ceros(70), name="ceros.csv")
+        assert "ceros_prolongados" not in self._advertencias(client)
+
+    def test_una_racha_corta_no_se_advierte(self, client):
+        load_stations(client)
+        post(client, "commit", self._csv_de_ceros(10), name="pocos.csv")
+        assert "ceros_prolongados" not in self._advertencias(client)
