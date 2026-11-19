@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable
 
+from app.ingestion.chirps import ChirpsCsvConnector
 from app.ingestion.siga import SigaCsvConnector
 from app.ingestion.sources import SourceConnector
 
@@ -16,4 +17,6 @@ def build_registry(connectors: Iterable[SourceConnector]) -> dict[str, SourceCon
     return registry
 
 
-DEFAULT_CONNECTORS: dict[str, SourceConnector] = build_registry([SigaCsvConnector()])
+DEFAULT_CONNECTORS: dict[str, SourceConnector] = build_registry(
+    [SigaCsvConnector(), ChirpsCsvConnector()]
+)
