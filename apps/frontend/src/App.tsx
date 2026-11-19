@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
+import FieldReport from './pages/FieldReport'
 import Importar from './pages/Importar'
 import NetworkHealth from './pages/NetworkHealth'
 import Parte from './pages/Parte'
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="estacion/:id" element={<Estacion />} />
         <Route path="comparador" element={<Comparador />} />
         <Route path="parte" element={<Parte />} />
+        <Route path="reporte" element={<FieldReport />} />
         <Route path="importar" element={<Importar />} />
         <Route path="salud" element={<NetworkHealth />} />
         <Route path="ayuda" element={<Ayuda />} />

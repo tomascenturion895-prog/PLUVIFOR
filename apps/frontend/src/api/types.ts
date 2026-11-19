@@ -176,6 +176,34 @@ export interface Report {
   notice: string
 }
 
+export type LocationSource = 'dispositivo' | 'manual'
+
+export interface FieldReportIn {
+  obs_date: string
+  mm: number
+  place: string
+  reporter: string
+  lat?: number
+  lon?: number
+  location_source?: LocationSource
+}
+
+export interface FieldReport {
+  id: number
+  obs_date: string
+  mm: number
+  place: string
+  reporter: string
+  lat: number | null
+  lon: number | null
+  location_status: 'informada' | 'pendiente'
+  location_source: LocationSource | null
+  category: DataCategory
+  validation: 'validado' | 'sin_validar'
+  source: string
+  created_at: string
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {

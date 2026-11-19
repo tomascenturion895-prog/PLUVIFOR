@@ -44,3 +44,17 @@ class ImportMode(StrEnum):
 class ImportStatus(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
+
+
+class ReportLocation(StrEnum):
+    """La ubicación de un reporte de campo: si no se informó, queda pendiente, no se inventa."""
+
+    INFORMADA = "informada"
+    PENDIENTE = "pendiente"
+
+
+class LocationSource(StrEnum):
+    """Cómo se obtuvo la ubicación de un reporte de campo."""
+
+    DISPOSITIVO = "dispositivo"
+    MANUAL = "manual"

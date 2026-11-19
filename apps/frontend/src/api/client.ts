@@ -3,6 +3,8 @@ import type {
   DataCategory,
   ImportKind,
   ImportLog,
+  FieldReport,
+  FieldReportIn,
   ImportReport,
   NetworkHealth,
   Report,
@@ -173,6 +175,20 @@ export function getReport(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ station_ids: stationIds, from, to, category }),
+    signal,
+  })
+}
+
+/** Carga un reporte de campo (policial). Entra como observado y sin validar. */
+export function postFieldReport(
+  apiKey: string,
+  reporte: FieldReportIn,
+  signal?: AbortSignal,
+): Promise<FieldReport> {
+  return request<FieldReport>('/api/field-reports', {
+    method: 'POST',
+    headers: { ...conClave(apiKey), 'Content-Type': 'application/json' },
+    body: JSON.stringify(reporte),
     signal,
   })
 }
