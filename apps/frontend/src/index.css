@@ -276,3 +276,51 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+/* Pantalla Parte pluvial */
+.estaciones-lista {
+  max-height: 14rem;
+  padding: 0.5rem 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 36px;
+  font-weight: 400;
+}
+
+.parte-texto {
+  padding: 1rem;
+  overflow-x: auto;
+  font: inherit;
+  white-space: pre-wrap;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+/* Vista de impresión: solo el parte, sin menús ni controles. */
+@media print {
+  .encabezado,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  .contenido {
+    padding: 0;
+  }
+
+  .parte-texto {
+    border: 0;
+    font-size: 11pt;
+  }
+
+  .pie {
+    border-top: 1px solid #000;
+  }
+}

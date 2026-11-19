@@ -2,7 +2,8 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
 import Importar from './pages/Importar'
-import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada, Parte, Salud } from './pages/Paginas'
+import Parte from './pages/Parte'
+import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada, Salud } from './pages/Paginas'
 
 export default function App() {
   return (

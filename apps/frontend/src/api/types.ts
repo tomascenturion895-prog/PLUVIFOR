@@ -122,3 +122,32 @@ export interface ImportLog {
   cutoff_applied: string
   started_at: string
 }
+
+export interface IntenseEvent {
+  obs_date: string
+  mm: number
+  level_mm: number
+}
+
+export interface StationReport {
+  station_id: number
+  station_name: string
+  source: Source
+  category: DataCategory
+  summary: Summary
+  intense_events: IntenseEvent[]
+  warnings: Warning[]
+}
+
+export interface Report {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  data_cutoff_date: string
+  clipped_to_cutoff: boolean
+  stations: StationReport[]
+  comparability_warnings: Warning[]
+  not_evaluated: { code: string; reason: string }[]
+  text: string
+  notice: string
+}
