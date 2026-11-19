@@ -8,8 +8,10 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.db.session import get_session
 from app.errors import ApiError
+from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
+from app.services.importer import ImportService
 from app.services.series import SeriesService
 from app.services.stations import StationService
 
@@ -42,3 +44,14 @@ def require_admin(
         x_api_key.encode(), expected.get_secret_value().encode()
     ):
         raise ApiError(401, "unauthorized", "Falta la clave de administración o es incorrecta.")
+
+
+def get_import_service(
+    session: Session = Depends(get_session),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> ImportService:
+    return ImportService(
+        SqlIngestionRepository(session),
+        settings.data_cutoff_date,
+        max_upload_bytes=settings.max_upload_bytes,
+    )

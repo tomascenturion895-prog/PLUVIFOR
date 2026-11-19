@@ -45,10 +45,16 @@ class ImportService:
     def _connector(self, source_code: str) -> SourceConnector:
         connector = self._connectors.get(source_code)
         if connector is None:
-            raise InvalidFileError(f"Fuente desconocida: {source_code}")
+            raise InvalidFileError("Fuente desconocida.")
         return connector
 
-    def import_stations(self, source_code: str, filename: str, content: bytes) -> ImportReport:
+    def import_stations(
+        self,
+        source_code: str,
+        filename: str,
+        content: bytes,
+        mode: ImportMode = ImportMode.COMMIT,
+    ) -> ImportReport:
         connector = self._connector(source_code)
         check_upload(filename, content, self._max_upload_bytes)
         definition = connector.definition
@@ -56,11 +62,13 @@ class ImportService:
         report = ImportReport(
             filename=_safe_name(filename),
             sha256=hashlib.sha256(content).hexdigest(),
-            mode=ImportMode.COMMIT.value,
+            mode=mode.value,
             rows_read=len(rows) + len(rejections),
             accepted=list(rows),
             rejections=rejections,
         )
+        if mode is ImportMode.AUDIT:
+            return report  # simulación: no se toca la base
         try:
             source_id = self._repository.ensure_source(definition)
             report.inserted, report.updated = self._repository.upsert_stations(source_id, rows)
@@ -71,8 +79,14 @@ class ImportService:
         return report
 
     def import_rainfall(
-        self, source_code: str, filename: str, content: bytes, mode: ImportMode
+        self,
+        source_code: str,
+        filename: str,
+        content: bytes,
+        mode: ImportMode,
+        record_audit: bool = True,
     ) -> ImportReport:
+        """`record_audit=False` deja una auditoría sin ninguna escritura (la usa la API)."""
         started_at = self._clock()
         connector = self._connector(source_code)
         check_upload(filename, content, self._max_upload_bytes)
@@ -95,6 +109,8 @@ class ImportService:
             else:
                 report.rejections.append(Rejection(raw.line, result))
 
+        if mode is ImportMode.AUDIT and not record_audit:
+            return report
         try:
             import_id = self._repository.record_import(source_id, report, self._cutoff, started_at)
             if mode is ImportMode.COMMIT:
