@@ -19,6 +19,8 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: './src/test/setup.ts',
       css: false,
+      // Las pruebas de e2e corren con Playwright (npm run test:e2e), no con Vitest.
+      exclude: ['e2e/**', 'node_modules/**'],
     },
   }
 })

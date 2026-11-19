@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: PLUVIFOR · API
+  version: 0.1.0
+  description: |
+    Contrato de la API. **PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial.**
+
+    - Hoy la API en Go implementa solo `GET /health`. Las rutas de estaciones y lluvia están
+      descritas como **referencia**: ya existen en la API de Python (`apps/backend`), que es la que
+      responde hoy, y el contrato de Go tiene que dar lo mismo.
+    - Un hueco no es 0 mm: en la serie, un día sin dato lleva `state` = `sin_fila` o `fila_sin_valor`
+      y `mm` = `null`, nunca 0.
+    - Observado, referencia y estimado van separados (`category`) y nunca se suman.
+    - Fecha de corte de los datos: 2026-10-31.
+    - Todos los errores tienen la misma forma y mensajes en español, sin detalles internos.
+servers:
+  - url: http://localhost:8080
+    description: API en Go (desarrollo)
+  - url: http://localhost:8000
+    description: API en Python (implementación de referencia de las rutas /api)
+paths:
+  /health:
+    get:
+      summary: Estado del servicio
+      x-implemented-in: go
+      responses:
+        '200':
+          description: El servicio responde.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Health' }
+  /api/stations:
+    get:
+      summary: Catálogo de estaciones
+      x-implemented-in: python
+      parameters:
+        - { name: source, in: query, schema: { type: string, maxLength: 64 }, description: Código de la fuente }
+        - { name: network, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: department, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: zone, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: coords_status, in: query, schema: { $ref: '#/components/schemas/CoordsStatus' } }
+        - { name: q, in: query, schema: { type: string, maxLength: 100 }, description: Texto en nombre o localidad }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 100 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200':
+          description: Página de estaciones.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StationList' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/stations/{station_id}:
+    get:
+      summary: Ficha de una estación
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: path, required: true, schema: { $ref: '#/components/schemas/Id' } }
+      responses:
+        '200':
+          description: La estación.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Station' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/rainfall:
+    get:
+      summary: Serie diaria de una estación con cobertura y advertencias
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { $ref: '#/components/schemas/Id' } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+        - { name: category, in: query, schema: { $ref: '#/components/schemas/Category' } }
+      responses:
+        '200':
+          description: La serie. Los días sin dato no llevan milímetros.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Series' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Invalid' }
+components:
+  responses:
+    NotFound:
+      description: No existe lo que se pidió.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Invalid:
+      description: Parámetros inválidos.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Id: { type: integer, minimum: 1, maximum: 2147483647 }
+    Category: { type: string, enum: [observado, referencia, estimado] }
+    CoordsStatus: { type: string, enum: [verificada, pendiente] }
+    RainState: { type: string, enum: [dato, sin_fila, fila_sin_valor] }
+    Health:
+      type: object
+      required: [status, version, env, data_cutoff_date]
+      properties:
+        status: { type: string, example: ok }
+        version: { type: string }
+        env: { type: string }
+        data_cutoff_date: { type: string, format: date }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, example: not_found }
+            message: { type: string, example: No se encontró lo que pediste. }
+            details: { type: array, items: { type: object } }
+    Source:
+      type: object
+      properties:
+        code: { type: string }
+        name: { type: string }
+        network: { type: string }
+        category: { $ref: '#/components/schemas/Category' }
+        day_cutoff_local: { type: string, nullable: true }
+    Station:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        code: { type: string }
+        internal_code: { type: string, nullable: true }
+        name: { type: string }
+        kind: { type: string, nullable: true }
+        locality: { type: string, nullable: true }
+        department: { type: string, nullable: true }
+        zone: { type: string, nullable: true }
+        lat: { type: number, nullable: true }
+        lon: { type: number, nullable: true }
+        elevation_m: { type: number, nullable: true }
+        coords_status: { $ref: '#/components/schemas/CoordsStatus' }
+        active_from: { type: string, format: date, nullable: true }
+        active_to: { type: string, format: date, nullable: true }
+        source: { $ref: '#/components/schemas/Source' }
+    StationList:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Station' } }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+    Day:
+      type: object
+      properties:
+        obs_date: { type: string, format: date }
+        state: { $ref: '#/components/schemas/RainState' }
+        mm: { type: number, nullable: true, description: Nulo cuando no hay dato. Nunca 0 por defecto. }
+        category: { $ref: '#/components/schemas/Category' }
+        source: { type: string }
+        flags: { type: array, items: { type: string } }
+    Series:
+      type: object
+      description: Resumen y advertencias se detallan en la API de Python (apps/backend, esquema SeriesOut).
+      properties:
+        station_id: { $ref: '#/components/schemas/Id' }
+        station_name: { type: string }
+        category: { $ref: '#/components/schemas/Category' }
+        date_from: { type: string, format: date }
+        date_to: { type: string, format: date }
+        data_cutoff_date: { type: string, format: date }
+        clipped_to_cutoff: { type: boolean }
+        days: { type: array, items: { $ref: '#/components/schemas/Day' } }

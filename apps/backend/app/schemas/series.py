@@ -34,8 +34,35 @@ class WarningOut(BaseModel):
     code: str
     message: str
     severity: Severity
-    start_date: date | None
-    end_date: date | None
+    start_date: date | None = None
+    end_date: date | None = None
+
+
+class SeriesCompareStationOut(BaseModel):
+    station_id: int
+    station_name: str
+    source: SourceOut
+    category: DataCategory
+    summary: SummaryOut
+    warnings: list[WarningOut]
+    days: list[DayOut]
+
+
+class NotEvaluatedOut(BaseModel):
+    code: str
+    reason: str
+
+
+class SeriesCompareOut(BaseModel):
+    category: DataCategory
+    date_from: date
+    date_to: date
+    data_cutoff_date: date
+    clipped_to_cutoff: bool
+    stations: list[SeriesCompareStationOut]
+    comparability_warnings: list[WarningOut]
+    not_evaluated: list[NotEvaluatedOut]
+    notice: str = "PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial"
 
 
 class SeriesOut(BaseModel):
@@ -50,4 +77,28 @@ class SeriesOut(BaseModel):
     summary: SummaryOut
     warnings: list[WarningOut]
     days: list[DayOut]
+    notice: str = "PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial"
+
+
+class AccumulatedStationOut(BaseModel):
+    station_id: int
+    station_name: str
+    accumulated_mm: float | None  # None = ningún día con dato; nunca 0
+    days_with_data: int
+    days_without_data: int
+    coverage: float
+    warnings: list[WarningOut]
+
+
+class AccumulatedOut(BaseModel):
+    """Una fila por estación: los acumulados de estaciones distintas no se suman."""
+
+    category: DataCategory
+    date_from: date
+    date_to: date
+    data_cutoff_date: date
+    clipped_to_cutoff: bool
+    days_in_period: int
+    stations: list[AccumulatedStationOut]
+    not_evaluated: list[str]
     notice: str = "PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial"

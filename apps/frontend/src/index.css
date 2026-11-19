@@ -26,3 +26,448 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* Diseño pensado primero para celular; se ensancha desde 720 px. */
+:root {
+  --azul: #0b4f8a;
+  --azul-claro: #e6f0fa;
+  --texto-suave: #52606d;
+  --borde: #d3dbe3;
+  --error: #9b1c1c;
+}
+
+.encabezado {
+  background: #fff;
+  border-bottom: 1px solid var(--borde);
+  padding: 0.5rem 1rem 0;
+}
+
+.encabezado-marca h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--azul);
+}
+
+.encabezado-marca p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+}
+
+.encabezado nav ul {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.encabezado nav a {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  min-height: 44px;
+  white-space: nowrap;
+  color: #1b2733;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.encabezado nav a.active {
+  color: var(--azul);
+  border-bottom-color: var(--azul);
+  font-weight: 600;
+}
+
+.contenido {
+  flex: 1;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.pie {
+  position: sticky;
+  bottom: 0;
+  padding: 0.5rem 1rem;
+  background: #1b2733;
+  color: #fff;
+  text-align: center;
+}
+
+.accesos {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.accesos a {
+  display: block;
+  padding: 0.9rem 1rem;
+  background: var(--azul-claro);
+  border-radius: 0.5rem;
+  color: var(--azul);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nota,
+.estado-vacio {
+  color: var(--texto-suave);
+}
+
+.estado {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.estado-cargando {
+  background: var(--azul-claro);
+}
+
+.estado-error {
+  border: 1px solid var(--error);
+  background: #fdf0f0;
+  color: var(--error);
+}
+
+.estado-error button {
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
+@media (min-width: 720px) {
+  .encabezado {
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    padding: 0.75rem 1.5rem 0;
+  }
+
+  /* Sin min-width:0 el menú no se achica dentro del flex y desborda la página (768 px). */
+  .encabezado nav {
+    min-width: 0;
+  }
+
+  .encabezado nav ul {
+    margin: 0;
+    flex-wrap: wrap;
+  }
+
+  .accesos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Pantalla Estación */
+.filtros {
+  display: grid;
+  /* minmax(0, 1fr): sin el 0, el ancho natural de un select o un input ensancha toda la página. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.filtros label {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.filtros select,
+.filtros input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font: inherit;
+}
+
+.metadatos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.resumen div {
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.resumen dt {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+}
+
+.resumen dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.advertencias {
+  padding: 0;
+  list-style: none;
+}
+
+.advertencias li {
+  margin-bottom: 0.5rem;
+}
+
+.advertencias p {
+  margin: 0.25rem 0 0;
+}
+
+.grafico {
+  margin: 1rem 0;
+}
+
+.grafico figcaption {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.grafico-detalle {
+  padding: 0.4rem 0.6rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.4rem;
+}
+
+.tabla-dias {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+}
+
+.tabla-dias th,
+.tabla-dias td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+}
+
+@media (min-width: 720px) {
+  .filtros {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .resumen {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Pantalla Importar */
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.acciones button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font: inherit;
+}
+
+/* Objetivo táctil de al menos 44 px de alto (WCAG 2.5.5), pensado para usar con el pulgar. */
+button {
+  min-height: 44px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Pantalla Parte pluvial */
+.estaciones-lista {
+  max-height: 14rem;
+  padding: 0.5rem 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 36px;
+  font-weight: 400;
+}
+
+.parte-texto {
+  padding: 1rem;
+  overflow-x: auto;
+  font: inherit;
+  white-space: pre-wrap;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+/* Vista de impresión: solo el parte, sin menús ni controles. */
+@media print {
+  .encabezado,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  .contenido {
+    padding: 0;
+  }
+
+  .parte-texto {
+    border: 0;
+    font-size: 11pt;
+  }
+
+  .pie {
+    border-top: 1px solid #000;
+  }
+}
+
+/* Pantalla Mapa provincial */
+.mapa-controles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mapa-controles label {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.mapa-controles input,
+.mapa-controles select {
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font: inherit;
+}
+
+.mapa-contenedor {
+  margin: 1rem 0;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-contenedor .leaflet-container {
+  font: inherit;
+}
+
+.mapa-popup dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.mapa-popup dt {
+  color: var(--texto-suave);
+}
+
+.mapa-popup dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.mapa-popup a {
+  display: inline-block;
+  min-height: 44px;
+  padding-top: 0.6rem;
+}
+
+.mapa-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.mapa-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.mapa-leyenda-color {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  border: 1px solid #37474f;
+  border-radius: 50%;
+}
+
+.mapa-leyenda-color-sin-dato {
+  border-style: dashed;
+}
+
+.mapa-pendientes {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-pendientes summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.mapa-pendientes ul {
+  margin-bottom: 0;
+}
+
+.mapa-resumen-departamento {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.mapa-resumen-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mapa-resumen-encabezado h3 {
+  margin: 0;
+}
+
+.mapa-resumen-encabezado button {
+  min-height: 44px;
+  padding: 0 0.75rem;
+}
+
+.mapa-resumen-departamento ul {
+  padding-left: 1.25rem;
+}
+
+.mapa-resumen-departamento li {
+  margin: 0.5rem 0;
+}

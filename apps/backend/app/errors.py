@@ -11,6 +11,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.security import API_CSP, SECURITY_HEADERS
+
 logger = logging.getLogger("pluvifor")
 
 _CODES = {
@@ -72,4 +74,7 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def _unexpected(_: Request, exc: Exception) -> JSONResponse:
         logger.exception("Error no controlado", exc_info=exc)
-        return error_response(500, "internal_error", "Ocurrió un error interno.")
+        response = error_response(500, "internal_error", "Ocurrió un error interno.")
+        # Este handler corre fuera de los middlewares: los encabezados se ponen acá.
+        response.headers.update({**SECURITY_HEADERS, "Content-Security-Policy": API_CSP})
+        return response

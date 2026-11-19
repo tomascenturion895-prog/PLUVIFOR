@@ -55,6 +55,10 @@ mostrar(Boolean(python), 'Python 3.12 o superior', python ? `${python.v.texto} (
 const node = version(process.version)
 mostrar(node.mayor >= 22, 'Node.js 22 o superior', node.texto)
 
+// Go 1.24 o superior (solo para la API en Go: la demo corre sin Go desde el backend en Python)
+const go = version(ejecutar('go version'))
+mostrar(Boolean(go) && (go.mayor > 1 || go.menor >= 24), 'Go 1.24 o superior (API en Go)', go ? go.texto : 'sin instalar (https://go.dev/dl/); hace falta solo para apps/api-go', false)
+
 // npm
 const npm = version(ejecutar('npm --version'))
 mostrar(Boolean(npm), 'npm', npm ? npm.texto : 'no se encontró')
@@ -64,8 +68,8 @@ const pc = version(ejecutar('pre-commit --version'))
 mostrar(Boolean(pc), 'pre-commit', pc ? pc.texto : 'sin instalar (pip install pre-commit; ver docs/seguridad-secretos.md)', false)
 
 // Estructura del repositorio
-for (const ruta of ['AGENTS.md', 'apps', 'docs']) {
-  mostrar(existsSync(join(raiz, ruta)), `Repositorio: ${ruta}`, existsSync(join(raiz, ruta)) ? '' : 'no está; ¿corriste el comando en la raíz del repo y hiciste git pull?', ruta === 'AGENTS.md' ? false : true)
+for (const ruta of ['AGENTS.md', 'apps', 'docs', 'apps/api-go']) {
+  mostrar(existsSync(join(raiz, ruta)), `Repositorio: ${ruta}`, existsSync(join(raiz, ruta)) ? '' : 'no está; ¿corriste el comando en la raíz del repo y hiciste git pull?', ruta === 'AGENTS.md' || ruta === 'apps/api-go' ? false : true)
 }
 
 // Archivo de variables de entorno

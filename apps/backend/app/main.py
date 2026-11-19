@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
-from app.api import health, rainfall, stations
+from app.api import health, imports, rainfall, references, reports, stations
 from app.config import Settings, get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.errors import register_error_handlers
+from app.security import BodySizeLimitMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -31,10 +32,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type", "X-API-Key"],
     )
+    # Lo último que se agrega es lo más externo: primero se limita el tamaño y las
+    # respuestas, incluidos los errores, salen con los encabezados de seguridad.
+    app.add_middleware(
+        BodySizeLimitMiddleware,
+        default=settings.max_request_bytes,
+        limits=(("/api/import", settings.max_upload_bytes + 1024),),
+    )
+    app.add_middleware(
+        RateLimitMiddleware,
+        default=settings.rate_limit_per_minute,
+        limits=(("/api/import", settings.rate_limit_import_per_minute),),
+    )
+    app.add_middleware(SecurityHeadersMiddleware, hsts=settings.app_env == "production")
     register_error_handlers(app)
     app.include_router(health.router)
     app.include_router(stations.router)
     app.include_router(rainfall.router)
+    app.include_router(imports.router)
+    app.include_router(reports.router)
+    app.include_router(references.router)
     return app
 
 

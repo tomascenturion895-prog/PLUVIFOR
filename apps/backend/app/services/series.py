@@ -6,7 +6,7 @@ from app.domain.metrics import LOW_COVERAGE_THRESHOLD, Summary, fill_calendar, s
 from app.domain.quality import DayValue
 from app.errors import ApiError
 from app.models import Station
-from app.repositories.series import SeriesRepository
+from app.repositories.series import SeriesRepository, StationAccumulated
 
 MAX_DAYS = 3660  # diez años
 
@@ -44,6 +44,22 @@ class SeriesService:
         date_to: date,
         category: DataCategory = DataCategory.OBSERVADO,
     ) -> SeriesResult:
+        date_to, clipped = self._normalize_range(date_from, date_to)
+
+        station = self._repository.get_station(station_id)
+        if station is None:
+            raise ApiError(404, "station_not_found", "No existe la estación pedida.")
+
+        data = self._repository.read(station_id, category, date_from, date_to)
+        calendar = fill_calendar(data.days, date_from, date_to)
+        summary = summarize(calendar)
+        warnings = self._warnings(station, summary, data.unvalidated_days, date_from, date_to)
+        return SeriesResult(
+            station, category, date_from, date_to, clipped, calendar, summary, warnings
+        )
+
+    def _normalize_range(self, date_from: date, date_to: date) -> tuple[date, bool]:
+        """Valida el período y lo recorta a la fecha de corte. Devuelve (hasta, recortado)."""
         if date_from > date_to:
             raise ApiError(
                 422, "invalid_range", "La fecha inicial no puede ser posterior a la final."
@@ -58,17 +74,32 @@ class SeriesService:
         date_to = min(date_to, self._cutoff)
         if (date_to - date_from).days + 1 > MAX_DAYS:
             raise ApiError(422, "range_too_large", f"El período no puede superar {MAX_DAYS} días.")
+        return date_to, clipped
 
-        station = self._repository.get_station(station_id)
-        if station is None:
-            raise ApiError(404, "station_not_found", "No existe la estación pedida.")
+    @staticmethod
+    def _flag_warning(flag) -> Warning_:
+        return Warning_(
+            code=flag.code,
+            message=(
+                "Racha de 60 días o más con 0 mm: puede ser un sensor sin registrar, "
+                "no ausencia de lluvia. No se da por buena."
+                if flag.code == "ceros_prolongados"
+                else "Advertencia de calidad."
+            ),
+            severity=flag.severity,
+            start_date=flag.start_date,
+            end_date=flag.end_date,
+        )
 
-        data = self._repository.read(station_id, category, date_from, date_to)
-        calendar = fill_calendar(data.days, date_from, date_to)
-        summary = summarize(calendar)
-        warnings = self._warnings(station, summary, data.unvalidated_days, date_from, date_to)
-        return SeriesResult(
-            station, category, date_from, date_to, clipped, calendar, summary, warnings
+    @staticmethod
+    def _low_coverage_warning(coverage: float) -> Warning_:
+        return Warning_(
+            code="cobertura_baja",
+            message=(
+                f"Solo {coverage:.0%} de los días tiene dato: "
+                "el acumulado puede quedar por debajo de lo que llovió."
+            ),
+            severity=Severity.AVISO,
         )
 
     def _warnings(
@@ -76,31 +107,9 @@ class SeriesService:
     ) -> list[Warning_]:
         warnings: list[Warning_] = []
         for flag in self._repository.flags(station.id, date_from, date_to):
-            warnings.append(
-                Warning_(
-                    code=flag.code,
-                    message=(
-                        "Racha de 60 días o más con 0 mm: puede ser un sensor sin registrar, "
-                        "no ausencia de lluvia. No se da por buena."
-                        if flag.code == "ceros_prolongados"
-                        else "Advertencia de calidad."
-                    ),
-                    severity=flag.severity,
-                    start_date=flag.start_date,
-                    end_date=flag.end_date,
-                )
-            )
+            warnings.append(self._flag_warning(flag))
         if summary.coverage < LOW_COVERAGE_THRESHOLD:
-            warnings.append(
-                Warning_(
-                    code="cobertura_baja",
-                    message=(
-                        f"Solo {summary.coverage:.0%} de los días tiene dato: "
-                        "el acumulado puede quedar por debajo de lo que llovió."
-                    ),
-                    severity=Severity.AVISO,
-                )
-            )
+            warnings.append(self._low_coverage_warning(summary.coverage))
         if unvalidated:
             warnings.append(
                 Warning_(
@@ -110,3 +119,77 @@ class SeriesService:
                 )
             )
         return warnings
+
+    def accumulated(
+        self,
+        date_from: date,
+        date_to: date,
+        category: DataCategory = DataCategory.OBSERVADO,
+        *,
+        station_id: int | None = None,
+        zone: str | None = None,
+    ) -> "AccumulatedResult":
+        """Acumulado separado por estación, de toda la red o con un filtro."""
+        if station_id is not None and zone is not None:
+            raise ApiError(422, "invalid_filter", "Indicá una estación o una zona, no ambas.")
+        date_to, clipped = self._normalize_range(date_from, date_to)
+        if station_id is not None:
+            one = self._repository.accumulated_by_station(station_id, category, date_from, date_to)
+            if one is None:
+                raise ApiError(404, "station_not_found", "No existe la estación pedida.")
+            rows = [one]
+        elif zone is not None:
+            rows = self._repository.accumulated_by_group("zone", zone, category, date_from, date_to)
+            if not rows:
+                raise ApiError(404, "zone_not_found", "No hay estaciones en la zona pedida.")
+        else:
+            rows = self._repository.accumulated_all(category, date_from, date_to)
+        days = (date_to - date_from).days + 1
+        return AccumulatedResult(
+            category=category,
+            date_from=date_from,
+            date_to=date_to,
+            clipped_to_cutoff=clipped,
+            days_in_period=days,
+            stations=[self._accumulated_entry(row, days, date_from, date_to) for row in rows],
+        )
+
+    def _accumulated_entry(
+        self, row: StationAccumulated, days: int, date_from: date, date_to: date
+    ) -> "AccumulatedEntry":
+        coverage = round(row.data_days / days, 4) if days else 0.0
+        warnings: list[Warning_] = []
+        for flag in self._repository.flags(row.station_id, date_from, date_to):
+            warnings.append(self._flag_warning(flag))
+        if coverage < LOW_COVERAGE_THRESHOLD:
+            warnings.append(self._low_coverage_warning(coverage))
+        return AccumulatedEntry(
+            station_id=row.station_id,
+            station_name=row.station_name,
+            accumulated_mm=None if row.accumulated_mm is None else round(row.accumulated_mm, 2),
+            days_with_data=row.data_days,
+            days_without_data=days - row.data_days,
+            coverage=coverage,
+            warnings=warnings,
+        )
+
+
+@dataclass(frozen=True)
+class AccumulatedEntry:
+    station_id: int
+    station_name: str
+    accumulated_mm: float | None  # None = ningún día con dato; nunca 0
+    days_with_data: int
+    days_without_data: int  # días sin fila + filas sin valor
+    coverage: float
+    warnings: list[Warning_]
+
+
+@dataclass(frozen=True)
+class AccumulatedResult:
+    category: DataCategory
+    date_from: date
+    date_to: date
+    clipped_to_cutoff: bool
+    days_in_period: int
+    stations: list[AccumulatedEntry]

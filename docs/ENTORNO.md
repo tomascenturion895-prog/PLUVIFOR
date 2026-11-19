@@ -11,6 +11,7 @@ Cómo dejar tu computadora lista para trabajar en PLUVIFOR, desde cero. Sirve pa
 | Git | cualquiera reciente | Bajar y subir el código |
 | Python | 3.12 o superior | Backend (API) |
 | Node.js | 22 o superior (LTS) | Frontend, y el script de verificación |
+| Go | 1.24 o superior | API en Go (`apps/api-go`); la demo corre sin Go |
 | Editor de código | VS Code, Antigravity u otro | Escribir código |
 | Una cuenta de GitHub con acceso al repositorio | — | Pull Requests |
 
@@ -24,13 +25,14 @@ Si ya usás **Laragon** (Windows), puede traer Git, Node y Python; igual verific
 winget install Git.Git
 winget install Python.Python.3.12
 winget install OpenJS.NodeJS.LTS
+winget install GoLang.Go
 ```
 
 Cerrá y volvé a abrir la terminal después de instalar.
 
-**macOS:** `brew install git python@3.12 node`
+**macOS:** `brew install git python@3.12 node go`
 
-**Linux (Debian/Ubuntu):** `sudo apt install git python3.12 python3.12-venv` y Node.js 22 desde nodejs.org o con `nvm`.
+**Linux (Debian/Ubuntu):** `sudo apt install git python3.12 python3.12-venv` y Node.js 22 desde nodejs.org o con `nvm`; Go desde <https://go.dev/dl/>.
 
 ### Identidad de Git (importante)
 
@@ -70,12 +72,70 @@ python -m venv .venv
 source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
 pytest
+python -m app.cli reset-demo --yes # crea la base y carga los datos de demo (hace falta una vez)
 uvicorn app.main:app --reload      # http://localhost:8000/docs
 ```
 
+**Cómo saber que funciona:** <http://localhost:8000/health> responde `{"status":"ok",...}` y <http://localhost:8000/api/stations> devuelve 3 estaciones. Si en cambio `/api/stations` da error 500, falta el paso `reset-demo`: la base está vacía y sin tablas.
+
 En Windows puede que `python` no responda y haga falta `py -3.12 -m venv .venv`.
 
-## 6. Frontend
+### Reiniciar la base de demo
+
+Para dejar la demo en un estado conocido, sin internet, desde `apps/backend`:
+
+```bash
+python -m app.cli reset-demo          # pide confirmación
+python -m app.cli reset-demo --yes    # sin preguntar (scripts)
+```
+
+Borra el archivo SQLite de `DATABASE_URL`, corre las migraciones y recarga las series del SIGA que están versionadas en `docs/datos/` (3 estaciones, 7.648 días), y recalcula las advertencias de racha de ceros. Se puede correr las veces que haga falta: siempre termina en el mismo estado.
+
+Cuidados que ya tiene el comando:
+
+- **Avisa antes de borrar** y dice qué archivo es. Sin una terminal para confirmar y sin `--yes`, no hace nada.
+- **Solo toca un archivo SQLite local.** Con PostgreSQL o una base en memoria se niega sin borrar nada.
+- **Revisa que estén los datos antes de borrar:** si falta un archivo de `docs/datos/`, no toca la base.
+
+### Usar PostgreSQL en lugar de SQLite (opcional)
+
+La demo corre con SQLite. Cambiar de motor es cambiar `DATABASE_URL`, y se comprobó el 19/11/2026 con PostgreSQL 16:
+
+```bash
+# 1. Una base vacía (ejemplo local)
+createdb pluvifor
+# 2. El controlador (no está en requirements.txt: ver «Diferencias»)
+pip install "psycopg[binary]"
+# 3. En .env
+DATABASE_URL=postgresql+psycopg://usuario:clave@localhost:5432/pluvifor
+# 4. Migraciones y datos, igual que con SQLite
+alembic upgrade head
+python -m app.cli import-stations ../../docs/datos/estaciones_siga_formosa.csv
+python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_formosa.csv
+python -m app.cli recompute-flags
+```
+
+**Qué se verificó:** las migraciones corren hasta la última; la importación real (3 estaciones y 7.648 días, 0 rechazos) da lo mismo que en SQLite; la estación 424 sale con acumulado 0,0 mm y la advertencia de racha de ceros, y la 425 con 1.265,0 mm; el parte pluvial responde 200; y 88 pruebas de la API (lluvia, estaciones, parte, calidad, modelos, salud y errores) pasan contra PostgreSQL.
+
+**Diferencias y límites:**
+
+- El controlador `psycopg` **no está en `requirements.txt`**: sumarlo es una dependencia nueva y no se agregó sin acordarlo. Hoy hay que instalarlo a mano.
+- No se encontraron diferencias de comportamiento en lo probado. No hay tipos propios de un motor (enumeraciones como texto con restricciones).
+- **No verificado:** la suite completa no corre contra PostgreSQL de forma automática (las pruebas de importación y de migraciones crean su propia base SQLite), no hay PostGIS y las capas geográficas siguen siendo archivos GeoJSON.
+- Se probó con Python 3.13 y PostgreSQL 16 en una máquina de trabajo, sin concurrencia ni volumen.
+
+## 6. API en Go
+
+Desde `apps/api-go` (solo hace falta si vas a trabajar en esa parte; la demo no la necesita):
+
+```bash
+go vet ./... && go test ./...
+go run ./cmd/api                    # http://localhost:8080/health   (puerto: API_GO_PORT)
+```
+
+**Cómo saber que funciona:** `/health` responde `{"status":"ok",...}`. Hoy la API en Go es un esqueleto: no sirve datos todavía, así que las pantallas siguen hablando con el backend en Python. Detalles en `apps/api-go/README.md`.
+
+## 7. Frontend
 
 Desde `apps/frontend`:
 
@@ -85,9 +145,11 @@ npm test
 npm run dev                         # http://localhost:5173
 ```
 
-Se ejecutan los dos a la vez, cada uno en su terminal.
+Se ejecutan los dos a la vez, cada uno en su terminal, y el backend tiene que estar corriendo (el frontend le pide los datos). **Cómo saber que funciona:** en <http://localhost:5173> se ve el Inicio con la leyenda de prototipo; en «Estación» aparecen 3 estaciones para elegir.
 
-## 7. Revisión automática antes de cada commit (recomendado)
+Pruebas de extremo a extremo en navegador real (escritorio, tableta y celular): `npm run test:e2e`. Detalles en `docs/qa/analisis-responsive.md`.
+
+## 8. Revisión automática antes de cada commit (recomendado)
 
 ```bash
 pip install pre-commit
@@ -96,7 +158,7 @@ pre-commit install
 
 Frena el commit si hay una clave o un secreto. Ver `docs/seguridad-secretos.md`.
 
-## 8. Tu herramienta de IA
+## 9. Tu herramienta de IA
 
 Todas leen el mismo contexto del proyecto, que está en `AGENTS.md`.
 
@@ -110,7 +172,7 @@ Todas leen el mismo contexto del proyecto, que está en `AGENTS.md`.
 
 Las reglas de uso de IA (quién es responsable de lo que entra, no pegar secretos en chats) están en `docs/CONTRIBUTING.md`.
 
-## 9. Problemas frecuentes
+## 10. Problemas frecuentes
 
 | Problema | Qué hacer |
 |---|---|
@@ -121,7 +183,7 @@ Las reglas de uso de IA (quién es responsable de lo que entra, no pegar secreto
 | Git muestra todos los archivos como modificados en Windows | Es un tema de finales de línea; el repositorio ya los normaliza (`.gitattributes`). Hacer `git pull` y reintentar |
 | `git push` pide credenciales | Iniciar sesión en GitHub desde Git Credential Manager (Windows) o usar un token personal; **nunca** pegar el token en un chat |
 
-## 10. Antes de abrir tu primer PR
+## 11. Antes de abrir tu primer PR
 
 1. Leer `docs/CONTRIBUTING.md` (ramas, commits, Pull Requests, Definition of Done).
 2. Crear tu rama desde `main` actualizada: `feature/SCRUM-<n>-descripcion`.

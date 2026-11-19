@@ -4,8 +4,13 @@ Reglas cortas para que cinco personas (y varias herramientas de IA) trabajen a l
 
 ## 1. Ramas
 
-- `main` siempre funciona. **Nadie sube directo a `main`**: todo entra por Pull Request.
-- Una rama por tarea de Jira, creada desde `main` actualizada:
+- Tres ramas de larga vida, que **nunca se pisan con push forzado**:
+  - `qa`: donde se integra y se prueba todo. **Es la base de los PR de cada tarea.**
+  - `main`: lo que se entrega. Siempre funciona. Recibe `qa` por Pull Request en cada hito, y de ahí salen las etiquetas (`v0.9-nucleo`, `v1.0`).
+  - `develop`: espejo de `qa`. Hoy no tiene trabajo propio: se mantiene alineada con `qa` por Pull Request (`qa` → `develop`) para que no diverja.
+- Flujo real: **rama de tarea → `qa` → `main`**. Nadie sube directo a `qa`, `develop` ni `main`: todo entra por Pull Request.
+- Después de una etiqueta de entrega, a `main` solo entran arreglos.
+- Una rama por tarea de Jira, creada desde `qa` actualizada:
 
 ```
 feature/SCRUM-<número>-descripcion-corta      # funcionalidad nueva
@@ -42,11 +47,11 @@ Commits chicos y frecuentes. Un commit = una idea.
 
 ## 3. Pull Requests
 
-1. Subir la rama y abrir el PR contra `main` con el título `[SCRUM-n] Qué hace`.
+1. Subir la rama y abrir el PR contra `qa` con el título `[SCRUM-n] Qué hace`.
 2. Completar la plantilla: qué hace, tarea, cómo probarlo y el Definition of Done.
 3. **Una persona distinta de quien lo escribió lo revisa y aprueba.** Mínimo 1 aprobación.
 4. Los checks automáticos (lint, tests, build) tienen que estar en verde.
-5. Se integra con **Squash and merge** para que `main` quede legible.
+5. Se integra con **Squash and merge** en las tareas, para que `qa` quede legible. Los PR de `qa` a `main` y de `qa` a `develop` se integran con **Merge commit** (no con squash), así las ramas no divergen.
 6. Se borra la rama después de integrar.
 
 Quien revisa mira: ¿cumple el «Hecho cuando»?, ¿hay tests?, ¿un hueco puede terminar como 0 mm?, ¿hay algún secreto?, ¿se metió algo de otro desafío?
@@ -85,7 +90,7 @@ Cada integrante usa su herramienta (Claude, Antigravity con Gemini, opencode). P
 
 ## 7. Qué hacer cada día
 
-1. `git checkout main && git pull`
+1. `git checkout qa && git pull`
 2. Crear la rama de la tarea.
 3. Trabajar, probar y hacer commits chicos.
 4. Subir la rama y abrir el PR.
@@ -94,7 +99,7 @@ Cada integrante usa su herramienta (Claude, Antigravity con Gemini, opencode). P
 
 ## 8. Protección de `main` (configuración en GitHub)
 
-En *Settings → Branches → Add branch ruleset* para `main`:
+En *Settings → Branches → Add branch ruleset* para `main` y `qa` (y `develop`):
 
 - Requerir Pull Request antes de integrar, con 1 aprobación.
 - Requerir que los checks de CI estén en verde (se activa cuando el CI esté funcionando).
