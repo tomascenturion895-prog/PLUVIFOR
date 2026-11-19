@@ -18,6 +18,7 @@ import { ApiError, getAccumulated, getNetworkHealth, getStations } from '../api/
 import type { AccumulatedOut, AccumulatedStation, DataCategory, Station } from '../api/types'
 import { Cargando, ErrorEstado } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria } from '../components/Insignias'
+import Destacados from '../components/Destacados'
 import PanelCapas from '../components/layers/PanelCapas'
 import {
   alternar,
@@ -112,9 +113,11 @@ interface PopupEstacionProps {
   station: Station
   acumulado: AccumulatedStation | undefined
   category: DataCategory
+  desde: string
+  hasta: string
 }
 
-function PopupEstacion({ station, acumulado, category }: PopupEstacionProps) {
+function PopupEstacion({ station, acumulado, category, desde, hasta }: PopupEstacionProps) {
   return (
     <div className="mapa-popup">
       <strong>{station.name}</strong>
@@ -135,6 +138,9 @@ function PopupEstacion({ station, acumulado, category }: PopupEstacionProps) {
       {acumulado?.warnings.map((w) => (
         <InsigniaAdvertencia key={w.code} codigo={w.code} mensaje={w.message} />
       ))}
+      {category === 'observado' && (
+        <Destacados stationId={station.id} desde={desde} hasta={hasta} compacto />
+      )}
       <Link to={`/estacion/${station.id}`}>Ver serie completa →</Link>
     </div>
   )
@@ -571,7 +577,13 @@ export function Mapa() {
                     aria-label={`Estación ${station.name}${principal ? '' : ` (${cat})`}: ${textoMmMapa(mm)}`}
                   >
                     <Popup>
-                      <PopupEstacion station={station} acumulado={acum} category={cat} />
+                      <PopupEstacion
+                        station={station}
+                        acumulado={acum}
+                        category={cat}
+                        desde={desde}
+                        hasta={hasta}
+                      />
                     </Popup>
                   </CircleMarker>
                 )

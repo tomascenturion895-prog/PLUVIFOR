@@ -691,3 +691,10 @@ html[data-movimiento='reducido'] *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+/* ---- Destacados (SCRUM-66) ---- */
+.destacados-lista {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.25rem;
+}

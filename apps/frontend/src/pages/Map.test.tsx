@@ -85,8 +85,9 @@ vi.mock('../api/client', async (original) => ({
   ...(await original<typeof import('../api/client')>()),
   getStations: vi.fn(),
   getAccumulated: vi.fn(),
+  getEvents: vi.fn(),
 }))
-import { getAccumulated, getStations } from '../api/client'
+import { getAccumulated, getEvents, getStations } from '../api/client'
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -198,6 +199,15 @@ beforeEach(() => {
     listaEstaciones([ESTACION_CON_COORDS, ESTACION_SIN_COORDS]),
   )
   vi.mocked(getAccumulated).mockResolvedValue(acumulados())
+  vi.mocked(getEvents).mockResolvedValue({
+    category: 'observado',
+    date_from: '2026-10-25',
+    date_to: '2026-10-31',
+    min_dry_days: 7,
+    stations: [],
+    notice: '',
+    description: '',
+  })
 })
 
 afterEach(() => {

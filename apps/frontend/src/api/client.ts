@@ -5,6 +5,8 @@ import type {
   ImportLog,
   FieldReport,
   FieldReportIn,
+  ClimateReferenceOut,
+  EventsOut,
   GapEstimateList,
   SensorReadingList,
   ImportReport,
@@ -228,6 +230,27 @@ export function getEstimates(
     `/api/estimates${query({ station_id: params.stationId, from: params.from, to: params.to, limit: params.limit })}`,
     { signal },
   )
+}
+
+/** Días de 50 y 100 mm o más y rachas secas de una estación. Descriptivo: no es una alerta. */
+export function getEvents(
+  params: { stationId: number; from: string; to: string; minDryDays?: number },
+  signal?: AbortSignal,
+): Promise<EventsOut> {
+  return request<EventsOut>(
+    `/api/events${query({ station_id: params.stationId, from: params.from, to: params.to, min_dry_days: params.minDryDays })}`,
+    { signal },
+  )
+}
+
+/** Normal mensual de una estación. Es referencia: no se suma ni se promedia con lo observado. */
+export function getClimateReference(
+  stationId: number,
+  signal?: AbortSignal,
+): Promise<ClimateReferenceOut> {
+  return request<ClimateReferenceOut>(`/api/climate-reference${query({ station_id: stationId })}`, {
+    signal,
+  })
 }
 
 /** Estaciones activas, en silencio y sin datos, calculadas contra la fecha de corte. */

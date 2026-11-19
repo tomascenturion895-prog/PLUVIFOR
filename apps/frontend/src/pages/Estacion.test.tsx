@@ -12,8 +12,16 @@ vi.mock('../api/client', async (original) => ({
   getStations: vi.fn(),
   getRainfall: vi.fn(),
   getEstimates: vi.fn(),
+  getEvents: vi.fn(),
+  getClimateReference: vi.fn(),
 }))
-import { getEstimates, getRainfall, getStations } from '../api/client'
+import {
+  getClimateReference,
+  getEstimates,
+  getEvents,
+  getRainfall,
+  getStations,
+} from '../api/client'
 
 const ESTACIONES = {
   items: [
@@ -80,6 +88,24 @@ beforeEach(() => {
   vi.mocked(getStations).mockResolvedValue(ESTACIONES)
   vi.mocked(getRainfall).mockReset()
   vi.mocked(getEstimates).mockReset()
+  vi.mocked(getEvents).mockReset()
+  vi.mocked(getEvents).mockResolvedValue({
+    category: 'observado',
+    date_from: '2016-01-01',
+    date_to: '2016-01-31',
+    min_dry_days: 7,
+    stations: [],
+    notice: '',
+    description: '',
+  })
+  vi.mocked(getClimateReference).mockReset()
+  vi.mocked(getClimateReference).mockResolvedValue({
+    station_id: 1,
+    station_name: 'x',
+    category: 'referencia',
+    normals: [],
+    notice: '',
+  })
   vi.mocked(getEstimates).mockResolvedValue({
     category: 'estimado',
     notice: 'Valores estimados, no medidos.',
