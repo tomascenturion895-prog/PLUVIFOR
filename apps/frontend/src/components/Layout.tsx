@@ -1,6 +1,8 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import PanelAccesibilidad from './a11y/PanelAccesibilidad'
 import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
+import { tituloDe } from '../titulos'
 
 /** Barras de lluvia diaria; la del medio va rayada porque un día sin dato no es 0 mm. */
 function MarcaPluvifor() {
@@ -36,6 +38,13 @@ function MarcaPluvifor() {
 }
 
 export default function Layout() {
+  const { pathname } = useLocation()
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  useEffect(() => {
+    document.title = tituloDe(pathname)
+  }, [pathname])
+  const actual = tituloDe(pathname).replace(' · PLUVIFOR', '')
+
   return (
     <>
       <header className="encabezado">
@@ -50,10 +59,26 @@ export default function Layout() {
           <PanelAccesibilidad />
         </div>
         <nav aria-label="Secciones">
-          <ul>
+          <button
+            type="button"
+            className="menu-boton"
+            aria-expanded={menuAbierto}
+            aria-controls="menu-secciones"
+            onClick={() => setMenuAbierto((a) => !a)}
+          >
+            <span className="menu-icono" aria-hidden="true" />
+            <span>
+              Menú<span className="menu-actual">: {actual}</span>
+            </span>
+          </button>
+          <ul id="menu-secciones" className={menuAbierto ? 'abierto' : ''}>
             {SECCIONES.map((seccion) => (
               <li key={seccion.ruta}>
-                <NavLink to={seccion.ruta} end={seccion.ruta === '/'}>
+                <NavLink
+                  to={seccion.ruta}
+                  end={seccion.ruta === '/'}
+                  onClick={() => setMenuAbierto(false)}
+                >
                   {seccion.nombre}
                 </NavLink>
               </li>

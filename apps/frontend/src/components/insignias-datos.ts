@@ -28,6 +28,15 @@ export const ADVERTENCIAS = {
 
 export type CodigoAdvertencia = keyof typeof ADVERTENCIAS
 
+/** Advertencias de calidad de una sola serie (no son de comparabilidad). El mensaje de la API va en la descripción. */
+export const ADVERTENCIAS_CALIDAD: Record<string, { texto: string; descripcion: string }> = {
+  cobertura_baja: {
+    texto: 'Cobertura baja',
+    descripcion:
+      'Faltan muchos días con dato: el acumulado puede quedar por debajo de lo que llovió.',
+  },
+}
+
 /** Texto para mostrar los milímetros de un día: un hueco nunca se muestra como 0. */
 export function textoMm(mm: number | null): string {
   return mm === null ? 'sin dato' : `${mm.toLocaleString('es-AR', { maximumFractionDigits: 1 })} mm`

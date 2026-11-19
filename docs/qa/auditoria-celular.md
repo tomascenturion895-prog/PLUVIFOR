@@ -50,6 +50,10 @@ La auditoría de arriba es anterior a la portada, el mapa con capas, la maqueta 
 
 Cambios hechos a partir de esto (solo presentación): campos de formularios que se estiraban en Reporte de campo, botones y selector de archivo con el estilo del sistema, tarjetas en la Ayuda y deslizadores de 24 px.
 
-**Sigue sin arreglar** (ver la lista de arriba): títulos de pestaña iguales en todas las pantallas, advertencia de cobertura duplicada y menú cortado a 360 px.
+**Arreglado el 19/11/2026** (los tres puntos de la lista de arriba):
+
+- **Títulos de pestaña:** cada pantalla tiene el suyo («Mapa · PLUVIFOR»).
+- **Cobertura baja:** la insignia dice «Cobertura baja» y el mensaje de la API queda como descripción.
+- **Menú a 360 px:** un botón «Menú» que muestra la sección actual y despliega todas las secciones en dos columnas, sin desplazamiento oculto.
 
 **Sin verificar:** celulares reales (SCRUM-71), lector de pantalla real, y la lectura de los textos por una persona ajena al equipo.
