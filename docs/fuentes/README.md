@@ -51,7 +51,7 @@ Hay dos informes del propio equipo y **no dicen lo mismo**, por eso se muestran 
 
 ## Red provincial, UPCA y SNIH
 
-**No hay datos cargados ni una fuente verificada de ninguna de las tres.** Esta ficha solo registra su horario de corte (07:00 a 07:00), que viene de las reglas del proyecto. Pendiente para cada una: organismo responsable, enlace a los datos, estaciones, cobertura, licencia o condiciones de uso, y si algún dato del kit del AI LAB las incluye. La lista de las 34 estaciones provinciales (SCRUM-31) tampoco está disponible. No se inventó ninguna.
+**No hay datos cargados ni una fuente verificada de ninguna de las tres.** Esta ficha solo registra su horario de corte (07:00 a 07:00), que viene de las reglas del proyecto. Pendiente para cada una: organismo responsable, enlace a los datos, estaciones, cobertura, licencia o condiciones de uso, y si algún dato del kit del AI LAB las incluye. La lista de las 34 estaciones provinciales tampoco está disponible: `docs/datos/estaciones.csv` (SCRUM-31) usa 34 estaciones **simuladas**, marcadas como tales, hasta tener la oficial (ver `docs/datos/LEEME_estaciones.md`).
 
 ## SMN (Servicio Meteorológico Nacional)
 
