@@ -36,7 +36,7 @@ func main() {
 	if store := openStore(cfg, logger); store != nil {
 		defer store.Close()
 		cutoff, _ := civil.Parse(cfg.CutoffDate) // ya validada por config
-		opts = append(opts, httpapi.WithStations(store, logger), httpapi.WithRainfall(store, cutoff, logger))
+		opts = append(opts, httpapi.WithStations(store, logger), httpapi.WithRainfall(store, cutoff, logger), httpapi.WithEvents(store, store, cutoff, logger))
 	}
 
 	srv := &http.Server{
