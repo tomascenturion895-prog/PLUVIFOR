@@ -24,7 +24,14 @@ Leyenda obligatoria, siempre visible en la interfaz y en los documentos:
 
 **Sí:** consultar y comparar lluvia por estación, zona y período; calidad del dato; mapa provincial; importación con auditoría; parte pluvial; eventos intensos (≥50 y ≥100 mm) y racha seca de forma **descriptiva**.
 
-**No (son de otros desafíos):** alturas de ríos y riachos, caudales, predicción de afectaciones, zonas de riesgo, evacuaciones, atajaderos, capas de catastro de parcelas. No agregues nada de eso aunque parezca fácil.
+**Requiere fundamento (antes eran «No»):** alturas de ríos y riachos, caudales, predicción de afectaciones, zonas de riesgo, evacuaciones, atajaderos, capas de catastro de parcelas, y cualquier otro tema que no sea el núcleo de lluvia.
+
+Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa pisar el trabajo de otros desafíos, **siempre que se fundamente** (indicación recibida de palabra; falta confirmarla por escrito). Antes de agregar algo de esta lista:
+
+1. Escribí en el PR, en el campo «Por qué suma a la solución», cómo ayuda a responder ¿cuánto llovió, dónde y en qué período?, o a decidir mejor con ese dato.
+2. Si la decisión es grande, dejala anotada en `docs/`.
+3. El núcleo de lluvia y su calidad van primero: no se deja nada del núcleo a medias por sumar un tema nuevo.
+4. Las reglas de integridad del dato de arriba valen igual para todo lo que se agregue. Un tema nuevo no las relaja.
 
 ## Stack
 
