@@ -5,6 +5,7 @@ export const LEYENDA_PROTOTIPO =
 /** Secciones de la navegación, en el orden en que se muestran. */
 export const SECCIONES = [
   { ruta: '/', nombre: 'Inicio' },
+  { ruta: '/vista-3d', nombre: 'Vista 3D' },
   { ruta: '/maqueta', nombre: 'Maqueta' },
   { ruta: '/mapa', nombre: 'Mapa' },
   { ruta: '/estacion', nombre: 'Estación' },
