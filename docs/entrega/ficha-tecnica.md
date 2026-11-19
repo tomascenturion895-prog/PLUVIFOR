@@ -2,7 +2,7 @@
 
 > **PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial**
 
-Tarea SCRUM-59. Describe el sistema **tal como está en el repositorio** (rama `qa`, 19/11/2026). Lo que todavía no existe figura como pendiente en la sección 9. Equipo 5 «SpaidyCode», UTN, Extensión Áulica Formosa. Desafío 2 · Reporte pluvial de la *Operación Agua* (AI LAB «Misión: Código Formosa»).
+Tarea SCRUM-59. Describe el sistema **tal como está en el repositorio** (rama `qa`, 19/11/2026, después del cierre del Sprint 2). Lo que todavía no existe figura como pendiente en la sección 9. Equipo 5 «SpaidyCode», UTN, Extensión Áulica Formosa. Desafío 2 · Reporte pluvial de la *Operación Agua* (AI LAB «Misión: Código Formosa»).
 
 ## 1. Qué problema resuelve
 
@@ -17,6 +17,10 @@ flowchart LR
     subgraph Fuentes
         S1[SIGA / INTA<br/>CSV versionados]
         S2[SMN<br/>normal mensual]
+        S3[Reportes de campo<br/>formulario con clave]
+    end
+    subgraph Go["API · Go (apps/api-go)"]
+        G[Puerta de entrada<br/>/health · errores · reenvío /api/*]
     end
     subgraph Backend["Backend · Python + FastAPI (apps/backend)"]
         I[Ingesta y auditoría<br/>validación fila por fila]
@@ -25,21 +29,24 @@ flowchart LR
         DB[(SQLite<br/>PostgreSQL por DATABASE_URL)]
     end
     subgraph Frontend["Frontend · React + Vite (apps/frontend)"]
-        P1[Estación]
-        P2[Importar]
-        P3[Parte pluvial]
+        P1[Inicio · Mapa · Maqueta]
+        P2[Estación · Comparador · Parte]
+        P3[Importar · Reporte · Salud de la red · Ayuda]
     end
     S1 --> I
     S2 --> I
+    S3 --> A
     I --> DB
     Q --> DB
     DB --> A
-    A --> P1
-    A --> P2
-    A --> P3
+    A --> G
+    G --> P1
+    G --> P2
+    G --> P3
 ```
 
-**Reparto del stack (decisión del 19/11/2026):** la API va en **Go** (`apps/api-go`) por rapidez y Python (FastAPI, `apps/backend`) hace el procesamiento de datos, la importación y la predicción con IA. **Hoy la API en Go es solo un esqueleto**: tiene `/health`, el formato de errores y el contrato `openapi.yaml`, pero todavía no se conecta a la base (falta elegir el driver) ni sirve estaciones o lluvia. **Todas las rutas `/api/*` reales siguen respondiendo desde Python.** El diagrama del Plan v2 no está en el repositorio, por eso no se reprodujo; el de arriba refleja lo implementado.
+
+**Reparto del stack (decisión del 19/11/2026):** la API va en **Go** (`apps/api-go`) por rapidez y Python (FastAPI, `apps/backend`) hace el procesamiento de datos, la importación y la predicción con IA. **Estado real de Go:** responde `/health`, usa el formato único de errores y **reenvía todo `/api/*` a Python** sin cambiar nada (estado, cuerpo, encabezados y clave de administración; si Python no responde, 502 o 504 en español). Además ya tiene escritas y probadas `GET /api/stations`, `GET /api/stations/{id}` y `GET /api/rainfall`, con las mismas respuestas que Python para los mismos datos (47 consultas comparadas en `apps/api-go/testdata/parity`). **Todavía no las sirve con datos reales: falta elegir el driver de base de datos** y eso lo decide el equipo; hoy las responde Python a través del reenvío. Cuando se elija, conectarlas es un adaptador de un archivo y dos líneas de arranque. La decisión de la puerta del 19/11 está en `docs/decisiones/2026-11-19-puerta-go.md`. El diagrama del Plan v2 vive en el enlace de `docs/decisiones/2026-11-18.md`; el de arriba refleja lo que hay en el repositorio.
 
 ### Capas del backend (`apps/backend/app/`)
 
@@ -60,7 +67,8 @@ Las dependencias van hacia adentro: la lógica depende de interfaces (por ejempl
 2. **Se valida fila por fila**: cada fila se acepta o se rechaza con un motivo (hay 10 motivos para lluvia y 3 para estaciones). Nada se descarta en silencio. Detalle en `docs/entrega/registro-de-limpieza.md`.
 3. **Se guarda** de forma atómica, con una fila en `import_logs` (archivo, SHA-256, filas leídas, aceptadas y rechazadas, fecha de corte).
 4. **Se recalculan las banderas de calidad** (tramos de 60 días o más con 0 mm).
-5. **Se consulta**: serie por estación y período, acumulados por estación o zona, y un parte pluvial de hasta 20 estaciones. Cada respuesta trae fuente, categoría y advertencias.
+5. **Se consulta**: serie por estación y período, acumulados por estación o zona, comparación de estaciones y un parte pluvial de hasta 20 estaciones. Cada respuesta trae fuente, categoría y advertencias.
+6. **Otras entradas y lecturas:** un reporte de campo (`POST /api/field-reports`, con clave de administración) entra como observado y sin validar, con su ubicación pendiente si no se informó; y `GET /api/network/health` clasifica cada estación como activa, en silencio (30 días sin dato, umbral provisional) o sin datos, sin confundir un silencio con un 0 mm.
 
 ## 4. Modelo de datos
 
@@ -102,6 +110,7 @@ Los **umbrales** (60 días, 0,2, 150 km, 50 mm, 0,5 y 0,8) los eligió el equipo
 
 | Parte | Tecnología | Versión |
 |---|---|---|
+| API de consultas | Go, solo biblioteca estándar (sin dependencias) | 1.24 |
 | Backend | Python | 3.12 (el CI usa 3.12) |
 | | FastAPI / Uvicorn | 0.163.2 / 0.54.0 |
 | | SQLAlchemy / Alembic | 2.1.9 / 1.20.1 |
@@ -113,7 +122,7 @@ Los **umbrales** (60 días, 0,2, 150 km, 50 mm, 0,5 y 0,8) los eligió el equipo
 | | Recharts / Leaflet y react-leaflet | ^3.11.0 / ^1.9.4 y ^5.0.0 |
 | | Vitest / Oxlint / Prettier | ^5.1.0 / ^1.90.0 / ^3.10.1 |
 | Capas geográficas | GeoJSON del IGN, dentro del repositorio (`apps/frontend/public/geo/`) | |
-| CI | GitHub Actions: backend (ruff + pytest), frontend (lint, pruebas y build, con Node 22) y escaneo de secretos (gitleaks) | |
+| CI | GitHub Actions: API en Go (vet + pruebas), backend (ruff + pytest), frontend (lint, pruebas y build, con Node 22) y escaneo de secretos (gitleaks) | |
 
 Las versiones del backend están fijadas; las del frontend son los rangos de `package.json` (las exactas quedan en `package-lock.json`).
 
@@ -135,15 +144,18 @@ Se revisó con una lista y el resultado está en `docs/entrega/informe-seguridad
 
 ## 9. Qué es prototipo y qué se haría a fondo
 
-**Hoy funciona:** importación con auditoría, serie diaria y acumulados por estación y zona, las advertencias, la ficha de estación, el parte pluvial imprimible, el registro de cargas y el recálculo de banderas. Está probado con datos reales del SIGA (7.648 filas, 3 estaciones).
+**Hoy funciona:** importación con auditoría, serie diaria y acumulados por estación y zona, comparación de estaciones con advertencias de comparabilidad, las seis advertencias, la ficha de estación, el mapa provincial y la maqueta, el parte pluvial imprimible, el registro de cargas y el recálculo de banderas, la salud de la red, el formulario de reporte de campo, el inicio y la ayuda. Está probado con datos reales del SIGA (7.648 filas, 3 estaciones). Hay pruebas en los tres lados: Python, Go (con paridad contra Python) y la interfaz.
 
-**Todavía no existe (pantallas de marcador o tareas abiertas):**
+**Todavía no existe o está pendiente:**
 
-- Mapa provincial, comparador, salud de la red y ayuda: en el frontend son pantallas de marcador. La comparación de estaciones de la API (`/api/rainfall/compare`) tampoco está entregada.
+- **Go no sirve datos reales todavía:** sus rutas de estaciones y lluvia están listas y probadas, pero esperan la elección del driver de base de datos. El comparador, los acumulados, el parte, la importación, la salud de la red y los reportes de campo solo existen en Python.
 - Datos de la red provincial, UPCA, SNIH, INA y CHIRPS: **ninguno está cargado**. Del INA hay solo un listado de estaciones. Ver `docs/fuentes/README.md`.
 - La normal mensual es de **una sola estación** (Formosa Aero, SMN) y no representa a toda la provincia.
 - Las coordenadas de varias estaciones siguen pendientes. Además, el sistema marca una estación como «coordenadas verificadas» cuando trae latitud y longitud, sin comprobar su origen.
 - El SIGA cargado termina entre 2015 y 2023: **no hay datos del período 2026** (El Niño 2026/27) en el sistema.
+- Los reportes de campo entran siempre como observado y **sin validar**; no hay un circuito de validación por una persona.
+- La salud de la red usa 30 días de silencio como umbral provisional, pendiente de confirmar.
+- El alcance fuera de la lluvia (ríos, caudales, zonas de riesgo) se habilitó de palabra el 18/11 y falta confirmarlo por escrito; no se implementó nada de eso.
 - El driver de PostgreSQL (`psycopg`) no está en `requirements.txt`; hay que instalarlo a mano.
 
 **Qué se haría a fondo con más tiempo:**
@@ -158,6 +170,10 @@ Se revisó con una lista y el resultado está en `docs/entrega/informe-seguridad
 ## 10. Cómo se prueba y se corre
 
 ```
+# API en Go (desde apps/api-go)
+go run ./cmd/api                       # http://localhost:8080/health
+gofmt -l . && go vet ./... && go test ./...
+
 # Backend (desde apps/backend)
 pip install -r requirements-dev.txt
 python -m app.cli reset-demo --yes     # carga los datos reales del SIGA
