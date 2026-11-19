@@ -11,6 +11,10 @@ class InvalidFileError(ValueError):
     """El archivo no tiene la forma esperada (faltan columnas, está vacío...)."""
 
 
+class UploadTooLargeError(InvalidFileError):
+    """El archivo supera el tamaño máximo permitido."""
+
+
 class RejectionReason(StrEnum):
     """Nada se descarta en silencio: cada rechazo lleva uno de estos motivos."""
 
@@ -26,6 +30,7 @@ class RejectionReason(StrEnum):
     DUPLICADO_EN_ARCHIVO = "duplicado_en_archivo"
     COORDENADAS_INVALIDAS = "coordenadas_invalidas"
     CODIGO_VACIO = "codigo_vacio"
+    TEXTO_CON_FORMULA = "texto_con_formula"
 
 
 @dataclass(frozen=True)
