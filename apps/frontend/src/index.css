@@ -471,3 +471,22 @@ button:disabled {
 .mapa-resumen-departamento li {
   margin: 0.5rem 0;
 }
+
+/* Ayuda (SCRUM-102) */
+.ayuda-lista {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.ayuda-advertencias div {
+  margin-bottom: 0.5rem;
+}
+
+.ayuda-advertencias dt {
+  font-weight: 600;
+}
+
+.ayuda-advertencias dd {
+  margin: 0;
+}
