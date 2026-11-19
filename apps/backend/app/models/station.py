@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import CheckConstraint, ForeignKey, String, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, Index, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -22,6 +22,9 @@ class Station(Base):
             "coords_status <> 'verificada' OR (lat IS NOT NULL AND lon IS NOT NULL)",
             name="verified_has_coords",
         ),
+        # Consultas por zona y por departamento (acumulados regionales).
+        Index("ix_stations_zone", "zone"),
+        Index("ix_stations_department", "department"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
