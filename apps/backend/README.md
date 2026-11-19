@@ -90,3 +90,9 @@ GET /api/rainfall?station_id=1&from=2016-01-01&to=2016-01-31&category=observado
 ```
 
 Devuelve un valor por día del período (`mm` es `null` en un hueco, nunca 0), el resumen (días con dato, huecos por tipo, cobertura, acumulado) y las advertencias. El acumulado es `null` si no hay ningún día con dato. Una consulta pide una sola categoría: observado, referencia y estimado no se mezclan. Las fechas posteriores al corte (31/10/2026) se recortan y se avisa. El umbral de cobertura baja (80 %) es provisional y está pendiente de confirmar.
+
+## Advertencias de comparabilidad
+
+`app/domain/warnings.py` es un módulo puro (sin base de datos) con las seis advertencias: horario de corte distinto, observado vs. estimado, cobertura despareja, dato sin validar, racha de ceros (60 días o más) e inconsistencia con estaciones vecinas. Cada una es una regla independiente; `evaluate_warnings(serie, otras_series)` devuelve las advertencias y, aparte, las reglas que no se pudieron aplicar (por ejemplo, una estación sin coordenadas) para no hacer pasar un «no sé» por «está bien».
+
+Provisionales, pendientes de confirmar: diferencia de cobertura de 20 %, radio de vecindad de 150 km y 50 mm en la vecina para marcar la inconsistencia.
