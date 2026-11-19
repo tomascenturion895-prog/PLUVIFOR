@@ -5,12 +5,14 @@ Importar es una acción de quien administra la base; no se expone por la API pú
 
 import argparse
 import sys
+from datetime import date
 from pathlib import Path
 
 from app.config import get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.demo import DEFAULT_DATA_DIR, DemoResetError, reset_demo
 from app.domain.enums import ImportMode
+from app.ingestion.siga_live import SigaLiveClient
 from app.ingestion.types import ImportReport, InvalidFileError
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
@@ -18,6 +20,7 @@ from app.repositories.references import SqlReferenceRepository
 from app.services.importer import ImportService
 from app.services.quality import QualityService
 from app.services.references import ReferenceService
+from app.services.siga_live import SigaLiveImporter
 
 DEFAULT_NORMALS_FILE = DEFAULT_DATA_DIR / "normales_smn_formosa_aero_1991_2020.csv"
 
@@ -50,6 +53,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--commit", action="store_true", help="Guarda los datos (por defecto solo audita)"
     )
     rainfall.add_argument("file", type=Path)
+
+    live = commands.add_parser(
+        "import-siga-live",
+        help="Pide lluvia diaria al SIGA en vivo; si falla, usa el CSV versionado y lo avisa",
+    )
+    live.add_argument("--station", type=int, action="append", required=True)
+    live.add_argument("--from", dest="date_from", type=date.fromisoformat, required=True)
+    live.add_argument("--to", dest="date_to", type=date.fromisoformat, required=True)
+    live.add_argument("--commit", action="store_true", help="Guarda (por defecto solo audita)")
 
     commands.add_parser("recompute-flags", help="Recalcula las banderas de calidad")
 
@@ -118,6 +130,25 @@ def main(argv: list[str] | None = None) -> int:
                 f"Estaciones revisadas: {len(counts)} · "
                 f"tramos de ceros prolongados: {sum(counts.values())}"
             )
+            return 0
+        if args.command == "import-siga-live":
+            with create_session_factory(engine)() as session:
+                repository = SqlIngestionRepository(session)
+                live = SigaLiveImporter(
+                    ImportService(repository, settings.data_cutoff_date),
+                    repository,
+                    SigaLiveClient(),
+                    DEFAULT_DATA_DIR / "lluvia_diaria_siga_formosa.csv",
+                    settings.data_cutoff_date,
+                )
+                mode = ImportMode.COMMIT if args.commit else ImportMode.AUDIT
+                result = live.run(args.station, args.date_from, args.date_to, mode)
+            if result.origin == "respaldo_csv":
+                print(f"AVISO: el SIGA en vivo no respondió ({result.reason}).")
+                print("Se usó el CSV versionado de docs/datos/, no datos en vivo.")
+            else:
+                print("Origen: SIGA en vivo.")
+            _print_report(result.report)
             return 0
         with create_session_factory(engine)() as session:
             service = ImportService(SqlIngestionRepository(session), settings.data_cutoff_date)

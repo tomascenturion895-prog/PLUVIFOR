@@ -1,3 +1,4 @@
+import hashlib
 import json
 from datetime import date, datetime
 from typing import Protocol
@@ -24,6 +25,16 @@ class IngestionRepository(Protocol):
 
     def record_import(
         self, source_id: int, report: ImportReport, cutoff: date, started_at: datetime
+    ) -> int: ...
+
+    def record_failed_attempt(
+        self,
+        source_id: int,
+        mode: ImportMode,
+        filename: str,
+        reason_code: str,
+        cutoff: date,
+        started_at: datetime,
     ) -> int: ...
 
     def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]: ...
@@ -114,6 +125,34 @@ class SqlIngestionRepository:
         )
         self._session.add(log)
         self._session.flush()
+        return log.id
+
+    def record_failed_attempt(
+        self,
+        source_id: int,
+        mode: ImportMode,
+        filename: str,
+        reason_code: str,
+        cutoff: date,
+        started_at: datetime,
+    ) -> int:
+        """Deja constancia de un intento que no llegó a leer ninguna fila (por ejemplo, sin red)."""
+        log = ImportLog(
+            source_id=source_id,
+            mode=mode,
+            status=ImportStatus.FAILED,
+            filename=filename,
+            sha256=hashlib.sha256(reason_code.encode()).hexdigest(),
+            rows_read=0,
+            rows_accepted=0,
+            rows_rejected=0,
+            rejections=json.dumps({reason_code: 1}, ensure_ascii=False),
+            cutoff_applied=cutoff,
+            started_at=started_at,
+        )
+        self._session.add(log)
+        self._session.flush()
+        self._session.commit()
         return log.id
 
     def recent_imports(self, limit: int) -> list[tuple[ImportLog, str]]:
