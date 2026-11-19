@@ -10,12 +10,14 @@ from app.db.session import get_session
 from app.errors import ApiError
 from app.repositories.field_reports import SqlFieldReportRepository
 from app.repositories.ingestion import SqlIngestionRepository
+from app.repositories.network_health import SqlNetworkHealthRepository
 from app.repositories.quality import SqlQualityRepository
 from app.repositories.references import SqlReferenceRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
 from app.services.field_reports import FieldReportService
 from app.services.importer import ImportService
+from app.services.network_health import NetworkHealthService
 from app.services.quality import QualityService
 from app.services.references import ReferenceService
 from app.services.report import ReportService
@@ -39,6 +41,13 @@ def get_field_report_service(
     settings: Settings = Depends(get_settings),  # noqa: B008
 ) -> FieldReportService:
     return FieldReportService(SqlFieldReportRepository(session), settings.data_cutoff_date)
+
+
+def get_network_health_service(
+    session: Session = Depends(get_session),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> NetworkHealthService:
+    return NetworkHealthService(SqlNetworkHealthRepository(session), settings.data_cutoff_date)
 
 
 def require_admin(

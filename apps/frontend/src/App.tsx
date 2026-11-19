@@ -3,8 +3,9 @@ import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
 import FieldReport from './pages/FieldReport'
 import Importar from './pages/Importar'
+import NetworkHealth from './pages/NetworkHealth'
 import Parte from './pages/Parte'
-import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada, Salud } from './pages/Paginas'
+import { Ayuda, Comparador, Inicio, Mapa, NoEncontrada } from './pages/Paginas'
 
 export default function App() {
   return (
@@ -18,7 +19,7 @@ export default function App() {
         <Route path="parte" element={<Parte />} />
         <Route path="reporte" element={<FieldReport />} />
         <Route path="importar" element={<Importar />} />
-        <Route path="salud" element={<Salud />} />
+        <Route path="salud" element={<NetworkHealth />} />
         <Route path="ayuda" element={<Ayuda />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
