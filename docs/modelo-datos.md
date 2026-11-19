@@ -213,6 +213,18 @@ Para una estación y un período de `N` días:
 
 Un acumulado con cobertura baja **siempre** se muestra con su advertencia.
 
+### Salud de la red (`GET /api/network/health`)
+
+Para cada estación se toma su **última lectura observada con valor** (estado `dato`, categoría `observado`, hasta la fecha de corte) y se cuentan los días desde entonces **hasta el corte, no hasta hoy**.
+
+| Estado | Cuándo |
+|---|---|
+| `activa` | la última lectura está a 30 días o menos del corte |
+| `en_silencio` | la última lectura está a más de 30 días del corte |
+| `sin_datos` | nunca tuvo una lectura con valor (solo huecos, nada, o solo referencias) |
+
+El umbral de **30 días es una propuesta a confirmar con el equipo**; se puede pedir otro con `silent_after_days` (1 a 365). Un silencio nunca devuelve `0 mm`: muestra la fecha y los milímetros de su última lectura real, y una estación sin datos devuelve todo vacío. Un `0` medido (lluvia cero) sí es una lectura y la estación sigue activa.
+
 ## 6. Cómo se cargan las series del SIGA
 
 `docs/datos/lluvia_diaria_siga_formosa.csv` (7.648 filas, una por estación y día) entra uno a uno:
