@@ -39,11 +39,6 @@ export const Comparador = () => (
 export const Parte = () => (
   <Pendiente titulo="Parte pluvial">Resumen listo para copiar o imprimir.</Pendiente>
 )
-export const Importar = () => (
-  <Pendiente titulo="Importar y auditar">
-    Cargá un archivo y revisá qué se aceptó y qué se rechazó.
-  </Pendiente>
-)
 export const Salud = () => (
   <Pendiente titulo="Salud de la red">
     Qué estaciones reportan y cuáles están en silencio.

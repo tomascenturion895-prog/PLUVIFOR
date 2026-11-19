@@ -258,3 +258,21 @@ body {
     grid-template-columns: repeat(5, 1fr);
   }
 }
+
+/* Pantalla Importar */
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.acciones button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
