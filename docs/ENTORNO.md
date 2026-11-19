@@ -75,6 +75,23 @@ uvicorn app.main:app --reload      # http://localhost:8000/docs
 
 En Windows puede que `python` no responda y haga falta `py -3.12 -m venv .venv`.
 
+### Reiniciar la base de demo
+
+Para dejar la demo en un estado conocido, sin internet, desde `apps/backend`:
+
+```bash
+python -m app.cli reset-demo          # pide confirmación
+python -m app.cli reset-demo --yes    # sin preguntar (scripts)
+```
+
+Borra el archivo SQLite de `DATABASE_URL`, corre las migraciones y recarga las series del SIGA que están versionadas en `docs/datos/` (3 estaciones, 7.648 días), y recalcula las advertencias de racha de ceros. Se puede correr las veces que haga falta: siempre termina en el mismo estado.
+
+Cuidados que ya tiene el comando:
+
+- **Avisa antes de borrar** y dice qué archivo es. Sin una terminal para confirmar y sin `--yes`, no hace nada.
+- **Solo toca un archivo SQLite local.** Con PostgreSQL o una base en memoria se niega sin borrar nada.
+- **Revisa que estén los datos antes de borrar:** si falta un archivo de `docs/datos/`, no toca la base.
+
 ### Usar PostgreSQL en lugar de SQLite (opcional)
 
 La demo corre con SQLite. Cambiar de motor es cambiar `DATABASE_URL`, y se comprobó el 19/11/2026 con PostgreSQL 16:

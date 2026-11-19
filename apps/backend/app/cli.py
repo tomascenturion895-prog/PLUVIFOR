@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app.config import get_settings
 from app.db.session import create_db_engine, create_session_factory
+from app.demo import DEFAULT_DATA_DIR, DemoResetError, reset_demo
 from app.domain.enums import ImportMode
 from app.ingestion.types import ImportReport, InvalidFileError
 from app.repositories.ingestion import SqlIngestionRepository
@@ -47,11 +48,48 @@ def build_parser() -> argparse.ArgumentParser:
     rainfall.add_argument("file", type=Path)
 
     commands.add_parser("recompute-flags", help="Recalcula las banderas de calidad")
+
+    demo = commands.add_parser(
+        "reset-demo", help="Borra la base SQLite y la recarga desde docs/datos (sin internet)"
+    )
+    demo.add_argument("--yes", action="store_true", help="No pedir confirmación")
+    demo.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     return parser
+
+
+def _ask_before_deleting(database: Path) -> bool:
+    if not sys.stdin.isatty():
+        print("Sin una terminal para confirmar: usá --yes para reiniciar.", file=sys.stderr)
+        return False
+    answer = input(f"Se va a BORRAR la base {database} y a recargarla desde cero. ¿Seguro? [s/N] ")
+    return answer.strip().lower() in {"s", "si", "sí"}
+
+
+def _reset_demo(args: argparse.Namespace) -> int:
+    settings = get_settings()
+    confirm = (lambda _: True) if args.yes else _ask_before_deleting
+    try:
+        result = reset_demo(
+            settings.database_url, settings.data_cutoff_date, confirm, args.data_dir
+        )
+    except DemoResetError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
+    if result is None:
+        print("No se reinició nada.")
+        return 1
+    print(f"Base reiniciada: {result.database}")
+    print(
+        f"Estaciones: {result.stations} · días de lluvia: {result.rainfall_rows} "
+        f"· rechazados: {result.rejected_rows} · tramos de ceros prolongados: {result.zero_streaks}"
+    )
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "reset-demo":
+        return _reset_demo(args)
     settings = get_settings()
     engine = create_db_engine(settings.database_url)
     try:
