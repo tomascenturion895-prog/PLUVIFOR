@@ -93,3 +93,13 @@ def test_un_id_gigante_no_rompe_el_parte_ni_la_referencia(client: TestClient):
     assert_error(client.get("/api/climate-reference", params={"station_id": huge}), 422)
     acumulado = client.get("/api/rainfall/accumulated", params={"station_id": huge, **DESDE_HASTA})
     assert_error(acumulado, 422)
+
+
+def test_comparar_rechaza_id_fuera_de_rango(client) -> None:
+    """Un id mayor al tope devuelve 422 y no un error 500 de la base."""
+    r = client.get(
+        "/api/rainfall/compare",
+        params={"station_ids": "99999999999999999999", "from": "2016-01-01", "to": "2016-01-31"},
+    )
+    assert r.status_code == 422
+    assert r.json()["error"]["code"] == "invalid_station_id"

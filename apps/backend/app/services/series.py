@@ -129,8 +129,8 @@ class SeriesService:
         station_id: int | None = None,
         zone: str | None = None,
     ) -> "AccumulatedResult":
-        """Acumulado por estación de una estación o de una zona. Nunca suma entre estaciones."""
-        if (station_id is None) == (zone is None):
+        """Acumulado separado por estación, de toda la red o con un filtro."""
+        if station_id is not None and zone is not None:
             raise ApiError(422, "invalid_filter", "Indicá una estación o una zona, no ambas.")
         date_to, clipped = self._normalize_range(date_from, date_to)
         if station_id is not None:
@@ -138,12 +138,12 @@ class SeriesService:
             if one is None:
                 raise ApiError(404, "station_not_found", "No existe la estación pedida.")
             rows = [one]
-        else:
-            rows = self._repository.accumulated_by_group(
-                "zone", zone or "", category, date_from, date_to
-            )
+        elif zone is not None:
+            rows = self._repository.accumulated_by_group("zone", zone, category, date_from, date_to)
             if not rows:
                 raise ApiError(404, "zone_not_found", "No hay estaciones en la zona pedida.")
+        else:
+            rows = self._repository.accumulated_all(category, date_from, date_to)
         days = (date_to - date_from).days + 1
         return AccumulatedResult(
             category=category,

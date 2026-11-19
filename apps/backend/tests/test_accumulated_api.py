@@ -74,6 +74,15 @@ class TestTotales:
         assert len(body["stations"]) == 2
         assert "accumulated_mm" not in body  # no hay un total de la zona
 
+    def test_sin_filtros_devuelve_todas_las_estaciones_por_separado(self, client, datos):
+        body = pedir(client).json()
+        est = por_estacion(body)
+        assert set(est) == {"Est A", "Est B", "Est C", "Est D"}
+        assert est["Est A"]["accumulated_mm"] == 12.5
+        assert est["Est B"]["accumulated_mm"] == 7.25
+        assert est["Est C"]["accumulated_mm"] is None
+        assert "accumulated_mm" not in body
+
     def test_zona_sin_ningun_dato_da_null_no_cero(self, client, datos):
         body = pedir(client, zone="sur").json()
         est = por_estacion(body)
@@ -144,9 +153,6 @@ class TestEntradaInvalida:
         body = pedir(client, zone="norte", **{"from": "2026-10-01", "to": "2026-12-31"}).json()
         assert body["clipped_to_cutoff"] is True
         assert body["date_to"] == "2026-10-31"
-
-    def test_sin_estacion_ni_zona_da_422(self, client, datos):
-        assert pedir(client).status_code == 422
 
     def test_con_estacion_y_zona_a_la_vez_da_422(self, client, datos):
         assert pedir(client, zone="norte", station_id=datos["A"]).status_code == 422

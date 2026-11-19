@@ -71,6 +71,16 @@ def test_station_without_any_record_is_listed_with_null(repo_and_ids):
     assert (result.accumulated_mm, result.data_days, result.gap_days) == (None, 0, 0)
 
 
+def test_all_stations_are_listed_separately_without_summing(repo_and_ids):
+    repo, a, b, c = repo_and_ids
+    rows = repo.accumulated_all(DataCategory.OBSERVADO, D(2016, 1, 1), D(2016, 1, 31))
+    assert [(row.station_id, row.accumulated_mm) for row in rows] == [
+        (a, 12.5),
+        (b, None),
+        (c, None),
+    ]
+
+
 def test_period_is_inclusive_and_empty_period_is_null(repo_and_ids):
     repo, a, *_ = repo_and_ids
     one_day = repo.accumulated_by_station(a, DataCategory.OBSERVADO, D(2016, 1, 5), D(2016, 1, 5))
