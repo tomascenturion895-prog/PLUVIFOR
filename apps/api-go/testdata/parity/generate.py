@@ -114,7 +114,10 @@ def main() -> None:
         env = {**os.environ, "DATABASE_URL": f"sqlite:///{db}", "DATA_CUTOFF_DATE": "2026-10-31"}
         subprocess.run(
             [sys.executable, "-m", "app.cli", "reset-demo", "--yes"],
-            cwd=BACKEND, env=env, check=True, capture_output=True,
+            cwd=BACKEND,
+            env=env,
+            check=True,
+            capture_output=True,
         )
         os.environ.update(env)
         sys.path.insert(0, str(BACKEND))
@@ -130,9 +133,7 @@ def main() -> None:
         data = dump_db(db)
 
     (HERE / "db.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
-    (HERE / "cases.json").write_text(
-        json.dumps(cases, ensure_ascii=False, separators=(",", ":"))
-    )
+    (HERE / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, separators=(",", ":")))
     print(f"db.json: {len(data['records'])} días · cases.json: {len(cases)} consultas")
 
 
