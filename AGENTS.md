@@ -37,7 +37,7 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 
 | Parte | Tecnología |
 |---|---|
-| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Hoy responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Todavía no tiene driver de base de datos (decisión pendiente) |
+| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Ya tiene escritas y probadas (paridad con Python) las rutas `/api/stations`, `/api/stations/{id}` y `/api/rainfall`, pero falta el driver de base de datos (decisión pendiente) para activarlas: hoy las responde Python |
 | Procesamiento (datos, importación, IA) | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff, en `apps/backend`. Hoy responde **todas** las rutas `/api/*` reales |
 | Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, Oxlint + Prettier |
 | Capas geográficas | GeoJSON del IGN dentro del repositorio |
