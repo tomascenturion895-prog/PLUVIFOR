@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '../api/client'
 import type { NetworkHealth as Salud, StationHealth } from '../api/types'
 import NetworkHealth from './NetworkHealth'
@@ -9,8 +9,17 @@ import { fechaLegible } from './network-health-datos'
 vi.mock('../api/client', async (original) => ({
   ...(await original<typeof import('../api/client')>()),
   getNetworkHealth: vi.fn(),
+  getSensorReadings: vi.fn(),
 }))
-import { getNetworkHealth } from '../api/client'
+import { getNetworkHealth, getSensorReadings } from '../api/client'
+
+beforeEach(() => {
+  vi.mocked(getSensorReadings).mockResolvedValue({
+    items: [],
+    total: 0,
+    notice: 'Lecturas simuladas.',
+  })
+})
 
 function est(extra: Partial<StationHealth>): StationHealth {
   return {
