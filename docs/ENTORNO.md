@@ -70,8 +70,11 @@ python -m venv .venv
 source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
 pytest
+python -m app.cli reset-demo --yes # crea la base y carga los datos de demo (hace falta una vez)
 uvicorn app.main:app --reload      # http://localhost:8000/docs
 ```
+
+**Cómo saber que funciona:** <http://localhost:8000/health> responde `{"status":"ok",...}` y <http://localhost:8000/api/stations> devuelve 3 estaciones. Si en cambio `/api/stations` da error 500, falta el paso `reset-demo`: la base está vacía y sin tablas.
 
 En Windows puede que `python` no responda y haga falta `py -3.12 -m venv .venv`.
 
@@ -129,7 +132,7 @@ npm test
 npm run dev                         # http://localhost:5173
 ```
 
-Se ejecutan los dos a la vez, cada uno en su terminal.
+Se ejecutan los dos a la vez, cada uno en su terminal, y el backend tiene que estar corriendo (el frontend le pide los datos). **Cómo saber que funciona:** en <http://localhost:5173> se ve el Inicio con la leyenda de prototipo; en «Estación» aparecen 3 estaciones para elegir.
 
 Pruebas de extremo a extremo en navegador real (escritorio, tableta y celular): `npm run test:e2e`. Detalles en `docs/qa/analisis-responsive.md`.
 
