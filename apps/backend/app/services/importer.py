@@ -4,7 +4,7 @@ from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime
 from pathlib import PurePath
 
-from app.domain.enums import ImportMode
+from app.domain.enums import DataCategory, ImportMode
 from app.ingestion.registry import DEFAULT_CONNECTORS
 from app.ingestion.sources import SourceConnector
 from app.ingestion.types import (
@@ -99,8 +99,14 @@ class ImportService:
         check_upload(filename, content, self._max_upload_bytes)
         source_id = self._repository.find_source_id(source_code)
         if source_id is None:
-            raise InvalidFileError("La fuente no existe: importar primero el catálogo.")
-        station_ids = self._repository.station_ids(source_id)
+            if connector.definition.category == DataCategory.ESTIMADO:
+                source_id = self._repository.ensure_source(connector.definition)
+            else:
+                raise InvalidFileError("La fuente no existe: importar primero el catálogo.")
+        # Fuentes como CHIRPS estiman sobre los puntos de estaciones ya existentes en la BD
+        station_ids = self._repository.station_ids(
+            None if connector.definition.category == DataCategory.ESTIMADO else source_id
+        )
 
         report = ImportReport(
             filename=_safe_name(filename),

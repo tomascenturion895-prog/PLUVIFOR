@@ -18,7 +18,7 @@ class IngestionRepository(Protocol):
 
     def find_source_id(self, code: str) -> int | None: ...
 
-    def station_ids(self, source_id: int) -> dict[str, int]: ...
+    def station_ids(self, source_id: int | None = None) -> dict[str, int]: ...
 
     def upsert_stations(self, source_id: int, rows: list[StationRow]) -> tuple[int, int]: ...
 
@@ -59,10 +59,11 @@ class SqlIngestionRepository:
     def find_source_id(self, code: str) -> int | None:
         return self._session.scalar(select(Source.id).where(Source.code == code))
 
-    def station_ids(self, source_id: int) -> dict[str, int]:
-        rows = self._session.execute(
-            select(Station.code, Station.id).where(Station.source_id == source_id)
-        )
+    def station_ids(self, source_id: int | None = None) -> dict[str, int]:
+        stmt = select(Station.code, Station.id)
+        if source_id is not None:
+            stmt = stmt.where(Station.source_id == source_id)
+        rows = self._session.execute(stmt)
         return {code: station_id for code, station_id in rows}
 
     def upsert_stations(self, source_id: int, rows: list[StationRow]) -> tuple[int, int]:
