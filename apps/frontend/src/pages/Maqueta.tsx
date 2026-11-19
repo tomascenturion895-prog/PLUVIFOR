@@ -83,7 +83,8 @@ function Leyenda() {
         Sin dato (rayado): no es 0 mm
       </li>
       <li className="mapa-leyenda-item">
-        <span aria-hidden="true">◐</span> Estación en silencio (apagada)
+        <span className="marca-estado marca-estado-en_silencio" aria-hidden="true" /> Estación en
+        silencio (apagada)
       </li>
       <li className="mapa-leyenda-item">
         <span className="mapa-leyenda-rio" aria-hidden="true" /> Cursos de agua (IGN, referencia

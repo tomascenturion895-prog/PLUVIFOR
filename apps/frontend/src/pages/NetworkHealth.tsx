@@ -1,11 +1,9 @@
 import { getNetworkHealth } from '../api/client'
-import type { NetworkState, StationHealth } from '../api/types'
+import type { StationHealth } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import LecturasSimuladas from '../components/LecturasSimuladas'
 import { useAsync } from '../hooks/useAsync'
 import { fechaLegible, formatoMm, TEXTO_ESTADO } from './network-health-datos'
-
-const SIMBOLO: Record<NetworkState, string> = { activa: '●', en_silencio: '◐', sin_datos: '○' }
 
 function UltimaLectura({ estacion }: { estacion: StationHealth }) {
   if (estacion.last_reading_date === null || estacion.last_reading_mm === null) {
@@ -74,7 +72,7 @@ export default function NetworkHealth() {
                     </th>
                     <td>{s.zone ?? 'Sin dato'}</td>
                     <td>
-                      <span aria-hidden="true">{SIMBOLO[s.state]} </span>
+                      <span className={`marca-estado marca-estado-${s.state}`} aria-hidden="true" />
                       {TEXTO_ESTADO[s.state]}
                     </td>
                     <td>
