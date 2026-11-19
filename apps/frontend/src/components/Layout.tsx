@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import PanelAccesibilidad from './a11y/PanelAccesibilidad'
 import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
 
 export default function Layout() {
@@ -8,6 +9,7 @@ export default function Layout() {
         <div className="encabezado-marca">
           <h1>PLUVIFOR</h1>
           <p>Reporte pluvial de Formosa</p>
+          <PanelAccesibilidad />
         </div>
         <nav aria-label="Secciones">
           <ul>

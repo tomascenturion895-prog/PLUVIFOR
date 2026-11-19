@@ -582,3 +582,82 @@ button:disabled {
   position: relative;
   overflow-x: auto;
 }
+
+/* ---- Accesibilidad (SCRUM-100) ---- */
+.a11y {
+  margin-top: 0.25rem;
+}
+
+.a11y-boton {
+  min-height: 44px;
+}
+
+.a11y-panel {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+.a11y-grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.a11y-grupo label {
+  display: inline-block;
+  margin-right: 1rem;
+  min-height: 44px;
+  line-height: 44px;
+}
+
+:focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 2px;
+}
+
+html[data-texto='grande'] {
+  font-size: 118.75%;
+}
+
+html[data-texto='muy-grande'] {
+  font-size: 137.5%;
+}
+
+/* Alto contraste: negro sobre blanco, bordes marcados. Las insignias conservan su símbolo y su
+   tipo de borde (continuo, punteado, de puntos, de guiones), que son lo que distingue cada estado. */
+html[data-contraste='alto'] {
+  --azul: #00264d;
+  --azul-claro: #fff;
+  --texto-suave: #000;
+  --borde: #000;
+  --error: #7a0000;
+  color: #000;
+  background: #fff;
+}
+
+html[data-contraste='alto'] .insignia {
+  color: #000;
+  background: #fff;
+  border-width: 3px;
+}
+
+html[data-contraste='alto'] a {
+  text-decoration: underline;
+}
+
+html[data-contraste='alto'] .pie {
+  background: #000;
+}
+
+html[data-movimiento='reducido'] *,
+html[data-movimiento='reducido'] *::before,
+html[data-movimiento='reducido'] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
