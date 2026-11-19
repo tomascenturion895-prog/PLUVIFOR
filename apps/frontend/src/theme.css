@@ -1,0 +1,398 @@
+/* Identidad visual de PLUVIFOR. Va después de index.css y solo redefine variables y presentación:
+   no cambia ningún dato ni regla. Colores de insignias (observado, referencia, estimado) intactos. */
+:root {
+  --tinta: #0f2a31;
+  --azul: #0d5c6e;
+  --azul-claro: #e1eff1;
+  --texto-suave: #43565d;
+  --borde: #c6d4d7;
+  --papel: #eef3f3;
+  --serif: 'Charter', 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  --radio: 0.6rem;
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+h2,
+h3 {
+  font-family: var(--serif);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.7rem;
+}
+
+.contenido {
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* ---- Cabecera ---- */
+.encabezado {
+  padding: 0;
+  background: var(--tinta);
+  border-bottom: 0;
+  color: #fff;
+}
+
+.encabezado-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem 0.25rem;
+}
+
+.encabezado-marca {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.marca-logo {
+  width: 2.5rem;
+  height: 2rem;
+  color: #7fd0dc;
+}
+
+.encabezado-marca h1 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.encabezado-marca p {
+  color: #b8d3d8;
+  font-size: 0.85rem;
+}
+
+.encabezado nav {
+  padding: 0 0.5rem;
+}
+
+.encabezado nav ul {
+  margin: 0;
+  scrollbar-width: thin;
+}
+
+.encabezado nav a {
+  color: #d5e6e9;
+  border-bottom-width: 3px;
+}
+
+.encabezado nav a:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 8%);
+}
+
+.encabezado nav a.active {
+  color: #fff;
+  border-bottom-color: #7fd0dc;
+}
+
+.a11y {
+  position: relative;
+  margin: 0;
+}
+
+.a11y-boton {
+  padding: 0 0.9rem;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.a11y-boton:hover {
+  background: rgb(255 255 255 / 12%);
+}
+
+.a11y-panel {
+  position: absolute;
+  right: 0;
+  z-index: 1000;
+  width: min(22rem, calc(100vw - 2rem));
+  margin: 0.4rem 0 0;
+  color: var(--tinta);
+  box-shadow: 0 8px 24px rgb(15 42 49 / 25%);
+}
+
+.encabezado :focus-visible {
+  outline-color: #ffd37a;
+}
+
+@media (min-width: 720px) {
+  .encabezado {
+    display: block;
+    padding: 0;
+  }
+
+  .encabezado-fila {
+    padding: 1rem 1.5rem 0.25rem;
+  }
+
+  .encabezado nav {
+    padding: 0 1rem;
+  }
+
+  .encabezado nav ul {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---- Pie ---- */
+.pie {
+  background: var(--tinta);
+  font-size: 0.85rem;
+}
+
+/* ---- Inicio ---- */
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--azul);
+  border-radius: var(--radio);
+}
+
+.hero h2 {
+  margin-top: 0;
+  font-size: clamp(1.7rem, 5vw, 2.6rem);
+}
+
+.hero-texto p {
+  max-width: 38rem;
+  font-size: 1.05rem;
+}
+
+.hero-figura {
+  margin: 0;
+  color: var(--azul);
+}
+
+.hero-figura svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-barra {
+  fill: currentColor;
+}
+
+.hero-figura figcaption {
+  margin-top: 0.4rem;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+}
+
+@media (min-width: 860px) {
+  .hero {
+    grid-template-columns: 1.3fr 1fr;
+    padding: 2rem;
+  }
+}
+
+.accesos li {
+  display: contents;
+}
+
+.accesos {
+  gap: 0.75rem;
+}
+
+.accesos li {
+  display: block;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  transition: border-color 0.15s;
+}
+
+.accesos li:hover {
+  border-color: var(--azul);
+}
+
+.accesos a {
+  display: inline;
+  padding: 0;
+  background: none;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.accesos .nota {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 720px) {
+  .accesos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- Controles y tarjetas ---- */
+.filtros select,
+.filtros input,
+.mapa-controles input,
+.mapa-controles select {
+  background: #fff;
+  border: 1px solid #8fa3a8;
+  border-radius: 0.4rem;
+}
+
+button {
+  font: inherit;
+}
+
+.acciones button,
+.estado-error button {
+  padding: 0 1.1rem;
+  color: #fff;
+  background: var(--azul);
+  border: 0;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.acciones button:hover:not(:disabled) {
+  background: #0a4857;
+}
+
+.resumen div {
+  border-radius: var(--radio);
+  border-top: 3px solid var(--azul);
+}
+
+.resumen dd {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+}
+
+.estados-capas,
+.capas {
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.capas legend {
+  padding: 0 0.4rem;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.capas ul {
+  display: grid;
+  gap: 0.5rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.capas .nota {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 900px) {
+  .capas ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mapa-contenedor,
+.parte-texto,
+.estaciones-lista,
+.grafico-detalle {
+  border-radius: var(--radio);
+}
+
+.mapa-contenedor {
+  box-shadow: 0 2px 10px rgb(15 42 49 / 10%);
+}
+
+/* ---- Alto contraste: el tema no puede pisar el modo accesible ---- */
+html[data-contraste='alto'] {
+  --tinta: #000;
+  --papel: #fff;
+}
+
+html[data-contraste='alto'] .encabezado {
+  background: #000;
+  border-bottom: 3px solid #fff;
+}
+
+html[data-contraste='alto'] .hero {
+  border-left-color: #000;
+}
+
+html[data-contraste='alto'] .a11y-panel {
+  border-width: 3px;
+}
+
+/* ---- Mapa: el mapa se ve sin bajar; las capas se abren a pedido ---- */
+.capas-plegable {
+  margin-bottom: 1rem;
+}
+
+.capas-plegable > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  font-weight: 600;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+
+.capas-plegable[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+.pie {
+  z-index: 1100;
+}
+
+@media (max-width: 719px) {
+  .hero-figura svg {
+    max-height: 7rem;
+  }
+
+  .hero {
+    padding: 1rem;
+  }
+}
+
+/* Casillas de la lista de estaciones (Parte): el estilo de los campos de texto las agrandaba. */
+.filtros .opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 400;
+}
+
+.filtros .opcion input {
+  flex: none;
+  width: 1.25rem;
+  min-height: 0;
+  height: 1.25rem;
+  padding: 0;
+}

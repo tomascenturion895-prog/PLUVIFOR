@@ -499,11 +499,16 @@ export function Mapa() {
         </label>
       </form>
 
-      <PanelCapas
-        activas={capasActivas}
-        totales={totales}
-        alCambiar={(id) => setCapasActivas((actuales) => alternar(actuales, id))}
-      />
+      <details className="capas-plegable">
+        <summary>
+          Capas del mapa: {capasActivas.length} activa{capasActivas.length === 1 ? '' : 's'}
+        </summary>
+        <PanelCapas
+          activas={capasActivas}
+          totales={totales}
+          alCambiar={(id) => setCapasActivas((actuales) => alternar(actuales, id))}
+        />
+      </details>
 
       {!rangoValido && (
         <ErrorEstado
