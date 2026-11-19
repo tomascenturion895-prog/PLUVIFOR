@@ -43,6 +43,10 @@ class SeriesRepository(Protocol):
         self, station_id: int, category: DataCategory, date_from: date, date_to: date
     ) -> StationAccumulated | None: ...
 
+    def accumulated_all(
+        self, category: DataCategory, date_from: date, date_to: date
+    ) -> list[StationAccumulated]: ...
+
     def accumulated_by_group(
         self,
         group: Literal["zone", "department"],
@@ -106,6 +110,11 @@ class SqlSeriesRepository:
         rows = self._accumulated(Station.id == station_id, category, date_from, date_to)
         return rows[0] if rows else None
 
+    def accumulated_all(
+        self, category: DataCategory, date_from: date, date_to: date
+    ) -> list[StationAccumulated]:
+        return self._accumulated(None, category, date_from, date_to)
+
     def accumulated_by_group(
         self,
         group: Literal["zone", "department"],
@@ -144,10 +153,11 @@ class SqlSeriesRepository:
                     RainfallRecord.obs_date.between(date_from, date_to),
                 ),
             )
-            .where(station_filter)
             .group_by(Station.id, Station.name)
             .order_by(Station.id)
         )
+        if station_filter is not None:
+            stmt = stmt.where(station_filter)
         return [
             StationAccumulated(
                 station_id=station_id,
