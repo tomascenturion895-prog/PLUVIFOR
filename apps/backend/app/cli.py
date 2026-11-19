@@ -14,9 +14,11 @@ from app.demo import DEFAULT_DATA_DIR, DemoResetError, reset_demo
 from app.domain.enums import ImportMode
 from app.ingestion.siga_live import SigaLiveClient
 from app.ingestion.types import ImportReport, InvalidFileError
+from app.repositories.gap_estimates import SqlGapEstimateRepository
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
 from app.repositories.references import SqlReferenceRepository
+from app.services.gap_estimation import GapEstimationService
 from app.services.importer import ImportService
 from app.services.quality import QualityService
 from app.services.references import ReferenceService
@@ -64,6 +66,17 @@ def build_parser() -> argparse.ArgumentParser:
     live.add_argument("--commit", action="store_true", help="Guarda (por defecto solo audita)")
 
     commands.add_parser("recompute-flags", help="Recalcula las banderas de calidad")
+
+    estimate = commands.add_parser(
+        "estimate-gaps",
+        help="Estima días sin dato con vecinas y CHIRPS (valores estimados, nunca medidos)",
+    )
+    estimate.add_argument("--from", dest="date_from", type=date.fromisoformat, required=True)
+    estimate.add_argument("--to", dest="date_to", type=date.fromisoformat, required=True)
+    estimate.add_argument("--station-id", type=int, help="Una sola estación (por defecto, todas)")
+    estimate.add_argument(
+        "--dry-run", action="store_true", help="Calcula y cuenta, pero no guarda nada"
+    )
 
     normals = commands.add_parser(
         "import-normals", help="Carga la normal mensual (referencia) con su fuente"
@@ -135,6 +148,30 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"Estaciones revisadas: {len(counts)} · "
                 f"tramos de ceros prolongados: {sum(counts.values())}"
+            )
+            return 0
+        if args.command == "estimate-gaps":
+            with create_session_factory(engine)() as session:
+                service = GapEstimationService(
+                    SqlGapEstimateRepository(session), settings.data_cutoff_date
+                )
+                try:
+                    done = service.run(
+                        args.date_from, args.date_to, args.station_id, dry_run=args.dry_run
+                    )
+                except ValueError as exc:
+                    print(f"Error: {exc}", file=sys.stderr)
+                    return 1
+            print(
+                f"Días sin dato revisados: {done.huecos} · estimados: {done.estimados} "
+                f"· siguen sin dato: {done.sin_estimar}"
+            )
+            for method, count in sorted(done.por_metodo.items()):
+                print(f"  {method}: {count}")
+            print(
+                "Guardado como ESTIMADO en gap_estimates."
+                if done.guardado
+                else "Simulación (--dry-run): no se guardó nada."
             )
             return 0
         if args.command == "import-siga-live":

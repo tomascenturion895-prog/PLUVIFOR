@@ -9,6 +9,7 @@ from app.config import Settings, get_settings
 from app.db.session import get_session
 from app.errors import ApiError
 from app.repositories.field_reports import SqlFieldReportRepository
+from app.repositories.gap_estimates import SqlGapEstimateRepository
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.network_health import SqlNetworkHealthRepository
 from app.repositories.quality import SqlQualityRepository
@@ -17,6 +18,7 @@ from app.repositories.sensor_readings import SqlSensorReadingRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
 from app.services.field_reports import FieldReportService
+from app.services.gap_estimation import GapEstimationService
 from app.services.importer import ImportService
 from app.services.network_health import NetworkHealthService
 from app.services.quality import QualityService
@@ -43,6 +45,13 @@ def get_field_report_service(
     settings: Settings = Depends(get_settings),  # noqa: B008
 ) -> FieldReportService:
     return FieldReportService(SqlFieldReportRepository(session), settings.data_cutoff_date)
+
+
+def get_gap_estimation_service(
+    session: Session = Depends(get_session),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> GapEstimationService:
+    return GapEstimationService(SqlGapEstimateRepository(session), settings.data_cutoff_date)
 
 
 def get_network_health_service(
