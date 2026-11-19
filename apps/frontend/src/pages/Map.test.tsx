@@ -27,7 +27,7 @@ vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="map-container">{children}</div>
   ),
-  TileLayer: () => null,
+  TileLayer: () => <div data-testid="tile-layer" />,
   GeoJSON: ({
     data,
     onEachFeature,
@@ -220,6 +220,12 @@ describe('Mapa provincial', () => {
   it('renderiza el encabezado y la leyenda PROTOTIPO en el footer del app', async () => {
     renderMapa()
     expect(screen.getByRole('heading', { name: /mapa provincial/i })).toBeInTheDocument()
+  })
+
+  it('arranca con mapa base local: no pide teselas de Internet (demo sin conexión)', () => {
+    renderMapa()
+    expect(screen.getByTestId('mapa-contenedor')).toHaveAttribute('data-mapa-base', 'local')
+    expect(screen.queryByTestId('tile-layer')).not.toBeInTheDocument()
   })
 
   it('muestra el contenedor del mapa', () => {
