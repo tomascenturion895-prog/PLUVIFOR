@@ -374,6 +374,11 @@ button:disabled {
   font: inherit;
 }
 
+/* Mapa base local (sin teselas de Internet): fondo liso y los GeoJSON del repositorio encima. */
+.mapa-contenedor[data-mapa-base='local'] .leaflet-container {
+  background: #eaf0f3;
+}
+
 .mapa-popup dl {
   display: grid;
   grid-template-columns: auto 1fr;

@@ -19,6 +19,7 @@ import type { AccumulatedOut, AccumulatedStation, DataCategory, Station } from '
 import { Cargando, ErrorEstado } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria } from '../components/Insignias'
 import { FECHA_CORTE } from '../constants'
+import { MAPA_BASE, TESELAS_OSM } from '../geo/mapaBase'
 import { useAsync } from '../hooks/useAsync'
 import { colorMm, radiusMm, textoMmMapa } from './map-helpers'
 
@@ -493,6 +494,7 @@ export function Mapa() {
         className="mapa-contenedor"
         style={{ height: '500px', width: '100%' }}
         data-testid="mapa-contenedor"
+        data-mapa-base={MAPA_BASE}
       >
         <MapContainer
           center={[-24.5, -60.0]}
@@ -500,10 +502,9 @@ export function Mapa() {
           style={{ height: '100%', width: '100%' }}
           scrollWheelZoom={false}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {MAPA_BASE === 'osm' && (
+            <TileLayer attribution={TESELAS_OSM.atribucion} url={TESELAS_OSM.url} />
+          )}
           <CapasFormosa
             onError={informarErrorGeoJson}
             estiloDepartamentos={estiloDepartamentos}
