@@ -64,3 +64,16 @@ Los conteos de filas, de vacíos y de días con lluvia, y las sumas anuales de l
 coinciden con los calculados sobre la respuesta del SIGA. Falta que el equipo ejecute
 `descargar_siga.py` y guarde los originales: ese script no se pudo ejecutar desde el entorno
 donde se preparó este paquete.
+
+## Originales (`original/`)
+
+Acá están las respuestas del SIGA **tal como llegaron**, sin modificar: un archivo por estación y ventana de dos años (`siga_diario_<estación>_<año>_<año+1>.json`), el catálogo de estaciones y `indice_descarga.json` con las filas de cada pedido. Se bajaron el 18/11/2026.
+
+- Estación 51: 20.268 filas (1960-01-01 a 2015-06-28). Estación 424: 2.955. Estación 425: 1.766.
+- `siga_diario_425_2019_2020.json` está **vacío**: el SIGA no devolvió ninguna fila para esa estación en 2019 y 2020. Es un hueco de la fuente, no ceros.
+- Las series del CSV usan solo desde 2013 en la estación 51 (909 filas), y todas las de las estaciones 424 y 425. Los días que no existen en el original se completan como `sin_fila`: 394 en la 424 y 1.624 en la 425. Por eso 909 + 3.349 + 3.390 = 7.648 filas.
+- Comparación con el CSV: todos los valores `dato` coinciden con `precDiaPlub`, salvo 2 diferencias de redondeo en la estación 424 (9,8 contra 9,800001 y 44,6 contra 44,59998).
+
+## Cambio del endpoint
+
+El archivo de datos del SIGA cambia de nombre de vez en cuando: el que usaba la primera versión de `descargar_siga.py` dejó de existir y hoy es otro. El script ahora lo busca solo en el JavaScript del sitio. Si el sitio cambia de estructura y no lo encuentra, avisa y se detiene.
