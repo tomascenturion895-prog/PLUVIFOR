@@ -180,7 +180,9 @@ Una racha de ceros no es una propiedad de un día sino de un tramo. Por eso las 
 | `detail` | texto (JSON) | datos que explican la advertencia (por ejemplo, acumulado de la estación vecina en el mismo tramo) |
 | `rule_version` | texto | versión de la regla que la generó, para poder recalcular |
 
-Las banderas se **recalculan** a partir de los registros; no son un dato de la fuente.
+Las banderas se **recalculan** a partir de los registros; no son un dato de la fuente. Se recalculan solas después de cada carga confirmada (API y línea de comandos) y a mano con `python -m app.cli recompute-flags`; correrlo dos veces no duplica nada (se reemplaza el conjunto de la estación y la regla).
+
+**Qué columnas lee Go:** Go no calcula banderas, solo las lee. Usa `station_id`, `code`, `start_date`, `end_date`, `severity`, `detail` y `rule_version`. Los umbrales viven en Python (`app/domain/quality.py`) y se guardan en `detail` (por ejemplo `min_days`); no se cambian sin avisar.
 
 ### `import_logs` — registro de cada carga (auditoría)
 
