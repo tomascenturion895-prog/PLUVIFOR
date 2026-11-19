@@ -1,19 +1,21 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
+import Help from './pages/Help'
+import Home from './pages/Home'
 import Comparador from './pages/Compare'
 import FieldReport from './pages/FieldReport'
 import Importar from './pages/Importar'
 import NetworkHealth from './pages/NetworkHealth'
 import Maqueta from './pages/Maqueta'
 import Parte from './pages/Parte'
-import { Ayuda, Inicio, Mapa, NoEncontrada } from './pages/Paginas'
+import { Mapa, NoEncontrada } from './pages/Paginas'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Inicio />} />
+        <Route index element={<Home />} />
         <Route path="maqueta" element={<Maqueta />} />
         <Route path="mapa" element={<Mapa />} />
         <Route path="estacion" element={<Estacion />} />
@@ -23,7 +25,7 @@ export default function App() {
         <Route path="reporte" element={<FieldReport />} />
         <Route path="importar" element={<Importar />} />
         <Route path="salud" element={<NetworkHealth />} />
-        <Route path="ayuda" element={<Ayuda />} />
+        <Route path="ayuda" element={<Help />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>
