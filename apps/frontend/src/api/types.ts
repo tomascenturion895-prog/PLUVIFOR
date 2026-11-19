@@ -270,6 +270,50 @@ export interface GapEstimateList {
   offset: number
 }
 
+export interface IntenseDay {
+  obs_date: string
+  mm: number
+}
+
+export interface DryStreak {
+  start_date: string
+  end_date: string
+  days: number
+  /** Toca un período con la advertencia de ceros prolongados: puede ser un sensor sin registrar. */
+  zero_run_warning: boolean
+}
+
+export interface EventsStation {
+  station_id: number
+  station_name: string
+  summary: Summary
+  /** Incluye los días de 100 mm o más. */
+  days_50mm_or_more: IntenseDay[]
+  days_100mm_or_more: IntenseDay[]
+  dry_streaks: DryStreak[]
+  longest_dry_streak: DryStreak | null
+  warnings: Warning[]
+}
+
+export interface EventsOut {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  min_dry_days: number
+  stations: EventsStation[]
+  notice: string
+  description: string
+}
+
+export interface ClimateReferenceOut {
+  station_id: number
+  station_name: string
+  category: 'referencia'
+  /** Vacío = no hay normal cargada para esta estación (no es 0). */
+  normals: { period: string; source_note: string; months: { month: number; normal_mm: number }[] }[]
+  notice: string
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {

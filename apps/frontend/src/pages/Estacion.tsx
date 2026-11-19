@@ -5,6 +5,7 @@ import type { Series } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria, InsigniaEstado } from '../components/Insignias'
 import { textoMm } from '../components/insignias-datos'
+import Destacados from '../components/Destacados'
 import EstimacionesHuecos from '../components/EstimacionesHuecos'
 import SerieDiaria from '../components/SerieDiaria'
 import { FECHA_CORTE } from '../constants'
@@ -101,6 +102,7 @@ function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: s
           </tbody>
         </table>
       </details>
+      <Destacados stationId={serie.station_id} desde={desde} hasta={hasta} />
       <EstimacionesHuecos stationId={serie.station_id} desde={desde} hasta={hasta} />
     </>
   )
