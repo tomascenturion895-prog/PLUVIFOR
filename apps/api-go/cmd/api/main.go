@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -34,7 +35,7 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:              ":" + cfg.Port,
+		Addr:              net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler:           httpapi.New(cfg, logger, opts...),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
@@ -45,7 +46,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go func() {
-		logger.Info("API en Go escuchando", "puerto", cfg.Port, "env", cfg.Env, "base", cfg.Database.Engine, "datos_en", cfg.BackendURL.Host)
+		logger.Info("API en Go escuchando", "direccion", net.JoinHostPort(cfg.Host, cfg.Port), "env", cfg.Env, "base", cfg.Database.Engine, "datos_en", cfg.BackendURL.Host)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Error("el servidor se detuvo", "error", err)
 			stop()

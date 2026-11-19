@@ -120,3 +120,29 @@ func TestLimitesDePedidosPorDefectoYValidacion(t *testing.T) {
 		t.Fatalf("0 debe desactivar el límite: %+v %v", cfg, err)
 	}
 }
+
+func TestEscuchaSoloEnLocalhostPorDefecto(t *testing.T) {
+	cfg, err := Load(func(string) (string, bool) { return "", false })
+	if err != nil || cfg.Host != "127.0.0.1" {
+		t.Fatalf("host = %q err = %v", cfg.Host, err)
+	}
+	cfg, err = Load(func(k string) (string, bool) {
+		if k == "API_GO_HOST" {
+			return "0.0.0.0", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.Host != "0.0.0.0" {
+		t.Fatalf("API_GO_HOST debía poder abrirse a la red a pedido: %q %v", cfg.Host, err)
+	}
+	for _, malo := range []string{"host:8080", "a b", "http://x", "x/y"} {
+		if _, err := Load(func(k string) (string, bool) {
+			if k == "API_GO_HOST" {
+				return malo, true
+			}
+			return "", false
+		}); err == nil {
+			t.Errorf("%q debía rechazarse", malo)
+		}
+	}
+}
