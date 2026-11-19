@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { InsigniaAdvertencia, InsigniaCategoria, InsigniaEstado } from './Insignias'
+import {
+  InsigniaAdvertencia,
+  InsigniaCategoria,
+  InsigniaEstado,
+  InsigniaSimulado,
+} from './Insignias'
 import { ADVERTENCIAS, textoMm, type CodigoAdvertencia } from './insignias-datos'
 
 describe('insignias de estado', () => {
@@ -56,6 +61,16 @@ describe('insignias de categoría', () => {
       return clase
     })
     expect(new Set(clases).size).toBe(3)
+  })
+})
+
+describe('insignia de lectura simulada', () => {
+  it('dice Simulado, con símbolo propio y distinta de las tres categorías de datos', () => {
+    const { container } = render(<InsigniaSimulado />)
+    expect(screen.getByText('Simulado')).toBeInTheDocument()
+    expect(screen.getByText(/no de un sensor real/)).toBeInTheDocument()
+    expect(container.querySelector('.insignia-simulado')).not.toBeNull()
+    expect(container.querySelector('.insignia-simbolo')?.textContent).toBe('⚙')
   })
 })
 

@@ -226,6 +226,25 @@ export interface FieldReport {
   created_at: string
 }
 
+/** Lectura de un dispositivo. Hoy no hay sensores reales: la categoría siempre es «simulado». */
+export interface SensorReading {
+  id: number
+  device_id: string
+  read_at: string
+  mm: number
+  lat: number | null
+  lon: number | null
+  category: 'simulado'
+  source: string
+  created_at: string
+}
+
+export interface SensorReadingList {
+  items: SensorReading[]
+  total: number
+  notice: string
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {

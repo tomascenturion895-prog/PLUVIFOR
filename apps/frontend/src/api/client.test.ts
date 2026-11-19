@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, getRainfall, getStations, request } from './client'
+import { ApiError, getRainfall, getSensorReadings, getStations, request } from './client'
 
 function responder(status: number, cuerpo?: unknown, texto?: string) {
   vi.stubGlobal(
@@ -28,6 +28,17 @@ describe('cliente de la API', () => {
     await getRainfall({ stationId: 7, from: '2016-01-01', to: '2016-01-31' })
     const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string
     expect(url).toBe('/api/rainfall?station_id=7&from=2016-01-01&to=2016-01-31')
+  })
+
+  it('pide las lecturas de sensores con su filtro y sin parámetros vacíos', async () => {
+    responder(200, { items: [], total: 0, notice: 'n' })
+    await getSensorReadings({ deviceId: 'SIM-001', limit: 10 })
+    await getSensorReadings()
+    const llamadas = (fetch as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0] as string)
+    expect(llamadas).toEqual([
+      '/api/sensor-readings?device_id=SIM-001&limit=10',
+      '/api/sensor-readings',
+    ])
   })
 
   it('usa el mensaje en español que manda la API', async () => {

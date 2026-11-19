@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/civil"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/config"
+	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/dotenv"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/httpapi"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/proxy"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/sqlstore"
@@ -20,12 +22,16 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+	envFile, envCount := dotenv.LoadNearest() // el entorno real gana sobre el archivo
 	cfg, err := config.FromEnv()
 	if err != nil {
 		logger.Error("configuración inválida", "error", err)
 		os.Exit(1)
 	}
 
+	if envFile != "" {
+		logger.Info("variables leídas de .env", "archivo", envFile, "nuevas", envCount)
+	}
 	opts := []httpapi.Option{httpapi.WithBackend(proxy.New(cfg.BackendURL, logger))}
 	if store := openStore(cfg, logger); store != nil {
 		defer store.Close()
@@ -34,7 +40,7 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:              ":" + cfg.Port,
+		Addr:              net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler:           httpapi.New(cfg, logger, opts...),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
@@ -45,7 +51,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go func() {
-		logger.Info("API en Go escuchando", "puerto", cfg.Port, "env", cfg.Env, "base", cfg.Database.Engine, "datos_en", cfg.BackendURL.Host)
+		logger.Info("API en Go escuchando", "direccion", net.JoinHostPort(cfg.Host, cfg.Port), "env", cfg.Env, "base", cfg.Database.Engine, "datos_en", cfg.BackendURL.Host)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Error("el servidor se detuvo", "error", err)
 			stop()
@@ -66,7 +72,7 @@ func openStore(cfg config.Config, logger *slog.Logger) *sqlstore.Store {
 		logger.Warn("Go todavía lee solo SQLite: estaciones y lluvia se reenvían a Python", "base", cfg.Database.Engine)
 		return nil
 	}
-	store, err := sqlstore.OpenSQLite(cfg.Database.SQLitePath)
+	store, err := sqlstore.OpenSQLite(config.ResolveSQLitePath(cfg.Database.SQLitePath, config.FileExists))
 	if err != nil {
 		logger.Warn("estaciones y lluvia se reenvían a Python", "motivo", err.Error())
 		return nil

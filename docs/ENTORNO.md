@@ -149,6 +149,18 @@ Se ejecutan los dos a la vez, cada uno en su terminal, y el backend tiene que es
 
 Pruebas de extremo a extremo en navegador real (escritorio, tableta y celular): `npm run test:e2e`. Detalles en `docs/qa/analisis-responsive.md`.
 
+### Demo sin conexión a Internet
+
+La demo funciona con el wifi apagado (SCRUM-92). Lo único que necesita es haber instalado todo antes (`pip install`, `npm ci`) y tener la base de demo: `python -m app.cli reset-demo --yes` (carga los datos versionados en SQLite, sin red).
+
+- **Mapa:** por defecto el mapa base es **local**: se dibuja solo con los GeoJSON de `apps/frontend/public/geo` (provincia, departamentos y cursos de agua), sobre un fondo liso. No pide nada a Internet. Para sumar las calles de OpenStreetMap, con conexión, poné `VITE_MAPA_BASE=osm` en el `.env` y reiniciá `npm run dev`.
+- **Interfaz:** no usa CDN, fuentes ni imágenes externas. Una prueba (`src/geo/sinInternet.test.ts`) falla si alguien agrega una dirección externa en `src` o en `index.html`.
+- **Datos:** salen de SQLite local. El conector del SIGA en vivo, si no hay red, usa el CSV versionado y lo avisa.
+
+Comprobado el 19/11/2026 en un navegador con todos los pedidos externos bloqueados: el mapa carga las capas del repositorio, 0 pedidos externos y 0 errores de JavaScript. Con `VITE_MAPA_BASE=osm` el mismo navegador intenta bajar 15 teselas, así que la diferencia se nota.
+
+**Qué falla sin conexión (y es esperable):** con `VITE_MAPA_BASE=osm` el mapa queda sin calles; importar datos en vivo desde el SIGA o CHIRPS no se puede (el SIGA cae al CSV); instalar dependencias nuevas.
+
 ## 8. Revisión automática antes de cada commit (recomendado)
 
 ```bash

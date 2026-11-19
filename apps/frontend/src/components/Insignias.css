@@ -47,6 +47,13 @@
   border-style: dotted;
 }
 
+/* Lecturas simuladas: línea de guiones para que no se confundan con lo medido */
+.insignia-simulado {
+  color: #1f4e79;
+  background: #e6f0fa;
+  border-style: dashed;
+}
+
 /* Advertencias de comparabilidad */
 .insignia-advertencia {
   color: #7a1f1f;

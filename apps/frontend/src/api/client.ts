@@ -5,6 +5,7 @@ import type {
   ImportLog,
   FieldReport,
   FieldReportIn,
+  SensorReadingList,
   ImportReport,
   NetworkHealth,
   Report,
@@ -204,6 +205,17 @@ export function postFieldReport(
     body: JSON.stringify(reporte),
     signal,
   })
+}
+
+/** Últimas lecturas de dispositivos. Siempre simuladas: no se suman a las series de lluvia. */
+export function getSensorReadings(
+  params: { deviceId?: string; limit?: number } = {},
+  signal?: AbortSignal,
+): Promise<SensorReadingList> {
+  return request<SensorReadingList>(
+    `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit })}`,
+    { signal },
+  )
 }
 
 /** Estaciones activas, en silencio y sin datos, calculadas contra la fecha de corte. */
