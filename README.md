@@ -45,7 +45,7 @@ El detalle y el tratamiento de cada una están en `docs/` (ficha de fuentes y re
 
 **Incluye:** consulta y comparación de lluvia, calidad del dato, mapa provincial, parte pluvial.
 
-**No incluye** (corresponde a otros desafíos de la misión): alturas de ríos y riachos, predicción de afectaciones, zonas de riesgo, evacuaciones, identificación de atajaderos.
+**Requiere fundamento** (puede sumarse si se justifica cómo ayuda a la solución; ver `AGENTS.md`): alturas de ríos y riachos, predicción de afectaciones, zonas de riesgo, evacuaciones, identificación de atajaderos.
 
 ## Tecnología
 
