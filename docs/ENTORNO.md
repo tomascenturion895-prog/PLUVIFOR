@@ -158,7 +158,7 @@ pre-commit install
 
 Frena el commit si hay una clave o un secreto. Ver `docs/seguridad-secretos.md`.
 
-## 8. Tu herramienta de IA
+## 9. Tu herramienta de IA
 
 Todas leen el mismo contexto del proyecto, que está en `AGENTS.md`.
 
@@ -172,7 +172,7 @@ Todas leen el mismo contexto del proyecto, que está en `AGENTS.md`.
 
 Las reglas de uso de IA (quién es responsable de lo que entra, no pegar secretos en chats) están en `docs/CONTRIBUTING.md`.
 
-## 9. Problemas frecuentes
+## 10. Problemas frecuentes
 
 | Problema | Qué hacer |
 |---|---|
@@ -183,7 +183,7 @@ Las reglas de uso de IA (quién es responsable de lo que entra, no pegar secreto
 | Git muestra todos los archivos como modificados en Windows | Es un tema de finales de línea; el repositorio ya los normaliza (`.gitattributes`). Hacer `git pull` y reintentar |
 | `git push` pide credenciales | Iniciar sesión en GitHub desde Git Credential Manager (Windows) o usar un token personal; **nunca** pegar el token en un chat |
 
-## 10. Antes de abrir tu primer PR
+## 11. Antes de abrir tu primer PR
 
 1. Leer `docs/CONTRIBUTING.md` (ramas, commits, Pull Requests, Definition of Done).
 2. Crear tu rama desde `main` actualizada: `feature/SCRUM-<n>-descripcion`.
