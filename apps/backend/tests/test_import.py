@@ -5,8 +5,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.domain.enums import DataCategory, ImportMode, RainState
-from app.ingestion.siga import InvalidFileError
-from app.ingestion.types import RawRainRow, RejectionReason
+from app.ingestion.types import InvalidFileError, RawRainRow, RejectionReason
 from app.ingestion.validation import RowValidator
 from app.models import ImportLog, RainfallRecord, Station
 from app.repositories.ingestion import SqlIngestionRepository

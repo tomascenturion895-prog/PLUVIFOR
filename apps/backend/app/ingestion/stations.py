@@ -4,8 +4,7 @@ import csv
 import io
 from datetime import date
 
-from app.ingestion.siga import InvalidFileError
-from app.ingestion.types import Rejection, RejectionReason, StationRow
+from app.ingestion.types import InvalidFileError, Rejection, RejectionReason, StationRow
 
 REQUIRED_COLUMNS = {"estacion_id", "nombre", "lat", "lon"}
 

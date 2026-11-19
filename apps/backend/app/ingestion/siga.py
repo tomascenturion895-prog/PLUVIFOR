@@ -1,10 +1,14 @@
 """Lector del CSV de lluvia diaria del SIGA (`docs/datos/lluvia_diaria_siga_formosa.csv`)."""
 
+__all__ = ["REQUIRED_COLUMNS", "InvalidFileError", "SigaCsvConnector", "read_rainfall_rows"]
+
 import csv
 import io
 from collections.abc import Iterator
 
-from app.ingestion.types import RawRainRow
+from app.ingestion.sources import SIGA_INTA, SourceDefinition
+from app.ingestion.stations import read_stations
+from app.ingestion.types import InvalidFileError, RawRainRow, Rejection, StationRow
 
 REQUIRED_COLUMNS = {
     "estacion_id",
@@ -15,10 +19,6 @@ REQUIRED_COLUMNS = {
     "estado",
     "categoria",
 }
-
-
-class InvalidFileError(ValueError):
-    """El archivo no tiene la forma esperada (faltan columnas, está vacío...)."""
 
 
 def read_rainfall_rows(text: str) -> Iterator[RawRainRow]:
@@ -37,3 +37,15 @@ def read_rainfall_rows(text: str) -> Iterator[RawRainRow]:
             state=(row["estado"] or "").strip(),
             category=(row["categoria"] or "").strip(),
         )
+
+
+class SigaCsvConnector:
+    """Conector del SIGA/INTA que lee los CSV versionados en `docs/datos/`."""
+
+    definition: SourceDefinition = SIGA_INTA
+
+    def read_stations(self, text: str) -> tuple[list[StationRow], list[Rejection]]:
+        return read_stations(text)
+
+    def read_rainfall(self, text: str) -> Iterator[RawRainRow]:
+        return read_rainfall_rows(text)

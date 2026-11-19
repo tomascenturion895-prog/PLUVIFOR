@@ -1,13 +1,12 @@
 import hashlib
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime
 from pathlib import PurePath
 
 from app.domain.enums import ImportMode
-from app.ingestion.siga import InvalidFileError, read_rainfall_rows
-from app.ingestion.sources import KNOWN_SOURCES
-from app.ingestion.stations import read_stations
-from app.ingestion.types import ImportReport, RainRow, Rejection
+from app.ingestion.registry import DEFAULT_CONNECTORS
+from app.ingestion.sources import SourceConnector
+from app.ingestion.types import ImportReport, InvalidFileError, RainRow, Rejection
 from app.ingestion.validation import RowValidator
 from app.repositories.ingestion import IngestionRepository
 
@@ -33,17 +32,23 @@ class ImportService:
         repository: IngestionRepository,
         cutoff: date,
         clock: Callable[[], datetime] = lambda: datetime.now(UTC),
+        connectors: Mapping[str, SourceConnector] | None = None,
     ):
         self._repository = repository
         self._cutoff = cutoff
         self._clock = clock
+        self._connectors = DEFAULT_CONNECTORS if connectors is None else connectors
+
+    def _connector(self, source_code: str) -> SourceConnector:
+        connector = self._connectors.get(source_code)
+        if connector is None:
+            raise InvalidFileError(f"Fuente desconocida: {source_code}")
+        return connector
 
     def import_stations(self, source_code: str, filename: str, content: bytes) -> ImportReport:
-        definition = KNOWN_SOURCES.get(source_code)
-        if definition is None:
-            raise InvalidFileError(f"Fuente desconocida: {source_code}")
-        text = _decode(content)
-        rows, rejections = read_stations(text)
+        connector = self._connector(source_code)
+        definition = connector.definition
+        rows, rejections = connector.read_stations(_decode(content))
         report = ImportReport(
             filename=_safe_name(filename),
             sha256=hashlib.sha256(content).hexdigest(),
@@ -65,6 +70,7 @@ class ImportService:
         self, source_code: str, filename: str, content: bytes, mode: ImportMode
     ) -> ImportReport:
         started_at = self._clock()
+        connector = self._connector(source_code)
         source_id = self._repository.find_source_id(source_code)
         if source_id is None:
             raise InvalidFileError("La fuente no existe: importar primero el catálogo.")
@@ -76,7 +82,7 @@ class ImportService:
             mode=mode.value,
         )
         validator = RowValidator(self._cutoff, set(station_ids))
-        for raw in read_rainfall_rows(_decode(content)):
+        for raw in connector.read_rainfall(_decode(content)):
             report.rows_read += 1
             result = validator.validate(raw)
             if isinstance(result, RainRow):

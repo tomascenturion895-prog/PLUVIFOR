@@ -7,6 +7,10 @@ from enum import StrEnum
 from app.domain.enums import DataCategory, RainState, Validation
 
 
+class InvalidFileError(ValueError):
+    """El archivo no tiene la forma esperada (faltan columnas, está vacío...)."""
+
+
 class RejectionReason(StrEnum):
     """Nada se descarta en silencio: cada rechazo lleva uno de estos motivos."""
 
