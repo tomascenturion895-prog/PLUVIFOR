@@ -568,3 +568,17 @@ button:disabled {
     align-items: start;
   }
 }
+
+/* Maqueta en celular: las tablas de los paneles se desplazan dentro de su caja, la página no */
+.maqueta-layout > * {
+  min-width: 0;
+}
+
+.panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tabla-scroll {
+  position: relative;
+  overflow-x: auto;
+}
