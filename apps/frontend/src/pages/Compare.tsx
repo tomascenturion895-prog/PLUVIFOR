@@ -17,6 +17,7 @@ import { textoMm } from '../components/insignias-datos'
 import { esDaltonico } from '../components/tema/tema-colores'
 import { FECHA_CORTE, MAX_ESTACIONES_COMPARADOR } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 import { alinearSeries, claveDe, diferenciaCobertura } from './compare-datos'
 
 const COLORES_BASE = ['#f05514', '#0284c7', '#16a34a', '#8b5cf6']
@@ -38,18 +39,19 @@ function restarDias(fecha: string, dias: number): string {
 }
 
 function Resultado({ datos }: { datos: SeriesCompare }) {
+  const { t } = useIdioma()
   const filas = alinearSeries(datos.stations)
   const dif = diferenciaCobertura(datos.stations)
   return (
-    <article aria-label="Resultado de la comparación">
+    <article aria-label={t('comparador.resultadoAria')}>
       <p className="metadatos">
         <InsigniaCategoria categoria={datos.category} />{' '}
         <span>
-          Del {datos.date_from} al {datos.date_to} · corte de datos {datos.data_cutoff_date}
+          {datos.date_from} – {datos.date_to} · {datos.data_cutoff_date}
         </span>
       </p>
       {datos.comparability_warnings.length > 0 ? (
-        <ul className="advertencias" aria-label="Advertencias de comparabilidad">
+        <ul className="advertencias" aria-label={t('comparador.advertenciasAria')}>
           {datos.comparability_warnings.map((w) => (
             <li key={`${w.code}-${w.start_date ?? ''}`}>
               <InsigniaAdvertencia codigo={w.code} mensaje={w.message} />
@@ -57,11 +59,11 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
           ))}
         </ul>
       ) : (
-        <p className="nota">No se detectaron advertencias de comparabilidad entre estas series.</p>
+        <p className="nota">{t('comparador.sinAdvertencias')}</p>
       )}
       {datos.not_evaluated.length > 0 && (
         <details>
-          <summary>Advertencias que no se pudieron evaluar</summary>
+          <summary>{t('comparador.noEvaluadas')}</summary>
           <ul>
             {datos.not_evaluated.map((n) => (
               <li key={n.code}>{n.reason}</li>

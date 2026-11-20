@@ -1,3 +1,4 @@
+import { useIdioma } from '../../i18n/usar-idioma'
 import { ATAJOS, type Atajo } from './atajos'
 
 export default function Atajos({
@@ -7,9 +8,10 @@ export default function Atajos({
   activo: Atajo['id'] | null
   alElegir: (atajo: Atajo) => void
 }) {
+  const { t } = useIdioma()
   return (
-    <section className="atajos" aria-label="Atajos">
-      <h3>Atajos</h3>
+    <section className="atajos" aria-label={t('atajos.titulo')}>
+      <h3>{t('atajos.titulo')}</h3>
       <ul>
         {ATAJOS.map((a) => (
           <li key={a.id}>

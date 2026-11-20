@@ -1,67 +1,43 @@
 import { Link } from 'react-router-dom'
+import { useIdioma } from '../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../i18n/traducciones/es'
 import Icono, { type NombreIcono } from '../material/Icono'
 
-const ACCESOS = [
-  {
-    ruta: '/vista-3d',
-    icono: 'vista3d' as NombreIcono,
-    nombre: 'Vista 3D',
-    texto: 'La provincia en 3D: dónde la lluvia observada y los ríos se cruzan.',
-  },
-  {
-    ruta: '/maqueta',
-    icono: 'maqueta' as NombreIcono,
-    nombre: 'Maqueta',
-    texto: 'La provincia de un vistazo: tocá un departamento y mirá cuánto llovió.',
-  },
-  {
-    ruta: '/mapa',
-    icono: 'mapa' as NombreIcono,
-    nombre: 'Mapa',
-    texto: 'Las estaciones sobre el mapa, con su acumulado del período.',
-  },
+const ACCESOS: readonly {
+  ruta: string
+  icono: NombreIcono
+  nombre: ClaveTraduccion
+  texto: ClaveTraduccion
+}[] = [
+  { ruta: '/vista-3d', icono: 'vista3d', nombre: 'nav.vista3d', texto: 'home.acceso.vista3d' },
+  { ruta: '/maqueta', icono: 'maqueta', nombre: 'nav.maqueta', texto: 'home.acceso.maqueta' },
+  { ruta: '/mapa', icono: 'mapa', nombre: 'nav.mapa', texto: 'home.acceso.mapa' },
   {
     ruta: '/comparador',
-    icono: 'comparador' as NombreIcono,
-    nombre: 'Comparador',
-    texto: 'Compará estaciones y períodos, con sus advertencias.',
+    icono: 'comparador',
+    nombre: 'nav.comparador',
+    texto: 'home.acceso.comparador',
   },
-  {
-    ruta: '/parte',
-    icono: 'parte' as NombreIcono,
-    nombre: 'Parte pluvial',
-    texto: 'Un texto listo para copiar o imprimir, con la fuente y la calidad.',
-  },
-  {
-    ruta: '/reporte',
-    icono: 'reporte' as NombreIcono,
-    nombre: 'Reporte de campo',
-    texto: 'Cargá la lluvia anotada donde no hay estación.',
-  },
-] as const
+  { ruta: '/parte', icono: 'parte', nombre: 'nav.parte', texto: 'home.acceso.parte' },
+  { ruta: '/reporte', icono: 'reporte', nombre: 'nav.reporte', texto: 'home.acceso.reporte' },
+]
 
 export default function Home() {
+  const { t } = useIdioma()
   return (
     <section>
       <div className="hero">
         <div className="hero-texto">
-          <h2>¿Cuánto llovió, dónde y en qué período?</h2>
+          <h2>{t('home.titulo')}</h2>
           <p>
-            PLUVIFOR responde esa pregunta para la provincia de Formosa y siempre dice{' '}
-            <strong>qué tan confiable es cada dato</strong>: de qué estación viene, si es medido o
-            estimado y qué advertencias tiene.
+            {t('home.p1.inicio')}
+            <strong>{t('home.p1.destacado')}</strong>
+            {t('home.p1.fin')}
           </p>
-          <p>
-            Un día sin dato se muestra como «sin dato», nunca como 0 mm: que falte la medición no
-            significa que no haya llovido.
-          </p>
+          <p>{t('home.p2')}</p>
         </div>
         <figure className="hero-figura">
-          <svg
-            viewBox="0 0 280 150"
-            role="img"
-            aria-label="Ilustración: barras de lluvia diaria; los días sin dato se dibujan rayados, no como cero."
-          >
+          <svg viewBox="0 0 280 150" role="img" aria-label={t('home.figura.aria')}>
             <defs>
               <pattern
                 id="hero-rayas"
@@ -98,23 +74,22 @@ export default function Home() {
               ),
             )}
           </svg>
-          <figcaption>
-            Ilustración, no son datos. Las franjas rayadas son días sin dato: no significan 0 mm.
-          </figcaption>
+          <figcaption>{t('home.figura.pie')}</figcaption>
         </figure>
       </div>
-      <ul className="accesos" aria-label="Accesos rápidos">
+      <ul className="accesos" aria-label={t('home.accesos.aria')}>
         {ACCESOS.map((a) => (
           <li key={a.ruta}>
             <Icono nombre={a.icono} className="acceso-icono" />
-            <Link to={a.ruta}>{a.nombre}</Link>
-            <span className="nota"> — {a.texto}</span>
+            <Link to={a.ruta}>{t(a.nombre)}</Link>
+            <span className="nota"> — {t(a.texto)}</span>
           </li>
         ))}
       </ul>
       <p className="nota">
-        ¿Dudas sobre un color, un símbolo o una advertencia? Mirá la <Link to="/ayuda">Ayuda</Link>.
-        Los datos llegan hasta el 31/10/2026.
+        {t('home.pie.inicio')}
+        <Link to="/ayuda">{t('nav.ayuda')}</Link>
+        {t('home.pie.fin')}
       </p>
     </section>
   )

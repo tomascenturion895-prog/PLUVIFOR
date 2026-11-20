@@ -21,6 +21,7 @@ import { periodoValido, type SeleccionValor } from '../components/panels/panels-
 import Seleccion from '../components/panels/Seleccion'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 import { colorMm, textoMmMapa } from './map-helpers'
 
 const DEPARTAMENTOS = '/geo/formosa_departamentos.geojson'
@@ -62,8 +63,9 @@ function mapaPorId(a: AccumulatedOut | null): Map<number, AccumulatedStation> {
 }
 
 function Leyenda() {
+  const { t } = useIdioma()
   const items = [
-    { color: colorMm(0), etiqueta: '0 mm (dato real)' },
+    { color: colorMm(0), etiqueta: t('maqueta.datoReal0') },
     { color: colorMm(5), etiqueta: '< 10 mm' },
     { color: colorMm(20), etiqueta: '10–30 mm' },
     { color: colorMm(45), etiqueta: '30–60 mm' },
@@ -71,7 +73,7 @@ function Leyenda() {
     { color: colorMm(120), etiqueta: '≥ 100 mm' },
   ]
   return (
-    <ul className="mapa-leyenda" aria-label="Leyenda de la maqueta">
+    <ul className="mapa-leyenda" aria-label={t('maqueta.leyendaAria')}>
       {items.map((i) => (
         <li key={i.etiqueta} className="mapa-leyenda-item">
           <span className="mapa-leyenda-color" style={{ background: i.color }} aria-hidden="true" />
@@ -80,20 +82,16 @@ function Leyenda() {
       ))}
       <li className="mapa-leyenda-item">
         <span className="mapa-leyenda-color mapa-leyenda-color-sin-dato" aria-hidden="true" />
-        Sin dato (rayado): no es 0 mm
+        {t('maqueta.sinDatoLeyenda')}
       </li>
       <li className="mapa-leyenda-item">
-        <span className="marca-estado marca-estado-en_silencio" aria-hidden="true" /> Estación en
-        silencio (apagada)
+        <span className="marca-estado marca-estado-en_silencio" aria-hidden="true" />{' '}
+        {t('maqueta.silencioLeyenda')}
       </li>
       <li className="mapa-leyenda-item">
-        <span className="mapa-leyenda-rio" aria-hidden="true" /> Cursos de agua (IGN, referencia
-        cartográfica)
+        <span className="mapa-leyenda-rio" aria-hidden="true" /> {t('maqueta.riosLeyenda')}
       </li>
-      <li className="nota">
-        La altura repite el mayor acumulado individual del departamento; sin dato queda a ras y
-        rayado. Relieve del terreno: pendiente, todavía no hay una fuente de altitud verificada.
-      </li>
+      <li className="nota">{t('maqueta.alturaNota')}</li>
     </ul>
   )
 }
