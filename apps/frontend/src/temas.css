@@ -9,6 +9,48 @@
  *   daltónico: base oscura, acento azul cielo #56b4e9 (Okabe-Ito) sobre #0b1322 → 8,3:1
  */
 
+/* ---- Selector de idioma (común a los tres temas) ---- */
+.selector-idioma {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  padding: 0 0.65rem;
+  color: var(--tinta);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+}
+
+.selector-idioma-icono {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.selector-idioma-select {
+  min-height: 36px !important;
+  padding: 0 0.25rem !important;
+  font: inherit;
+  font-size: 0.85rem !important;
+  font-weight: 500;
+  color: var(--tinta) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  cursor: pointer;
+}
+
+.selector-idioma-select:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+.selector-idioma-select option {
+  color: var(--tinta);
+  background: var(--superficie);
+}
+
 /* ---- Selector de tema (común a los tres temas) ---- */
 .encabezado-acciones {
   display: flex;

@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import { useIdioma } from '../../i18n/usar-idioma'
 import Icono from '../../material/Icono'
 import {
   aplicar,
@@ -12,10 +13,6 @@ import {
   type Preferencias,
 } from './a11y-datos'
 
-const ETIQUETA_TEXTO = { normal: 'Normal', grande: 'Grande', 'muy-grande': 'Muy grande' } as const
-const ETIQUETA_CONTRASTE = { normal: 'Normal', alto: 'Alto contraste' } as const
-const ETIQUETA_MOVIMIENTO = { normal: 'Normal', reducido: 'Reducir movimiento' } as const
-
 function sistemaPideMenosMovimiento(): boolean {
   return typeof window.matchMedia === 'function'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -25,10 +22,25 @@ function sistemaPideMenosMovimiento(): boolean {
 /** Tamaño de texto, alto contraste y reducción de movimiento, guardados en el dispositivo. */
 export default function PanelAccesibilidad() {
   const id = useId()
+  const { t } = useIdioma()
   const [abierto, setAbierto] = useState(false)
   const [prefs, setPrefs] = useState<Preferencias>(() =>
     leer(almacenLocal(), porDefecto(sistemaPideMenosMovimiento())),
   )
+
+  const etiquetaTexto = {
+    normal: t('a11y.texto.normal'),
+    grande: t('a11y.texto.grande'),
+    'muy-grande': t('a11y.texto.muyGrande'),
+  } as const
+  const etiquetaContraste = {
+    normal: t('a11y.contraste.normal'),
+    alto: t('a11y.contraste.alto'),
+  } as const
+  const etiquetaMovimiento = {
+    normal: t('a11y.movimiento.normal'),
+    reducido: t('a11y.movimiento.reducido'),
+  } as const
 
   useEffect(() => {
     aplicar(document.documentElement, prefs)
@@ -56,37 +68,34 @@ export default function PanelAccesibilidad() {
         onClick={() => setAbierto((v) => !v)}
       >
         <Icono nombre="accesibilidad" />
-        Accesibilidad
+        {t('a11y.boton')}
       </button>
       {abierto && (
-        <section id={id} className="a11y-panel" aria-label="Opciones de accesibilidad">
+        <section id={id} className="a11y-panel" aria-label={t('a11y.panel')}>
           <Grupo
-            nombre="Tamaño del texto"
+            nombre={t('a11y.texto')}
             opciones={TEXTOS}
-            etiquetas={ETIQUETA_TEXTO}
+            etiquetas={etiquetaTexto}
             valor={prefs.texto}
             alCambiar={(texto) => cambiar({ texto })}
           />
           <Grupo
-            nombre="Contraste"
+            nombre={t('a11y.contraste')}
             opciones={CONTRASTES}
-            etiquetas={ETIQUETA_CONTRASTE}
+            etiquetas={etiquetaContraste}
             valor={prefs.contraste}
             alCambiar={(contraste) => cambiar({ contraste })}
           />
           <Grupo
-            nombre="Movimiento"
+            nombre={t('a11y.movimiento')}
             opciones={MOVIMIENTOS}
-            etiquetas={ETIQUETA_MOVIMIENTO}
+            etiquetas={etiquetaMovimiento}
             valor={prefs.movimiento}
             alCambiar={(movimiento) => cambiar({ movimiento })}
           />
-          <p className="nota">
-            Tu elección se guarda en este dispositivo. Los datos se distinguen siempre por su texto,
-            su símbolo y el tipo de borde, no solo por el color.
-          </p>
+          <p className="nota">{t('a11y.nota')}</p>
           <button type="button" onClick={restablecer}>
-            Restablecer
+            {t('a11y.restablecer')}
           </button>
         </section>
       )}

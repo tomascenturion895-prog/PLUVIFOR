@@ -1,0 +1,133 @@
+import type { Diccionario } from './es'
+
+/** Toba / Qom (Qom l'aqtaqa, tob) translations. */
+export const tob: Diccionario = {
+  // Marca y layout
+  'app.subtitulo': "Formosa awot l'aqtaqa (Reporte pluvial)",
+  'app.leyendaPrototipo': 'PROTOTIPO · AI LAB Misión: Código Formosa · sqa oficial',
+  'nav.etiqueta': 'Secciones',
+  'nav.menu': 'Menú',
+  'nav.inicio': "N'onaxanaxa (Inicio)",
+  'nav.vista3d': 'Vista 3D',
+  'nav.maqueta': 'Maqueta',
+  'nav.mapa': 'Alhua (Mapa)',
+  'nav.estacion': 'Estación',
+  'nav.comparador': 'Comparador',
+  'nav.parte': 'Awot parte',
+  'nav.reporte': 'Alhua reporte',
+  'nav.importar': 'Importar y auditar',
+  'nav.salud': 'Salud de la red',
+  'nav.ayuda': "Nt'aunaxanaxa (Ayuda)",
+  'nav.noEncontrada': 'Sqa nachek',
+
+  // Selector de idioma
+  'idioma.etiqueta': "Qom l'aqtaqa (Idioma)",
+
+  // Selector de tema
+  'tema.etiqueta': 'Tema de color',
+  'tema.claro': 'Na’aq (Claro)',
+  'tema.oscuro': 'Pe (Oscuro)',
+  'tema.daltonico': 'Daltónico',
+  'tema.claro.desc': 'Fondo claro, bajo brillo',
+  'tema.oscuro.desc': 'Tema oscuro original',
+  'tema.daltonico.desc': 'Azul y naranja, con íconos y subrayados además del color',
+
+  // Accesibilidad
+  'a11y.boton': 'Accesibilidad',
+  'a11y.panel': 'Opciones de accesibilidad',
+  'a11y.texto': 'Tamaño del texto',
+  'a11y.texto.normal': 'Normal',
+  'a11y.texto.grande': 'Lta’a (Grande)',
+  'a11y.texto.muyGrande': 'Lta’a da (Muy grande)',
+  'a11y.contraste': 'Contraste',
+  'a11y.contraste.normal': 'Normal',
+  'a11y.contraste.alto': 'Alto contraste',
+  'a11y.movimiento': 'Movimiento',
+  'a11y.movimiento.normal': 'Normal',
+  'a11y.movimiento.reducido': 'Reducir movimiento',
+  'a11y.nota':
+    'Tu elección se guarda en este dispositivo. Los datos se distinguen por texto, símbolo y borde, no solo por el color.',
+  'a11y.restablecer': 'Restablecer',
+
+  // Estados y errores
+  'estado.cargando': 'Cargando…',
+  'estado.cargando3d': 'Cargando vista 3D…',
+  'estado.reintentar': 'Reintentar',
+  'error.inesperado': 'Error inesperado al cargar la vista',
+  'error.volverInicio': 'Volver al inicio',
+  'error.noEncontradaTitulo': 'Página no encontrada',
+  'error.noEncontradaTexto': 'No existe esta dirección.',
+
+  // Insignias
+  'insignia.estado.dato': 'Dato',
+  'insignia.estado.dato.desc': 'Hay medición para este día.',
+  'insignia.estado.sin_fila': 'Sqa dato (Sin dato)',
+  'insignia.estado.sin_fila.desc': 'La fuente no tiene este día. No significa que no llovió.',
+  'insignia.estado.fila_sin_valor': 'Fila sin valor',
+  'insignia.estado.fila_sin_valor.desc':
+    'La fuente tiene el día sin valor. No significa que no llovió.',
+  'insignia.categoria.observado': 'Observado',
+  'insignia.categoria.observado.desc': 'Medido por una estación o un reporte.',
+  'insignia.categoria.referencia': 'Referencia',
+  'insignia.categoria.referencia.desc': 'Valor de referencia. No se suma a lo observado.',
+  'insignia.categoria.estimado': 'Estimado',
+  'insignia.categoria.estimado.desc': 'Calculado, no medido. Nunca se suma con lo observado.',
+  'insignia.categoria.simulado': 'Simulado',
+  'insignia.categoria.simulado.desc': 'Escenario de prueba. Nunca se mezcla con datos observados.',
+
+  // Advertencias
+  'adv.horario_corte_distinto': 'Horario de corte distinto',
+  'adv.horario_corte_distinto.desc':
+    'Las redes miden el día con horarios distintos (07:00 vs. 09:00).',
+  'adv.observado_vs_estimado': 'Observado vs. estimado',
+  'adv.observado_vs_estimado.desc': 'Compara datos medidos con datos calculados.',
+  'adv.cobertura_despareja': 'Cobertura despareja',
+  'adv.cobertura_despareja.desc': 'Distinta proporción de días con dato.',
+  'adv.dato_sin_validar': 'Dato sin validar',
+  'adv.dato_sin_validar.desc': 'Incluye lecturas todavía no revisadas.',
+  'adv.ceros_prolongados': 'Racha de ceros',
+  'adv.ceros_prolongados.desc': '60 días o más en 0 mm: revisar la estación.',
+  'adv.inconsistente_con_vecinas': 'Inconsistente con vecinas',
+  'adv.inconsistente_con_vecinas.desc': 'Difiere mucho de estaciones cercanas.',
+
+  // Inicio (Home)
+  'home.titulo': "¿Chaqata awot, ñi'i ha chaqa na'aq? (¿Cuánto llovió, dónde y cuándo?)",
+  'home.p1.inicio': 'PLUVIFOR responde para Formosa y siempre muestra ',
+  'home.p1.destacado': 'qué tan confiable es cada dato',
+  'home.p1.fin': ': de qué estación viene, si es medido o estimado y sus advertencias.',
+  'home.p2': 'Un día sin dato se muestra como «sqa dato» (sin dato), nunca como 0 mm.',
+  'home.figura.aria':
+    'Ilustración: barras de lluvia diaria; días sin dato van rayados, no como cero.',
+  'home.figura.pie': 'Ilustración, no son datos. Franjas rayadas = sin dato (no 0 mm).',
+  'home.accesos.aria': 'Accesos rápidos',
+  'home.acceso.vista3d': 'Formosa en 3D: dónde se cruzan la lluvia (awot) y los ríos (lachigué).',
+  'home.acceso.maqueta': 'Formosa de un vistazo: tocá un departamento y mirá cuánto llovió.',
+  'home.acceso.mapa': 'Las estaciones sobre el mapa, con su acumulado del período.',
+  'home.acceso.comparador': 'Compará estaciones y períodos, con sus advertencias.',
+  'home.acceso.parte': 'Texto listo para copiar o imprimir, con fuente y calidad.',
+  'home.acceso.reporte': 'Cargá la lluvia anotada donde no hay estación.',
+  'home.pie.inicio': '¿Dudas sobre un color, símbolo o advertencia? Mirá ',
+  'home.pie.fin': '. Los datos llegan hasta el 31/10/2026.',
+
+  // Ayuda (Help)
+  'ayuda.titulo': "Nt'aunaxanaxa (Ayuda)",
+  'ayuda.intro': 'Qué significa cada estado de un día, categoría de dato y advertencia.',
+  'ayuda.estados.titulo': 'Estados de un día',
+  'ayuda.estados.dato': 'Hay medición para ese día. Un «0 mm» aquí es cero medido.',
+  'ayuda.estados.sin_fila': 'La fuente no tiene ese día. No significa que no haya llovido.',
+  'ayuda.estados.fila_sin_valor': 'La fuente tiene el día sin valor. Tampoco significa 0 mm.',
+  'ayuda.estados.nota': 'Los días sin dato se cuentan aparte y nunca entran como 0 mm.',
+  'ayuda.categorias.titulo': 'Categorías del dato',
+  'ayuda.categorias.observado': 'Medido por una estación o un reporte.',
+  'ayuda.categorias.estimado': 'Calculado, no medido. Nunca se suma con lo observado.',
+  'ayuda.categorias.referencia': 'Valor de referencia. Tampoco se mezcla con lo observado.',
+  'ayuda.advertencias.titulo': 'Las 6 advertencias de comparabilidad',
+  'ayuda.advertencias.intro':
+    'Avisan cuando dos datos no se comparan igual. Son descriptivas: no son alertas de riesgo.',
+  'ayuda.otras.titulo': 'Otras cosas para tener en cuenta',
+  'ayuda.otras.silencio.inicio': 'Una estación ',
+  'ayuda.otras.silencio.destacado': 'en silencio',
+  'ayuda.otras.silencio.fin': ' dejó de reportar: se ve apagada y nunca como 0 mm.',
+  'ayuda.otras.corte': 'Los datos llegan hasta el 31/10/2026.',
+  'ayuda.otras.acumulados': 'Los acumulados de estaciones distintas no se suman.',
+}
