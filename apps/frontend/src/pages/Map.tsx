@@ -30,6 +30,7 @@ import {
 import { FECHA_CORTE } from '../constants'
 import { MAPA_BASE, TESELAS_OSM } from '../geo/mapaBase'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 import { DALTONICO, esDaltonico } from '../components/tema/tema-colores'
 import { colorMm, radiusMm, textoMmMapa } from './map-helpers'
 
@@ -326,9 +327,10 @@ function CapasFormosa({
 // ---------------------------------------------------------------------------
 
 function MapaLeyenda() {
+  const { t } = useIdioma()
   const entradas: { color: string; label: string; dashed?: boolean }[] = [
-    { color: colorMm(null), label: 'Sin dato (trazo discontinuo; hueco ≠ 0 mm)', dashed: true },
-    { color: colorMm(0), label: '0 mm (dato real)' },
+    { color: colorMm(null), label: t('mapa.sinDatoLeyenda'), dashed: true },
+    { color: colorMm(0), label: t('maqueta.datoReal0') },
     { color: colorMm(5), label: '< 10 mm' },
     { color: colorMm(20), label: '10–30 mm' },
     { color: colorMm(45), label: '30–60 mm' },
@@ -336,7 +338,7 @@ function MapaLeyenda() {
     { color: colorMm(120), label: '≥ 100 mm' },
   ]
   return (
-    <div className="mapa-leyenda" aria-label="Leyenda del mapa">
+    <div className="mapa-leyenda" aria-label={t('mapa.leyendaAria')}>
       {entradas.map(({ color, label, dashed }) => (
         <span key={label} className="mapa-leyenda-item">
           <span

@@ -189,6 +189,95 @@ export const es = {
   'parte.imprimir': 'Imprimir',
   'parte.copiado': 'Texto copiado. Ya lo podés pegar.',
   'parte.copiaError': 'No se pudo copiar automáticamente: seleccioná el texto del parte y copialo.',
+
+  // Vista 3D
+  'v3d.intro':
+    'Dónde la lluvia observada y la red de ríos de Formosa se cruzan, sobre los límites reales de los departamentos (IGN). Una ayuda para pensar El Niño 2026/27, no un pronóstico.',
+  'v3d.periodoAria': 'Período de lluvia',
+  'v3d.lluviaDe': 'Lluvia de:',
+  'v3d.periodo.nino': 'El Niño 2015/16',
+  'v3d.periodo.caso': 'Caso 424 y 425',
+  'v3d.periodo.registro': 'Todo el registro',
+  'v3d.preparando': 'Preparando la vista 3D…',
+  'v3d.leyendo': 'Leyendo la lluvia del período…',
+  'v3d.sinWebgl':
+    'Este navegador no puede dibujar 3D (WebGL). La tabla de abajo tiene los mismos datos.',
+  'v3d.modoAria': 'Qué mostrar en el mapa 3D',
+  'v3d.modo.exposicion': 'Exposición',
+  'v3d.modo.pluvial': 'Lluvia',
+  'v3d.modo.hidrica': 'Red hídrica',
+  'v3d.gesto': 'Arrastrá para girar · rueda o pellizco para acercar · tocá un departamento',
+  'v3d.leyenda.exposicion': 'Exposición estimada',
+  'v3d.leyenda.hidrica': 'Cursos de agua por superficie',
+  'v3d.clase.baja': 'Baja',
+  'v3d.clase.media': 'Media',
+  'v3d.clase.alta': 'Alta',
+  'v3d.leyenda.sinDato': 'Sin dato (rayado): no es «baja»',
+  'v3d.leyenda.rios': 'Ríos y riachos (IGN)',
+  'v3d.leyenda.altura': 'La altura repite la clase; no es el relieve del terreno.',
+  'v3d.resumenTitulo': 'Formosa · 9 departamentos',
+  'v3d.elegirDepto': 'Elegí un departamento en el mapa o en la tabla.',
+  'v3d.departamentos': 'Departamentos',
+  'v3d.departamento': 'Departamento',
+  'v3d.comoSeCalcula': 'Cómo se calcula',
+  'v3d.fuentesPie': 'Fuentes: lluvia observada SIGA/INTA · cartografía IGN. Más detalle en ',
+  'v3d.sinDatoConfiable': 'Sin dato confiable',
+  'v3d.sinEstacionesDepto': 'No hay estaciones con datos de lluvia en este departamento.',
+
+  // Maqueta y paneles
+  'maqueta.leyendaAria': 'Leyenda de la maqueta',
+  'maqueta.datoReal0': '0 mm (dato real)',
+  'maqueta.sinDatoLeyenda': 'Sin dato (rayado): no es 0 mm',
+  'maqueta.silencioLeyenda': 'Estación en silencio (apagada)',
+  'maqueta.riosLeyenda': 'Cursos de agua (IGN, referencia cartográfica)',
+  'maqueta.alturaNota':
+    'La altura repite el mayor acumulado individual del departamento; sin dato queda a ras y rayado. Relieve del terreno: pendiente, todavía no hay una fuente de altitud verificada.',
+  'atajos.titulo': 'Atajos',
+  'seleccion.titulo': '1 · Tu selección',
+  'seleccion.todaProvincia': 'Toda la provincia',
+  'seleccion.categoria': 'Categoría',
+  'seleccion.estacionesLeyenda': 'Estaciones (ninguna marcada = todas las de la zona)',
+  'seleccion.sinEstacionesZona': 'No hay estaciones en esta zona.',
+
+  // Mapa
+  'mapa.leyendaAria': 'Leyenda del mapa',
+  'mapa.sinDatoLeyenda': 'Sin dato (trazo discontinuo; hueco ≠ 0 mm)',
+
+  // Comparador
+  'comparador.resultadoAria': 'Resultado de la comparación',
+  'comparador.sinAdvertencias':
+    'No se detectaron advertencias de comparabilidad entre estas series.',
+  'comparador.noEvaluadas': 'Advertencias que no se pudieron evaluar',
+  'comparador.graficoAria': 'Gráfico de líneas de las series',
+  'comparador.boton': 'Comparar',
+
+  // Reporte de campo
+  'reporte.clave': 'Clave',
+  'reporte.fechaLluvia': 'Fecha de la lluvia',
+  'reporte.milimetros': 'Milímetros',
+  'reporte.lugar': 'Lugar',
+  'reporte.lugarPlaceholder': 'Comisaría o paraje',
+  'reporte.quien': 'Quién reporta',
+  'reporte.ubicacion': 'Ubicación (opcional)',
+  'reporte.usarUbicacion': 'Usar mi ubicación',
+  'reporte.latitud': 'Latitud',
+  'reporte.longitud': 'Longitud',
+
+  // Importar y auditar
+  'importar.tipoLluvia': 'Lluvia diaria',
+  'importar.tipoEstaciones': 'Catálogo de estaciones',
+  'importar.cargaConfirmada': 'Carga confirmada',
+  'importar.informeAuditoria': 'Informe de auditoría',
+  'importar.filasLeidas': 'Filas leídas',
+  'importar.aceptadas': 'Aceptadas',
+  'importar.rechazadas': 'Rechazadas',
+  'importar.nuevas': 'Nuevas',
+  'importar.actualizadas': 'Actualizadas',
+  'importar.filasRechazadas': 'Filas rechazadas',
+  'importar.linea': 'Línea',
+  'importar.motivo': 'Motivo',
+  'importar.sinCargas': 'Todavía no hay cargas registradas.',
+  'importar.archivo': 'Archivo',
 } as const
 
 export type ClaveTraduccion = keyof typeof es

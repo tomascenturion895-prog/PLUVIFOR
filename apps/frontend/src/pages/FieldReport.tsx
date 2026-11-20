@@ -3,6 +3,7 @@ import { ApiError, postFieldReport } from '../api/client'
 import type { FieldReport as Reporte } from '../api/types'
 import { ErrorEstado } from '../components/Estados'
 import { FECHA_CORTE } from '../constants'
+import { useIdioma } from '../i18n/usar-idioma'
 import { armarPedido, fechaLegible, type FormularioReporte } from './field-report-datos'
 
 const VACIO: FormularioReporte = {
@@ -16,6 +17,7 @@ const VACIO: FormularioReporte = {
 }
 
 export default function FieldReport() {
+  const { t } = useIdioma()
   // La clave solo vive en esta variable: no se guarda en el navegador ni viaja en la URL.
   const [clave, setClave] = useState('')
   const [f, setF] = useState<FormularioReporte>(VACIO)
@@ -83,7 +85,7 @@ export default function FieldReport() {
 
   return (
     <section>
-      <h2>Reporte de campo</h2>
+      <h2>{t('nav.reporte')}</h2>
       <p>
         Donde no hay estación, la lluvia la anota la policía por día. Cargá acá ese reporte: queda
         como <strong>observado y sin validar</strong>, con la fuente «reporte policial», y no se
@@ -91,7 +93,7 @@ export default function FieldReport() {
       </p>
       <form className="filtros" onSubmit={(e) => void enviar(e)} noValidate>
         <label>
-          Clave
+          {t('reporte.clave')}
           <input
             type="password"
             autoComplete="off"
@@ -100,7 +102,7 @@ export default function FieldReport() {
           />
         </label>
         <label>
-          Fecha de la lluvia
+          {t('reporte.fechaLluvia')}
           <input
             type="date"
             value={f.fecha}
@@ -109,7 +111,7 @@ export default function FieldReport() {
           />
         </label>
         <label>
-          Milímetros
+          {t('reporte.milimetros')}
           <input
             inputMode="decimal"
             placeholder="12,5"
@@ -118,16 +120,16 @@ export default function FieldReport() {
           />
         </label>
         <label>
-          Lugar
+          {t('reporte.lugar')}
           <input
             maxLength={200}
-            placeholder="Comisaría o paraje"
+            placeholder={t('reporte.lugarPlaceholder')}
             value={f.lugar}
             onChange={(e) => cambiar('lugar', e.target.value)}
           />
         </label>
         <label>
-          Quién reporta
+          {t('reporte.quien')}
           <input
             maxLength={120}
             value={f.quien}
@@ -135,12 +137,12 @@ export default function FieldReport() {
           />
         </label>
         <fieldset>
-          <legend>Ubicación (opcional)</legend>
+          <legend>{t('reporte.ubicacion')}</legend>
           <button type="button" onClick={usarMiUbicacion}>
-            Usar mi ubicación
+            {t('reporte.usarUbicacion')}
           </button>
           <label>
-            Latitud
+            {t('reporte.latitud')}
             <input
               inputMode="decimal"
               placeholder="-26,18"
@@ -149,7 +151,7 @@ export default function FieldReport() {
             />
           </label>
           <label>
-            Longitud
+            {t('reporte.longitud')}
             <input
               inputMode="decimal"
               placeholder="-58,17"

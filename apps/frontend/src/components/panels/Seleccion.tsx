@@ -1,11 +1,13 @@
 import type { DataCategory, Station } from '../../api/types'
 import { FECHA_CORTE } from '../../constants'
+import { useIdioma } from '../../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../../i18n/traducciones/es'
 import { periodoValido, type SeleccionValor } from './panels-datos'
 
-const CATEGORIAS: { valor: DataCategory; nombre: string }[] = [
-  { valor: 'observado', nombre: 'Observado' },
-  { valor: 'referencia', nombre: 'Referencia' },
-  { valor: 'estimado', nombre: 'Estimado' },
+const CATEGORIAS: { valor: DataCategory; clave: ClaveTraduccion }[] = [
+  { valor: 'observado', clave: 'insignia.categoria.observado' },
+  { valor: 'referencia', clave: 'insignia.categoria.referencia' },
+  { valor: 'estimado', clave: 'insignia.categoria.estimado' },
 ]
 
 interface Props {
@@ -16,15 +18,16 @@ interface Props {
 }
 
 export default function Seleccion({ valor, estaciones, departamentos, onCambiar }: Props) {
+  const { t } = useIdioma()
   const enZona = estaciones.filter((s) => valor.zona === '' || s.department === valor.zona)
   const set = (parcial: Partial<SeleccionValor>) => onCambiar({ ...valor, ...parcial })
   return (
     <section className="panel" aria-labelledby="panel-seleccion">
-      <h3 id="panel-seleccion">1 · Tu selección</h3>
+      <h3 id="panel-seleccion">{t('seleccion.titulo')}</h3>
       <label>
-        Departamento
+        {t('v3d.departamento')}
         <select value={valor.zona} onChange={(e) => set({ zona: e.target.value, estaciones: [] })}>
-          <option value="">Toda la provincia</option>
+          <option value="">{t('seleccion.todaProvincia')}</option>
           {departamentos.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -33,7 +36,7 @@ export default function Seleccion({ valor, estaciones, departamentos, onCambiar 
         </select>
       </label>
       <label>
-        Desde
+        {t('comun.desde')}
         <input
           type="date"
           value={valor.desde}
@@ -42,7 +45,7 @@ export default function Seleccion({ valor, estaciones, departamentos, onCambiar 
         />
       </label>
       <label>
-        Hasta
+        {t('comun.hasta')}
         <input
           type="date"
           value={valor.hasta}
@@ -51,21 +54,21 @@ export default function Seleccion({ valor, estaciones, departamentos, onCambiar 
         />
       </label>
       <label>
-        Categoría
+        {t('seleccion.categoria')}
         <select
           value={valor.category}
           onChange={(e) => set({ category: e.target.value as DataCategory })}
         >
           {CATEGORIAS.map((c) => (
             <option key={c.valor} value={c.valor}>
-              {c.nombre}
+              {t(c.clave)}
             </option>
           ))}
         </select>
       </label>
       <fieldset>
-        <legend>Estaciones (ninguna marcada = todas las de la zona)</legend>
-        {enZona.length === 0 && <p className="nota">No hay estaciones en esta zona.</p>}
+        <legend>{t('seleccion.estacionesLeyenda')}</legend>
+        {enZona.length === 0 && <p className="nota">{t('seleccion.sinEstacionesZona')}</p>}
         {enZona.map((s) => (
           <label key={s.id} className="opcion">
             <input

@@ -23,6 +23,8 @@ import ProvinciaEscena from '../components/vista3d/ProvinciaEscena'
 import { COLOR_HIDRICA, type Modo, type PinEstacion } from '../components/vista3d/provincia-aspecto'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../i18n/traducciones/es'
 
 const DEPARTAMENTOS = '/geo/formosa_departamentos.geojson'
 const PERENNES = '/geo/formosa_cursos_agua_perennes.geojson'
@@ -57,15 +59,21 @@ interface Periodo {
   hasta: string
 }
 
-const PERIODOS: { id: string; nombre: string; periodo: Periodo }[] = [
-  { id: 'nino', nombre: 'El Niño 2015/16', periodo: { desde: '2015-09-01', hasta: '2016-06-30' } },
-  { id: 'caso', nombre: 'Caso 424 y 425', periodo: { desde: '2015-09-20', hasta: '2016-06-26' } },
+const PERIODOS: { id: string; clave: ClaveTraduccion; periodo: Periodo }[] = [
+  { id: 'nino', clave: 'v3d.periodo.nino', periodo: { desde: '2015-09-01', hasta: '2016-06-30' } },
+  { id: 'caso', clave: 'v3d.periodo.caso', periodo: { desde: '2015-09-20', hasta: '2016-06-26' } },
   {
     id: 'registro',
-    nombre: 'Todo el registro',
+    clave: 'v3d.periodo.registro',
     periodo: { desde: '1960-01-01', hasta: FECHA_CORTE },
   },
 ]
+
+const CLAVE_CLASE: Record<Clase, ClaveTraduccion> = {
+  baja: 'v3d.clase.baja',
+  media: 'v3d.clase.media',
+  alta: 'v3d.clase.alta',
+}
 
 /** Estaciones activas en el período (las demás no pueden tener datos). */
 function activasEn(estaciones: Station[], p: Periodo): Station[] {
@@ -185,20 +193,21 @@ function DetalleDepartamento({ d }: { d: Departamento }) {
   )
 }
 
-const MODOS: { id: Modo; nombre: string }[] = [
-  { id: 'exposicion', nombre: 'Exposición' },
-  { id: 'pluvial', nombre: 'Lluvia' },
-  { id: 'hidrica', nombre: 'Red hídrica' },
+const MODOS: { id: Modo; clave: ClaveTraduccion }[] = [
+  { id: 'exposicion', clave: 'v3d.modo.exposicion' },
+  { id: 'pluvial', clave: 'v3d.modo.pluvial' },
+  { id: 'hidrica', clave: 'v3d.modo.hidrica' },
 ]
 
 function LeyendaProvincia({ modo }: { modo: Modo }) {
+  const { t } = useIdioma()
   const colores = modo === 'hidrica' ? COLOR_HIDRICA : COLOR_CLASE
   const titulo =
     modo === 'exposicion'
-      ? 'Exposición estimada'
+      ? t('v3d.leyenda.exposicion')
       : modo === 'pluvial'
-        ? `Lluvia: días ≥ ${UMBRAL_EVENTO_MM} y ≥ ${UMBRAL_EVENTO_FUERTE_MM} mm`
-        : 'Cursos de agua por superficie'
+        ? `${t('v3d.modo.pluvial')}: ≥ ${UMBRAL_EVENTO_MM} / ≥ ${UMBRAL_EVENTO_FUERTE_MM} mm`
+        : t('v3d.leyenda.hidrica')
   return (
     <div className="v3d-leyenda">
       <p className="v3d-leyenda-titulo">{titulo}</p>
@@ -208,23 +217,23 @@ function LeyendaProvincia({ modo }: { modo: Modo }) {
             <Muestra color={colores[c]} />
             {modo === 'pluvial'
               ? c === 'alta'
-                ? `Algún día ≥ ${UMBRAL_EVENTO_FUERTE_MM} mm`
+                ? `≥ ${UMBRAL_EVENTO_FUERTE_MM} mm`
                 : c === 'media'
-                  ? `Algún día ≥ ${UMBRAL_EVENTO_MM} mm`
-                  : `Ningún día ≥ ${UMBRAL_EVENTO_MM} mm`
-              : TEXTO_CLASE[c]}
+                  ? `≥ ${UMBRAL_EVENTO_MM} mm`
+                  : `< ${UMBRAL_EVENTO_MM} mm`
+              : t(CLAVE_CLASE[c])}
           </li>
         ))}
         <li>
           <Muestra color={null} />
-          Sin dato (rayado): no es «baja»
+          {t('v3d.leyenda.sinDato')}
         </li>
         <li>
           <span className="v3d-muestra-rio" aria-hidden="true" />
-          Ríos y riachos (IGN)
+          {t('v3d.leyenda.rios')}
         </li>
       </ul>
-      <p className="v3d-nota">La altura repite la clase; no es el relieve del terreno.</p>
+      <p className="v3d-nota">{t('v3d.leyenda.altura')}</p>
     </div>
   )
 }
@@ -238,6 +247,7 @@ function Provincia({
   estaciones: Station[]
   periodo: Periodo
 }) {
+  const { t } = useIdioma()
   const [modo, setModo] = useState<Modo>('exposicion')
   const [elegido, setElegido] = useState<string | null>(null)
   const [sinWebGL, setSinWebGL] = useState(false)
@@ -282,9 +292,7 @@ function Provincia({
     <div className="v3d-vista">
       <div className="v3d-escenario">
         {sinWebGL ? (
-          <p className="v3d-sin-webgl">
-            Este navegador no puede dibujar 3D (WebGL). La tabla de abajo tiene los mismos datos.
-          </p>
+          <p className="v3d-sin-webgl">{t('v3d.sinWebgl')}</p>
         ) : (
           <ProvinciaEscena
             deptos={capas.deptos}
@@ -299,7 +307,7 @@ function Provincia({
           />
         )}
         <div className="v3d-panel v3d-panel-arriba-izq">
-          <div className="v3d-segmentado" role="radiogroup" aria-label="Qué mostrar en el mapa 3D">
+          <div className="v3d-segmentado" role="radiogroup" aria-label={t('v3d.modoAria')}>
             {MODOS.map((m) => (
               <button
                 key={m.id}
@@ -309,13 +317,11 @@ function Provincia({
                 className={modo === m.id ? 'es-activo' : ''}
                 onClick={() => setModo(m.id)}
               >
-                {m.nombre}
+                {t(m.clave)}
               </button>
             ))}
           </div>
-          <p className="v3d-ayuda-gesto">
-            Arrastrá para girar · rueda o pellizco para acercar · tocá un departamento
-          </p>
+          <p className="v3d-ayuda-gesto">{t('v3d.gesto')}</p>
         </div>
         <div className="v3d-panel v3d-panel-abajo-izq">
           <LeyendaProvincia modo={modo} />
@@ -324,9 +330,7 @@ function Provincia({
           <div className="v3d-insignias">
             <InsigniaCategoria categoria="estimado" />
           </div>
-          {lecturas.estado.tipo === 'cargando' && (
-            <Cargando texto="Leyendo la lluvia del período…" />
-          )}
+          {lecturas.estado.tipo === 'cargando' && <Cargando texto={t('v3d.leyendo')} />}
           {lecturas.estado.tipo === 'error' && (
             <ErrorEstado mensaje={lecturas.estado.mensaje} onReintentar={lecturas.reintentar} />
           )}
@@ -334,27 +338,26 @@ function Provincia({
             <DetalleDepartamento d={seleccion} />
           ) : (
             <div className="v3d-detalle">
-              <h3>Formosa · 9 departamentos</h3>
+              <h3>{t('v3d.resumenTitulo')}</h3>
               <p>
-                {conExposicion} de {datos.length} con exposición estimada. El resto no tiene
-                estaciones con lluvia confiable en el período: se ve rayado, no como «baja».
+                {conExposicion} {t('comun.de')} {datos.length} — {t('v3d.leyenda.exposicion')}.
               </p>
-              <p className="v3d-nota">Elegí un departamento en el mapa o en la tabla.</p>
+              <p className="v3d-nota">{t('v3d.elegirDepto')}</p>
             </div>
           )}
         </aside>
       </div>
 
       <section className="v3d-tabla-caja" aria-labelledby="v3d-tabla-titulo">
-        <h3 id="v3d-tabla-titulo">Departamentos</h3>
+        <h3 id="v3d-tabla-titulo">{t('v3d.departamentos')}</h3>
         <div className="tabla-scroll">
           <table className="v3d-tabla">
             <thead>
               <tr>
-                <th scope="col">Departamento</th>
-                <th scope="col">Exposición</th>
-                <th scope="col">Lluvia</th>
-                <th scope="col">Red hídrica (km cada 100 km²)</th>
+                <th scope="col">{t('v3d.departamento')}</th>
+                <th scope="col">{t('v3d.modo.exposicion')}</th>
+                <th scope="col">{t('v3d.modo.pluvial')}</th>
+                <th scope="col">{t('v3d.modo.hidrica')} (km / 100 km²)</th>
               </tr>
             </thead>
             <tbody>
@@ -415,6 +418,7 @@ function Provincia({
 }
 
 export default function Vista3D() {
+  const { t } = useIdioma()
   const [periodoId, setPeriodoId] = useState('nino')
   const periodo = PERIODOS.find((p) => p.id === periodoId)!.periodo
   const capas = useAsync(cargarCapas, [])
@@ -433,17 +437,13 @@ export default function Vista3D() {
     <section className="v3d" aria-labelledby="v3d-titulo">
       <header className="v3d-cabecera">
         <div>
-          <h2 id="v3d-titulo">Vista 3D</h2>
-          <p>
-            Dónde la lluvia observada y la red de ríos de Formosa se cruzan, sobre los límites
-            reales de los departamentos (IGN). Una ayuda para pensar El Niño 2026/27, no un
-            pronóstico.
-          </p>
+          <h2 id="v3d-titulo">{t('nav.vista3d')}</h2>
+          <p>{t('v3d.intro')}</p>
         </div>
       </header>
 
-      <div className="v3d-periodos" role="group" aria-label="Período de lluvia">
-        <span className="v3d-periodos-titulo">Lluvia de:</span>
+      <div className="v3d-periodos" role="group" aria-label={t('v3d.periodoAria')}>
+        <span className="v3d-periodos-titulo">{t('v3d.lluviaDe')}</span>
         {PERIODOS.map((p) => (
           <button
             key={p.id}
@@ -451,7 +451,7 @@ export default function Vista3D() {
             aria-pressed={p.id === periodoId}
             onClick={() => setPeriodoId(p.id)}
           >
-            {p.nombre}
+            {t(p.clave)}
             <small>
               {fecha(p.periodo.desde)} – {fecha(p.periodo.hasta)}
             </small>
@@ -459,14 +459,14 @@ export default function Vista3D() {
         ))}
         {catalogo.estado.tipo === 'listo' && (
           <span className="v3d-periodos-nota">
-            {estaciones.length} estaciones en el catálogo, {ubicadas} con departamento. Corte de
-            datos: {fecha(FECHA_CORTE)}.
+            {estaciones.length} {t('comun.estaciones').toLowerCase()}, {ubicadas}{' '}
+            {t('v3d.departamento').toLowerCase()}. {fecha(FECHA_CORTE)}.
           </span>
         )}
       </div>
 
       {(capas.estado.tipo === 'cargando' || catalogo.estado.tipo === 'cargando') && (
-        <Cargando texto="Preparando la vista 3D…" />
+        <Cargando texto={t('v3d.preparando')} />
       )}
       {capas.estado.tipo === 'error' && (
         <ErrorEstado mensaje={capas.estado.mensaje} onReintentar={capas.reintentar} />
@@ -478,8 +478,8 @@ export default function Vista3D() {
         <Provincia capas={capas.estado.datos} estaciones={estaciones} periodo={periodo} />
       )}
       <p className="v3d-pie">
-        Fuentes: lluvia observada SIGA/INTA · cartografía IGN. Más detalle en{' '}
-        <Link to="/ayuda">Ayuda</Link>.
+        {t('v3d.fuentesPie')}
+        <Link to="/ayuda">{t('nav.ayuda')}</Link>.
       </p>
     </section>
   )
