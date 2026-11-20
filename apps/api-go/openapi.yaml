@@ -211,6 +211,36 @@ paths:
                   total: { type: integer }
                   notice: { type: string }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/sensor-readings/devices:
+    get:
+      summary: Dispositivos que enviaron lecturas, con su última lectura (siempre simulados)
+      description: |
+        Una fila por dispositivo: cuántas lecturas tiene, la primera, la última y los milímetros de
+        la última (puede ser un 0 real). Un dispositivo que nunca envió nada no aparece: no se inventa.
+      x-implemented-in: python
+      responses:
+        '200':
+          description: Dispositivos ordenados por nombre, con el aviso de que son simulados.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, notice]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [device_id, readings, first_read_at, last_read_at, last_mm, category]
+                      properties:
+                        device_id: { type: string }
+                        readings: { type: integer }
+                        first_read_at: { type: string, format: date-time }
+                        last_read_at: { type: string, format: date-time }
+                        last_mm: { type: number }
+                        category: { type: string, enum: [simulado] }
+                  total: { type: integer }
+                  notice: { type: string }
   /api/estimates:
     get:
       summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado

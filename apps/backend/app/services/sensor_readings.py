@@ -3,7 +3,7 @@ from datetime import UTC, date, timedelta, timezone
 from app.domain.enums import SensorCategory
 from app.errors import ApiError
 from app.models import SensorReading
-from app.repositories.sensor_readings import SensorReadingRepository
+from app.repositories.sensor_readings import DeviceSummary, SensorReadingRepository
 from app.schemas.sensor_readings import SensorReadingIn
 
 SOURCE = "sensor_simulado"
@@ -53,3 +53,6 @@ class SensorReadingService:
         self, limit: int, offset: int, device_id: str | None
     ) -> tuple[list[SensorReading], int]:
         return self._repository.latest(limit, offset, device_id)
+
+    def devices(self) -> list[DeviceSummary]:
+        return self._repository.devices()

@@ -8,6 +8,7 @@ import type {
   ClimateReferenceOut,
   EventsOut,
   GapEstimateList,
+  SensorDeviceList,
   SensorReadingList,
   ImportReport,
   NetworkHealth,
@@ -212,13 +213,18 @@ export function postFieldReport(
 
 /** Últimas lecturas de dispositivos. Siempre simuladas: no se suman a las series de lluvia. */
 export function getSensorReadings(
-  params: { deviceId?: string; limit?: number } = {},
+  params: { deviceId?: string; limit?: number; offset?: number } = {},
   signal?: AbortSignal,
 ): Promise<SensorReadingList> {
   return request<SensorReadingList>(
-    `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit })}`,
+    `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit, offset: params.offset })}`,
     { signal },
   )
+}
+
+/** Dispositivos que enviaron lecturas, con la última de cada uno. Siempre simulados. */
+export function getSensorDevices(signal?: AbortSignal): Promise<SensorDeviceList> {
+  return request<SensorDeviceList>('/api/sensor-readings/devices', { signal })
 }
 
 /** Días sin dato rellenados con un valor ESTIMADO. Se muestran aparte: nunca entran en lo observado. */

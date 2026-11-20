@@ -17,6 +17,7 @@ export const tob: Diccionario = {
   'nav.reporte': 'Alhua reporte',
   'nav.importar': 'Importar y auditar',
   'nav.salud': 'Salud de la red',
+  'nav.sensores': 'Sensores',
   'nav.ayuda': "Nt'aunaxanaxa (Ayuda)",
   'nav.noEncontrada': 'Sqa nachek',
 

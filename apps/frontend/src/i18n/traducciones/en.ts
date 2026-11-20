@@ -17,6 +17,7 @@ export const en: Diccionario = {
   'nav.reporte': 'Field report',
   'nav.importar': 'Import & audit',
   'nav.salud': 'Network health',
+  'nav.sensores': 'Sensors',
   'nav.ayuda': 'Help',
   'nav.noEncontrada': 'Page not found',
 

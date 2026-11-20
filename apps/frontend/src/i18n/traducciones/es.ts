@@ -16,6 +16,7 @@ export const es = {
   'nav.reporte': 'Reporte de campo',
   'nav.importar': 'Importar y auditar',
   'nav.salud': 'Salud de la red',
+  'nav.sensores': 'Sensores',
   'nav.ayuda': 'Ayuda',
   'nav.noEncontrada': 'Página no encontrada',
 
