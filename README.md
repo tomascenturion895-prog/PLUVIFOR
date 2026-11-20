@@ -240,7 +240,7 @@ Dejá **esta terminal abierta**: es el servidor. Para comprobar que anda, abrí 
 
 - <http://localhost:8000/health> → tiene que mostrar `{"status":"ok", ...}`.
 - <http://localhost:8000/docs> → la documentación interactiva de la API.
-- <http://localhost:8000/api/stations> → las 3 estaciones, en JSON.
+- <http://localhost:8000/api/stations> → las estaciones, en JSON: las 3 del SIGA/INTA (51, 424 y 425) y la de referencia del SMN (87162) que cargaste en el paso 5.5.
 
 ## Paso 7 · Instalar y levantar la interfaz
 
@@ -265,7 +265,7 @@ Recorré esta lista en <http://localhost:5173>. Si todo coincide, la instalació
 | Abrir **Inicio** | La pantalla de bienvenida y, abajo, la leyenda «PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial». |
 | **Estación** → elegir la **424** (El Colorado) | Un gráfico diario con franjas rayadas (días **sin dato**) y una **advertencia de racha de ceros** de 281 días: el sistema no da por buena una racha tan larga. |
 | **Estación** → elegir la **425**, del 1/1/2016 al 31/12/2016 | Un acumulado de **1.528 mm**. La 424, en el mismo período, no puede decir lo mismo: es el caso que muestra por qué un cero prolongado se advierte. |
-| **Mapa** | Los departamentos de Formosa con las estaciones. |
+| **Mapa** | Los departamentos de Formosa con las estaciones que tienen coordenadas. |
 | **Cuenta** → «Ya tengo cuenta» | Ingresá con el correo y la contraseña del paso 5.6. Tendrías que ver tu rol «Administrador» y el panel de cuentas. |
 | **Avisos** | Registrá un teléfono (por ejemplo `+54 370 4123456`) y un correo: aparece un **celular con un chat de WhatsApp** con el código. Escribilo, confirmá, y abrí «Panel del personal» → «Usar el día de ejemplo» → «Enviar aviso (simulado)»: el aviso **llega al celular, al correo y a la campana**. |
 
@@ -284,8 +284,10 @@ La demo corre con SQLite (un archivo, sin instalar nada). Para trabajar con una 
 
    ```ini
    POSTGRES_PASSWORD=<una clave larga y al azar>
-   DATABASE_URL=postgresql+psycopg://pluvifor:<esa misma clave>@localhost:5432/pluvifor
+   DATABASE_URL=postgresql+psycopg://pluvifor:<esa misma clave>@127.0.0.1:5432/pluvifor
    ```
+
+   > **Escribí `127.0.0.1` y no `localhost`.** En Windows, `localhost` puede intentar primero la dirección IPv6 y esperar unos 8 segundos **en cada conexión**: la carga de datos parece colgada. Si el puerto 5432 ya lo usa otro PostgreSQL instalado en tu computadora, agregá por ejemplo `POSTGRES_PORT=5433` al `.env` y poné ese mismo número en la URL.
 
 3. Desde `PLUVIFOR`, levantá la base y esperá a que diga `healthy`:
 
@@ -356,6 +358,9 @@ La primera vez descarga el driver de SQLite. Ver `apps/api-go/README.md`.
 | Error de tabla o columna que no existe | La base está desactualizada: `alembic upgrade head` (o `python -m app.cli reset-demo --yes` con SQLite) |
 | `create-user` dice «Sin una terminal» | Corrélo en una terminal normal, o definí la variable `PLUVIFOR_NEW_USER_PASSWORD` solo para ese comando |
 | `docker compose up` dice que falta `POSTGRES_PASSWORD` | Completalo en el `.env` (paso de PostgreSQL) |
+| `docker compose up` dice «ports are not available» (puerto 5432) | Ya hay otro PostgreSQL en tu computadora usando ese puerto. Poné otro en el `.env` (`POSTGRES_PORT=5433`) y el mismo número en `DATABASE_URL`, y repetí `docker compose up -d db` |
+| Con PostgreSQL todo tarda muchísimo (cada comando se queda esperando) | En `DATABASE_URL` escribí `127.0.0.1` en lugar de `localhost` |
+| PostgreSQL dice «la autentificación password falló» | La clave de `DATABASE_URL` no coincide con `POSTGRES_PASSWORD`, o estás apuntando a otro PostgreSQL que ya tenías (revisá el puerto). Si cambiaste la clave después de crear la base, `docker compose down -v` y volvé a empezar (borra los datos) |
 | Git muestra todos los archivos como modificados en Windows | Es un tema de finales de línea; el repositorio ya los normaliza. Hacé `git pull` y reintentá |
 
 Más casos en `docs/ENTORNO.md`.
