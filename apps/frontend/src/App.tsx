@@ -1,4 +1,6 @@
+import { Suspense, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { Cargando } from './components/Estados'
 import Layout from './components/Layout'
 import Estacion from './pages/Estacion'
 import Help from './pages/Help'
@@ -11,11 +13,22 @@ import Maqueta from './pages/Maqueta'
 import Parte from './pages/Parte'
 import { Mapa, NoEncontrada } from './pages/Paginas'
 
+// three.js pesa: la vista 3D se descarga solo cuando se abre.
+const Vista3D = lazy(() => import('./pages/Vista3D'))
+
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route
+          path="vista-3d"
+          element={
+            <Suspense fallback={<Cargando texto="Cargando la vista 3D…" />}>
+              <Vista3D />
+            </Suspense>
+          }
+        />
         <Route path="maqueta" element={<Maqueta />} />
         <Route path="mapa" element={<Mapa />} />
         <Route path="estacion" element={<Estacion />} />

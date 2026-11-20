@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './theme.css'
 import './maqueta3d.css'
+import './vista3d.css'
 import './pulido.css'
 import App from './App.tsx'
 
