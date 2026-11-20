@@ -8,6 +8,7 @@ import type {
 } from 'geojson'
 import type { Series, Station } from '../../api/types'
 import { normalizar } from '../maqueta/maqueta-datos'
+import { DALTONICO, esDaltonico } from '../tema/tema-colores'
 
 /**
  * Exposición pluvial por departamento (categoría: estimado).
@@ -270,9 +271,15 @@ export const TEXTO_CLASE: Record<Clase, string> = { baja: 'Baja', media: 'Media'
 
 /** Colores accesibles (ColorBrewer YlOrRd, 3 clases) para la exposición. */
 export const COLOR_CLASE: Record<Clase, string> = {
-  baja: '#ffeda0',
-  media: '#feb24c',
-  alta: '#e5482a',
+  get baja() {
+    return esDaltonico() ? DALTONICO.clase.baja : '#ffeda0'
+  },
+  get media() {
+    return esDaltonico() ? DALTONICO.clase.media : '#feb24c'
+  },
+  get alta() {
+    return esDaltonico() ? DALTONICO.clase.alta : '#e5482a'
+  },
 }
 
 export const COLOR_SIN_DATO = '#9e9e9e'

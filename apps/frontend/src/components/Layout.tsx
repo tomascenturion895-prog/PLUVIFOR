@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import PanelAccesibilidad from './a11y/PanelAccesibilidad'
 import SelectorTema from './tema/SelectorTema'
+import { useTema } from './tema/tema-colores'
 import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
 import { tituloDe } from '../titulos'
 import Icono from '../material/Icono'
@@ -42,6 +43,8 @@ function MarcaPluvifor() {
 export default function Layout() {
   const { pathname } = useLocation()
   const [menuAbierto, setMenuAbierto] = useState(false)
+  // Al cambiar de tema se vuelve a dibujar el contenido: mapas, gráficos y 3D toman sus colores.
+  const tema = useTema()
   useEffect(() => {
     document.title = tituloDe(pathname)
   }, [pathname])
@@ -92,7 +95,7 @@ export default function Layout() {
           </ul>
         </nav>
       </header>
-      <main className="contenido">
+      <main className="contenido" key={tema}>
         <Outlet />
       </main>
       <footer className="pie">

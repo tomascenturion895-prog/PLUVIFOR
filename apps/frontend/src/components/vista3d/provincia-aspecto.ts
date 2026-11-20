@@ -1,3 +1,4 @@
+import { DALTONICO, esDaltonico } from '../tema/tema-colores'
 import { COLOR_CLASE, type Clase, type Departamento } from './exposicion-datos'
 
 export type Modo = 'exposicion' | 'pluvial' | 'hidrica'
@@ -14,9 +15,15 @@ export interface PinEstacion {
 export const ALTURA_SIN_DATO = 4
 const ESCALA: Record<Clase, number> = { baja: 16, media: 38, alta: 66 }
 export const COLOR_HIDRICA: Record<Clase, string> = {
-  baja: '#c6dbef',
-  media: '#6baed6',
-  alta: '#2171b5',
+  get baja() {
+    return esDaltonico() ? DALTONICO.hidrica.baja : '#c6dbef'
+  },
+  get media() {
+    return esDaltonico() ? DALTONICO.hidrica.media : '#6baed6'
+  },
+  get alta() {
+    return esDaltonico() ? DALTONICO.hidrica.alta : '#2171b5'
+  },
 }
 
 /** Alto y color de un departamento según lo que se esté mirando. null = sin dato (rayado). */

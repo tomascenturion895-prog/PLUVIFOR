@@ -470,8 +470,216 @@ html[data-tema='daltonico'] {
   --borde: #5b6b82;
   --md-outline: #8394ad;
   --md-outline-variant: #5b6b82;
-  --texto-suave: #b4c0d0;
-  --md-on-surface-variant: #b4c0d0;
+  --texto-suave: #c3ccd9;
+  --md-on-surface-variant: #c3ccd9;
+
+  /* Superficies: gris neutro casi negro (el oscuro original es azul pizarra) */
+  --tinta: #ffffff;
+  --papel: #0e0f13;
+  --superficie: #181b21;
+  --superficie-elevada: #242831;
+  --borde-suave: #2c313b;
+  --md-surface: #0e0f13;
+  --md-surface-container-lowest: #181b21;
+  --md-surface-container-low: #1e222a;
+  --md-surface-container: #242831;
+  --md-surface-container-high: #2c313b;
+  --md-surface-container-highest: #383e4a;
+  --md-on-surface: #ffffff;
+  --md-secondary-container: #3d2c06;
+  --md-linear-progress-track-color: #3d2c06;
+  --sombra: 0 4px 16px -2px rgb(0 0 0 / 60%), 0 0 0 1px rgb(255 255 255 / 6%);
+
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+html[data-tema='daltonico'] body {
+  background: var(--papel);
+}
+
+html[data-tema='daltonico'] h1,
+html[data-tema='daltonico'] h2,
+html[data-tema='daltonico'] h3,
+html[data-tema='daltonico'] h4,
+html[data-tema='daltonico'] .hero h2,
+html[data-tema='daltonico'] .resumen dd,
+html[data-tema='daltonico'] .panel h3 {
+  color: #ffffff;
+}
+
+/* Cabecera, pie y menú con la misma base neutra y un filo azul */
+html[data-tema='daltonico'] .encabezado {
+  background: #14161b;
+  border-bottom: 3px solid #56b4e9;
+}
+
+html[data-tema='daltonico'] .marca-logo {
+  color: #56b4e9;
+  filter: none;
+}
+
+html[data-tema='daltonico'] .encabezado nav a {
+  color: #e2e8f0;
+}
+
+html[data-tema='daltonico'] .pie,
+html[data-tema='daltonico'] .pie small {
+  color: #ffffff;
+  background: #14161b;
+}
+
+html[data-tema='daltonico'] .pie {
+  border-top: 3px solid #e69f00;
+}
+
+html[data-tema='daltonico'] .pie strong {
+  color: #ffd27a;
+}
+
+/* Campos, tablas y paneles sobre las superficies neutras */
+html[data-tema='daltonico'] .filtros select,
+html[data-tema='daltonico'] .filtros input,
+html[data-tema='daltonico'] .mapa-controles input,
+html[data-tema='daltonico'] .mapa-controles select,
+html[data-tema='daltonico'] input:not([type='checkbox'], [type='radio'], [type='range']),
+html[data-tema='daltonico'] select,
+html[data-tema='daltonico'] textarea,
+html[data-tema='daltonico'] .panel select,
+html[data-tema='daltonico'] .panel input[type='date'],
+html[data-tema='daltonico'] .maqueta-layout select,
+html[data-tema='daltonico'] .maqueta-layout input[type='date'] {
+  color: #ffffff !important;
+  background: #0e0f13 !important;
+  border: 2px solid #8a93a3 !important;
+}
+
+html[data-tema='daltonico'] .filtros select option,
+html[data-tema='daltonico'] .mapa-controles select option,
+html[data-tema='daltonico'] .panel select option,
+html[data-tema='daltonico'] .maqueta-layout select option {
+  color: #ffffff;
+  background: #0e0f13;
+}
+
+html[data-tema='daltonico'] .a11y-panel {
+  background: #242831;
+  border: 2px solid #56b4e9;
+}
+
+html[data-tema='daltonico'] .tabla-dias th,
+html[data-tema='daltonico'] .tabla-dias td,
+html[data-tema='daltonico'] .tabla-scroll th,
+html[data-tema='daltonico'] .tabla-scroll td {
+  color: #ffffff;
+}
+
+html[data-tema='daltonico'] .tabla-dias thead th,
+html[data-tema='daltonico'] .tabla-scroll thead th {
+  color: #ffd27a;
+  background: #242831;
+  border-bottom: 2px solid #8a93a3;
+}
+
+html[data-tema='daltonico'] .resumen div {
+  border-top: 4px solid #e69f00;
+}
+
+html[data-tema='daltonico'] .hero {
+  border-left: 8px solid #e69f00;
+}
+
+/* Botones principales: azul cielo con texto oscuro (el blanco no contrasta sobre azul claro) */
+html[data-tema='daltonico'] .acciones button,
+html[data-tema='daltonico'] .estado-error button,
+html[data-tema='daltonico'] button[type='submit'],
+html[data-tema='daltonico'] .boton-primario {
+  color: #04121c;
+  background: #56b4e9;
+  box-shadow: none;
+}
+
+html[data-tema='daltonico'] .acciones button + button {
+  color: #ffd27a;
+  background: #3d2c06;
+}
+
+html[data-tema='daltonico'] .atajos button:hover,
+html[data-tema='daltonico'] .maqueta-layout button:hover,
+html[data-tema='daltonico'] .barra-tiempo button:hover {
+  color: #ffffff;
+}
+
+/* Mapa Leaflet y gráficos sobre la base neutra */
+html[data-tema='daltonico'] .leaflet-container {
+  background: #0e0f13 !important;
+}
+
+html[data-tema='daltonico'] .leaflet-popup-content-wrapper,
+html[data-tema='daltonico'] .leaflet-popup-tip,
+html[data-tema='daltonico'] .leaflet-bar a,
+html[data-tema='daltonico'] .recharts-default-tooltip {
+  color: #ffffff !important;
+  background-color: #242831 !important;
+  border-color: #8a93a3 !important;
+}
+
+html[data-tema='daltonico'] .recharts-cartesian-grid line {
+  stroke: #4a505c !important;
+}
+
+html[data-tema='daltonico'] .recharts-text {
+  fill: #d4dbe6 !important;
+}
+
+/* Escenario 3D y maqueta: de teal a gris-índigo, con selección en naranja */
+html[data-tema='daltonico'] .v3d {
+  --v3d-panel: rgb(14 15 19 / 0.9);
+  --v3d-panel-borde: rgb(255 255 255 / 0.3);
+  --v3d-panel-texto: #ffffff;
+  --v3d-panel-suave: #d4dbe6;
+  --v3d-acento: #ffd27a;
+}
+
+html[data-tema='daltonico'] .v3d-escenario,
+html[data-tema='daltonico'] .v3d-lienzo-caja {
+  background:
+    radial-gradient(120% 90% at 50% 0%, #3a3f55 0%, transparent 60%),
+    linear-gradient(180deg, #1f2230 0%, #0e0f13 100%);
+}
+
+html[data-tema='daltonico'] .v3d-segmentado button.es-activo,
+html[data-tema='daltonico'] .v3d-segmentado button.con-onda.es-activo:hover {
+  color: #04121c;
+  background: #56b4e9;
+}
+
+html[data-tema='daltonico'] .v3d-etiqueta-depto.es-elegida {
+  background: #14161b !important;
+  border: 3px solid #e69f00 !important;
+}
+
+html[data-tema='daltonico'] .v3d-tabla tr.es-elegida {
+  background: #3d2c06;
+}
+
+html[data-tema='daltonico'] .maqueta-nombre {
+  fill: #ffffff;
+  stroke: #0e0f13;
+}
+
+html[data-tema='daltonico'] .maqueta-bloque-activo .maqueta-nombre {
+  stroke: #e69f00;
+}
+
+html[data-tema='daltonico'] .maqueta-rio,
+html[data-tema='daltonico'] .maqueta-rio-int {
+  stroke: #56b4e9;
+}
+
+html[data-tema='daltonico'] .mapa-leyenda-rio,
+html[data-tema='daltonico'] .v3d-muestra-rio {
+  background: #56b4e9;
 }
 
 /* El foco se ve en amarillo, el color con más luminancia de la paleta. */
