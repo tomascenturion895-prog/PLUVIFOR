@@ -1,5 +1,5 @@
 import type { DataCategory, RainState } from '../api/types'
-import { ADVERTENCIAS, type CodigoAdvertencia } from './insignias-datos'
+import { ADVERTENCIAS, ADVERTENCIAS_CALIDAD, type CodigoAdvertencia } from './insignias-datos'
 import './Insignias.css'
 
 interface Definicion {
@@ -96,8 +96,9 @@ export function InsigniaSimulado() {
 }
 
 export function InsigniaAdvertencia({ codigo, mensaje }: { codigo: string; mensaje?: string }) {
-  const conocida = ADVERTENCIAS[codigo as CodigoAdvertencia] as
-    { texto: string; descripcion: string } | undefined
+  const conocida =
+    (ADVERTENCIAS[codigo as CodigoAdvertencia] as
+      { texto: string; descripcion: string } | undefined) ?? ADVERTENCIAS_CALIDAD[codigo]
   const definicion: Definicion = {
     clase: 'advertencia',
     simbolo: '⚠',

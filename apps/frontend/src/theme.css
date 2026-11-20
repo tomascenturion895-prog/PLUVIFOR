@@ -396,3 +396,98 @@ html[data-contraste='alto'] .a11y-panel {
   height: 1.25rem;
   padding: 0;
 }
+
+/* ---- Menú en celular: un botón que despliega todas las secciones, sin desplazamiento oculto ---- */
+.menu-boton {
+  display: none;
+}
+
+@media (max-width: 719px) {
+  .menu-boton {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    margin: 0.25rem 0 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: left;
+    background: rgb(255 255 255 / 8%);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: var(--radio);
+  }
+
+  .menu-actual {
+    font-weight: 400;
+    color: #b8d3d8;
+  }
+
+  .menu-icono,
+  .menu-icono::before,
+  .menu-icono::after {
+    display: block;
+    width: 1.1rem;
+    height: 2px;
+    background: currentColor;
+    border-radius: 1px;
+  }
+
+  .menu-icono {
+    position: relative;
+  }
+
+  .menu-icono::before,
+  .menu-icono::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .menu-icono::before {
+    top: -6px;
+  }
+
+  .menu-icono::after {
+    top: 6px;
+  }
+
+  .menu-boton[aria-expanded='true'] .menu-icono {
+    background: transparent;
+  }
+
+  .menu-boton[aria-expanded='true'] .menu-icono::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+
+  .menu-boton[aria-expanded='true'] .menu-icono::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  .encabezado nav ul {
+    display: none;
+  }
+
+  .encabezado nav ul.abierto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.15rem 0.5rem;
+    margin: 0 0 0.75rem;
+    overflow: visible;
+  }
+
+  .encabezado nav ul.abierto a {
+    white-space: normal;
+    border-bottom: 0;
+    border-left: 3px solid transparent;
+    border-radius: 0.3rem;
+  }
+
+  .encabezado nav ul.abierto a.active {
+    border-left-color: #7fd0dc;
+    background: rgb(255 255 255 / 8%);
+  }
+}
