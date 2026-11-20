@@ -10,6 +10,7 @@ import importar from '@material-symbols/svg-400/rounded/upload_file.svg?raw'
 import salud from '@material-symbols/svg-400/rounded/monitor_heart.svg?raw'
 import sensores from '@material-symbols/svg-400/rounded/sensors.svg?raw'
 import avisos from '@material-symbols/svg-400/rounded/notifications.svg?raw'
+import cuenta from '@material-symbols/svg-400/rounded/account_circle.svg?raw'
 import ayuda from '@material-symbols/svg-400/rounded/help.svg?raw'
 import accesibilidad from '@material-symbols/svg-400/rounded/accessibility_new.svg?raw'
 import menu from '@material-symbols/svg-400/rounded/menu.svg?raw'
@@ -29,6 +30,7 @@ const ICONOS = {
   salud,
   sensores,
   avisos,
+  cuenta,
   ayuda,
   accesibilidad,
   menu,

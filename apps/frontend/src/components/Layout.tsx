@@ -22,6 +22,7 @@ const CLAVE_SECCION: Record<string, ClaveTraduccion> = {
   '/salud': 'nav.salud',
   '/sensores': 'nav.sensores',
   '/avisos': 'nav.avisos',
+  '/cuenta': 'nav.cuenta',
   '/ayuda': 'nav.ayuda',
 }
 

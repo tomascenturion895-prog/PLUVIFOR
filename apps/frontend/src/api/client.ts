@@ -23,6 +23,10 @@ import type {
   SeriesCompare,
   Station,
   StationList,
+  Cuenta,
+  CuentaList,
+  Rol,
+  SesionIniciada,
 } from './types'
 
 /** Error de la API o de la red, con un mensaje listo para mostrar (en español). */
@@ -121,8 +125,19 @@ export function getRainfall(
 /** Fuente que hoy sabe leer la API. No se agregan otras hasta que exista su conector. */
 export const FUENTE_IMPORTACION = 'siga_inta'
 
+/** Token de la sesión abierta (vive en memoria; el contexto de sesión lo mantiene). */
+let tokenSesion: string | null = null
+export function fijarTokenSesion(token: string | null): void {
+  tokenSesion = token
+}
+
+function encabezadosSesion(): Record<string, string> {
+  return tokenSesion ? { Authorization: `Bearer ${tokenSesion}` } : {}
+}
+
+/** Credenciales de escritura: la sesión (si hay) y la clave de administración (si se escribió). */
 function conClave(apiKey: string): Record<string, string> {
-  return { 'X-API-Key': apiKey }
+  return { ...encabezadosSesion(), ...(apiKey ? { 'X-API-Key': apiKey } : {}) }
 }
 
 function importar(
@@ -362,4 +377,46 @@ export function enviarAviso(
     `/api/alerts/send${query({ station_id: params.stationId, date: params.date })}`,
     { method: 'POST', headers: conClave(apiKey), signal },
   )
+}
+
+/** Crea una cuenta de ciudadano. El rol no se puede elegir. */
+export function registrarCuenta(
+  datos: { email: string; password: string; display_name?: string },
+  signal?: AbortSignal,
+): Promise<Cuenta> {
+  return postJson('/api/auth/register', datos, signal)
+}
+
+export function iniciarSesion(
+  email: string,
+  password: string,
+  signal?: AbortSignal,
+): Promise<SesionIniciada> {
+  return postJson('/api/auth/login', { email, password }, signal)
+}
+
+export async function cerrarSesionApi(): Promise<void> {
+  await fetch(`${apiBase()}/api/auth/logout`, { method: 'POST', headers: encabezadosSesion() })
+}
+
+export function getMiCuenta(signal?: AbortSignal): Promise<Cuenta> {
+  return request<Cuenta>('/api/auth/me', { headers: encabezadosSesion(), signal })
+}
+
+/** Cuentas. Solo administradores. */
+export function getCuentas(signal?: AbortSignal): Promise<CuentaList> {
+  return request<CuentaList>('/api/users?limit=200', { headers: encabezadosSesion(), signal })
+}
+
+export function cambiarCuenta(
+  id: number,
+  cambio: { role?: Rol; is_active?: boolean },
+  signal?: AbortSignal,
+): Promise<Cuenta> {
+  return request<Cuenta>(`/api/users/${id}`, {
+    method: 'PATCH',
+    headers: { ...encabezadosSesion(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(cambio),
+    signal,
+  })
 }

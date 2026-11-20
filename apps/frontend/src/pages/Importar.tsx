@@ -1,3 +1,4 @@
+import { useSesion } from '../auth/usar-sesion'
 import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ApiError, auditImport, commitImport, getImportLogs } from '../api/client'
 import type { ImportKind, ImportLog, ImportReport } from '../api/types'
@@ -146,6 +147,7 @@ type Historia =
 
 export default function Importar() {
   // La clave solo vive en esta variable: no se guarda en el navegador ni viaja en la URL.
+  const { esPersonal } = useSesion()
   const [clave, setClave] = useState('')
   const [tipo, setTipo] = useState<ImportKind>('rainfall')
   const [archivo, setArchivo] = useState<File | null>(null)
@@ -156,7 +158,7 @@ export default function Importar() {
   const [errorApi, setErrorApi] = useState<string | null>(null)
   const [historia, setHistoria] = useState<Historia>({ tipo: 'sin_clave' })
 
-  const tienePermiso = clave.trim().length > 0
+  const tienePermiso = esPersonal || clave.trim().length > 0
   // Sin clave el historial no se muestra aunque ya se hubiera cargado antes.
   const vista: Historia = tienePermiso ? historia : { tipo: 'sin_clave' }
 
@@ -231,15 +233,17 @@ export default function Importar() {
       </p>
 
       <form className="filtros" onSubmit={alAuditar}>
-        <label>
-          Clave de administración
-          <input
-            type="password"
-            autoComplete="off"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-          />
-        </label>
+        {!esPersonal && (
+          <label>
+            Clave de administración
+            <input
+              type="password"
+              autoComplete="off"
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+            />
+          </label>
+        )}
         <label>
           Tipo de archivo
           <select

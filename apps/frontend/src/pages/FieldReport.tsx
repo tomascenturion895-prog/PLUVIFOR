@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useSesion } from '../auth/usar-sesion'
 import { ApiError, postFieldReport } from '../api/client'
 import type { FieldReport as Reporte } from '../api/types'
 import { ErrorEstado } from '../components/Estados'
@@ -19,6 +20,7 @@ const VACIO: FormularioReporte = {
 export default function FieldReport() {
   const { t } = useIdioma()
   // La clave solo vive en esta variable: no se guarda en el navegador ni viaja en la URL.
+  const { esPersonal } = useSesion()
   const [clave, setClave] = useState('')
   const [f, setF] = useState<FormularioReporte>(VACIO)
   const [errores, setErrores] = useState<string[]>([])
@@ -67,7 +69,7 @@ export default function FieldReport() {
       setErrores(resultado.errores)
       return
     }
-    if (clave.trim() === '') {
+    if (!esPersonal && clave.trim() === '') {
       setErrores(['Ingresá la clave para cargar reportes.'])
       return
     }
@@ -92,15 +94,17 @@ export default function FieldReport() {
         mezcla con lo que miden las estaciones.
       </p>
       <form className="filtros" onSubmit={(e) => void enviar(e)} noValidate>
-        <label>
-          {t('reporte.clave')}
-          <input
-            type="password"
-            autoComplete="off"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-          />
-        </label>
+        {!esPersonal && (
+          <label>
+            {t('reporte.clave')}
+            <input
+              type="password"
+              autoComplete="off"
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+            />
+          </label>
+        )}
         <label>
           {t('reporte.fechaLluvia')}
           <input

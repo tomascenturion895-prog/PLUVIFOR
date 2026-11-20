@@ -438,6 +438,113 @@ paths:
                   notice: { type: string }
         '404': { $ref: '#/components/responses/Invalid' }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/auth/register:
+    post:
+      summary: Crear una cuenta de ciudadano
+      description: |
+        El rol no se puede elegir: toda cuenta nueva es de ciudadano (un campo `role` se rechaza con 422).
+        Contraseña de 10 a 128 caracteres. El correo se guarda en minúsculas y no se repite (409).
+        Con `REGISTRATION_OPEN=false` responde 403. La contraseña nunca vuelve en una respuesta.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              additionalProperties: false
+              properties:
+                email: { type: string }
+                password: { type: string, minLength: 10, maxLength: 128 }
+                display_name: { type: string, maxLength: 80, nullable: true }
+      responses:
+        '201': { description: Cuenta creada con rol ciudadano. }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '409': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión; devuelve un token de sesión
+      description: |
+        Un correo inexistente y una clave incorrecta responden lo mismo (401). Tras 5 intentos fallidos la
+        cuenta se bloquea 15 minutos (429). El token se envía como `Authorization: Bearer ...`, vence a las
+        `SESSION_HOURS` horas y en la base solo queda su resumen.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              additionalProperties: false
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: 'Sesión iniciada: token, vencimiento y la cuenta.' }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '429': { $ref: '#/components/responses/Invalid' }
+  /api/auth/logout:
+    post:
+      summary: Cerrar la sesión actual (revoca el token)
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '204': { description: Sesión cerrada (también sin sesión). }
+  /api/auth/me:
+    get:
+      summary: La cuenta de la sesión actual
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '200': { description: La cuenta. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/users:
+    get:
+      summary: Cuentas (solo administradores con sesión)
+      description: La clave de administración no alcanza para gestionar cuentas.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Las cuentas, sin contraseñas. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+  /api/users/{user_id}:
+    patch:
+      summary: Cambiar el rol o activar o desactivar una cuenta (solo administradores)
+      description: |
+        Solo se puede cambiar `role` y `is_active`. Cambiar el rol o desactivar cierra las sesiones de esa
+        cuenta. Nadie puede cambiarse a sí mismo (409), así siempre queda un administrador.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: user_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                role: { type: string, enum: [ciudadano, operador, administrador] }
+                is_active: { type: boolean }
+      responses:
+        '200': { description: La cuenta actualizada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '409': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/estimates:
     get:
       summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado
@@ -498,6 +605,10 @@ paths:
         '422': { $ref: '#/components/responses/Invalid' }
 components:
   securitySchemes:
+    sessionToken:
+      type: http
+      scheme: bearer
+      description: Token de sesión de POST /api/auth/login. Las rutas de escritura aceptan también la clave de administración.
     adminKey:
       type: apiKey
       in: header

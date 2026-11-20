@@ -35,6 +35,12 @@ class Settings(BaseSettings):
     # Pedidos por minuto y por dirección. 0 desactiva el límite.
     rate_limit_per_minute: int = 120
     rate_limit_import_per_minute: int = 10
+    # Registro e inicio de sesión: pocos pedidos por minuto y por dirección frenan la fuerza bruta.
+    rate_limit_auth_per_minute: int = 10
+    # Cuánto dura una sesión abierta.
+    session_hours: int = 12
+    # Si es false, nadie puede crear cuentas por la API (siguen las altas por línea de comandos).
+    registration_open: bool = True
 
     @field_validator("cors_origins", mode="before")
     @classmethod

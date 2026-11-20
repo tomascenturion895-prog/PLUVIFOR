@@ -12,6 +12,7 @@ import NetworkHealth from './pages/NetworkHealth'
 import Maqueta from './pages/Maqueta'
 import Sensores from './pages/Sensores'
 import Avisos from './pages/Avisos'
+import Cuenta from './pages/Cuenta'
 import Parte from './pages/Parte'
 import { Mapa, NoEncontrada } from './pages/Paginas'
 
@@ -76,6 +77,7 @@ export default function App() {
           <Route path="salud" element={<NetworkHealth />} />
           <Route path="sensores" element={<Sensores />} />
           <Route path="avisos" element={<Avisos />} />
+          <Route path="cuenta" element={<Cuenta />} />
           <Route path="ayuda" element={<Help />} />
           <Route path="*" element={<NoEncontrada />} />
         </Route>

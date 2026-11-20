@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import CheckConstraint, DateTime, Float, Index, Numeric, String, func
+from sqlalchemy import CheckConstraint, DateTime, Float, ForeignKey, Index, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -28,6 +28,7 @@ class FieldReport(Base):
             "(location_status = 'informada') = (lat IS NOT NULL)", name="location_status_matches"
         ),
         Index("ix_field_reports_obs_date", "obs_date"),
+        Index("ix_field_reports_created_by_user_id", "created_by_user_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -51,3 +52,7 @@ class FieldReport(Base):
     )
     source: Mapped[str] = mapped_column(String(64), default="reporte_policial")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # Quién lo cargó; nulo si se usó la clave de administración. Si se borra la cuenta, queda nulo.
+    created_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
