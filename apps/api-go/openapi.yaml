@@ -217,7 +217,12 @@ paths:
       description: |
         Una fila por dispositivo: cuántas lecturas tiene, la primera, la última y los milímetros de
         la última (puede ser un 0 real). Un dispositivo que nunca envió nada no aparece: no se inventa.
+        Cada uno trae su estado, calculado contra la fecha de corte de los datos (no contra hoy) con la
+        misma regla que las estaciones: `en_silencio` si su última lectura es de hace más de
+        `silent_after_days` días. Un silencio no es 0 mm: sigue mostrando su última lectura real.
       x-implemented-in: python
+      parameters:
+        - { name: silent_after_days, in: query, schema: { type: integer, minimum: 1, maximum: 365, default: 30 } }
       responses:
         '200':
           description: Dispositivos ordenados por nombre, con el aviso de que son simulados.
@@ -225,13 +230,13 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [items, total, notice]
+                required: [items, total, notice, data_cutoff_date, silent_after_days, active, silent]
                 properties:
                   items:
                     type: array
                     items:
                       type: object
-                      required: [device_id, readings, first_read_at, last_read_at, last_mm, category]
+                      required: [device_id, readings, first_read_at, last_read_at, last_mm, category, state, last_read_date, days_since_last]
                       properties:
                         device_id: { type: string }
                         readings: { type: integer }
@@ -239,8 +244,15 @@ paths:
                         last_read_at: { type: string, format: date-time }
                         last_mm: { type: number }
                         category: { type: string, enum: [simulado] }
+                        state: { type: string, enum: [activa, en_silencio] }
+                        last_read_date: { type: string, format: date }
+                        days_since_last: { type: integer }
                   total: { type: integer }
                   notice: { type: string }
+                  data_cutoff_date: { type: string, format: date }
+                  silent_after_days: { type: integer }
+                  active: { type: integer }
+                  silent: { type: integer }
   /api/alerts/subscriptions:
     post:
       summary: Pedir avisos de lluvia; se manda un código de confirmación por un canal simulado

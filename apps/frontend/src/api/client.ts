@@ -225,8 +225,14 @@ export function getSensorReadings(
 }
 
 /** Dispositivos que enviaron lecturas, con la última de cada uno. Siempre simulados. */
-export function getSensorDevices(signal?: AbortSignal): Promise<SensorDeviceList> {
-  return request<SensorDeviceList>('/api/sensor-readings/devices', { signal })
+export function getSensorDevices(
+  params: { silentAfterDays?: number } = {},
+  signal?: AbortSignal,
+): Promise<SensorDeviceList> {
+  return request<SensorDeviceList>(
+    `/api/sensor-readings/devices${query({ silent_after_days: params.silentAfterDays })}`,
+    { signal },
+  )
 }
 
 /** Días sin dato rellenados con un valor ESTIMADO. Se muestran aparte: nunca entran en lo observado. */
