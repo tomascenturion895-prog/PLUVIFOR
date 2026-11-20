@@ -104,7 +104,9 @@ La demo corre con SQLite (un archivo, sin instalar nada). Para trabajar con Post
 ```bash
 # 1. En tu .env, elegí una clave y poné la URL de PostgreSQL (la clave tiene que coincidir)
 #    POSTGRES_PASSWORD=<una clave larga y al azar>
-#    DATABASE_URL=postgresql+psycopg://pluvifor:<esa misma clave>@localhost:5432/pluvifor
+#    DATABASE_URL=postgresql+psycopg://pluvifor:<esa misma clave>@127.0.0.1:5432/pluvifor
+#    (127.0.0.1 y no localhost: en Windows, localhost puede esperar 8 segundos en cada conexión)
+#    Si el puerto 5432 ya está ocupado por otro PostgreSQL, usá POSTGRES_PORT=5433 y ese número en la URL
 
 # 2. Levantar la base (necesita Docker Desktop abierto)
 docker compose up -d db
@@ -125,9 +127,9 @@ Para apagarla: `docker compose down` (los datos quedan) o `docker compose down -
 ```bash
 docker compose exec db createdb -U pluvifor pluvifor_test      # una sola vez
 # Linux/macOS (Git Bash):
-TEST_DATABASE_URL=postgresql+psycopg://pluvifor:<tu clave>@localhost:5432/pluvifor_test pytest
+TEST_DATABASE_URL=postgresql+psycopg://pluvifor:<tu clave>@127.0.0.1:5432/pluvifor_test pytest
 # Windows (PowerShell):
-$env:TEST_DATABASE_URL="postgresql+psycopg://pluvifor:<tu clave>@localhost:5432/pluvifor_test"; pytest
+$env:TEST_DATABASE_URL="postgresql+psycopg://pluvifor:<tu clave>@127.0.0.1:5432/pluvifor_test"; pytest
 ```
 
 Usá siempre una base **aparte** (`pluvifor_test`): las pruebas la vacían. El CI corre las migraciones y la suite contra PostgreSQL 16 en cada Pull Request.
