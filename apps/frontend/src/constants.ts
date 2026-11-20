@@ -15,6 +15,7 @@ export const SECCIONES = [
   { ruta: '/importar', nombre: 'Importar y auditar', icono: 'importar' },
   { ruta: '/salud', nombre: 'Salud de la red', icono: 'salud' },
   { ruta: '/sensores', nombre: 'Sensores', icono: 'sensores' },
+  { ruta: '/avisos', nombre: 'Avisos', icono: 'avisos' },
   { ruta: '/ayuda', nombre: 'Ayuda', icono: 'ayuda' },
 ] as const
 

@@ -12,7 +12,8 @@ Tarea SCRUM-96. `AGENTS.md` pide fundamentar cada tema que no es el núcleo de l
 | Ingesta de sensores simulados | SCRUM-94 | [sensores-simulados.md](sensores-simulados.md) |
 | Estimación rotulada de días sin dato | SCRUM-93 | [estimacion-de-huecos.md](estimacion-de-huecos.md) |
 | Demo local sin internet | SCRUM-92 | [demo-sin-conexion.md](demo-sin-conexion.md) |
+| Avisos a la población (canal simulado) | sin tarea | [avisos-a-la-poblacion.md](avisos-a-la-poblacion.md) |
 
 ## Temas que se piden y todavía no están
 
-Alturas de ríos y riachos, caudales, predicción de afectaciones, zonas de riesgo, evacuaciones, atajaderos y capas de catastro **no están construidos ni tienen nota**. Antes de agregar alguno hay que escribirla acá: qué es, cómo ayuda a responder ¿cuánto llovió, dónde y en qué período? y qué no incluye. La predicción solo figura como propuesta en `docs/entrega/arquitectura-objetivo.md`.
+Alturas de ríos y riachos, caudales, predicción de afectaciones, zonas de riesgo, evacuaciones, atajaderos y capas de catastro **no están construidos ni tienen nota** (los avisos a la población tienen la suya, pero sin predicción, zonas ni evacuaciones). Antes de agregar alguno hay que escribirla acá: qué es, cómo ayuda a responder ¿cuánto llovió, dónde y en qué período? y qué no incluye. La predicción solo figura como propuesta en `docs/entrega/arquitectura-objetivo.md`.

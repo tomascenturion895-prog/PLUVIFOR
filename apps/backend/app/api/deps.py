@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.db.session import get_session
 from app.errors import ApiError
+from app.repositories.alerts import SqlAlertRepository
 from app.repositories.field_reports import SqlFieldReportRepository
 from app.repositories.gap_estimates import SqlGapEstimateRepository
 from app.repositories.ingestion import SqlIngestionRepository
@@ -17,6 +18,7 @@ from app.repositories.references import SqlReferenceRepository
 from app.repositories.sensor_readings import SqlSensorReadingRepository
 from app.repositories.series import SqlSeriesRepository
 from app.repositories.stations import SqlStationRepository
+from app.services.alerts import AlertService
 from app.services.field_reports import FieldReportService
 from app.services.gap_estimation import GapEstimationService
 from app.services.importer import ImportService
@@ -130,3 +132,16 @@ def get_quality_service(
 
 def get_reference_service(session: Session = Depends(get_session)) -> ReferenceService:  # noqa: B008
     return ReferenceService(SqlReferenceRepository(session))
+
+
+def get_alert_service(
+    session: Session = Depends(get_session),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> AlertService:
+    secret = settings.alerts_secret.get_secret_value() if settings.alerts_secret else None
+    return AlertService(
+        SqlAlertRepository(session),
+        SeriesService(SqlSeriesRepository(session), settings.data_cutoff_date),
+        secret,
+        settings.data_cutoff_date,
+    )

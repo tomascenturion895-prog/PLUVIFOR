@@ -8,6 +8,8 @@ import type {
   ClimateReferenceOut,
   EventsOut,
   GapEstimateList,
+  AlertOutboxList,
+  AlertSubscriptionStatus,
   SensorDeviceList,
   SensorReadingList,
   ImportReport,
@@ -268,4 +270,42 @@ export function getNetworkHealth(
     `/api/network/health${query({ silent_after_days: params.silentAfterDays })}`,
     { signal },
   )
+}
+
+function postJson<T>(path: string, cuerpo: unknown, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+    signal,
+  })
+}
+
+/** Pide avisos de lluvia: se «manda» un código de confirmación por un canal simulado. */
+export function suscribirseAvisos(
+  phone: string,
+  stationId?: number,
+  signal?: AbortSignal,
+): Promise<AlertSubscriptionStatus> {
+  return postJson('/api/alerts/subscriptions', { phone, station_id: stationId }, signal)
+}
+
+export function confirmarAvisos(
+  phone: string,
+  code: string,
+  signal?: AbortSignal,
+): Promise<AlertSubscriptionStatus> {
+  return postJson('/api/alerts/subscriptions/confirm', { phone, code }, signal)
+}
+
+export function bajaAvisos(phone: string, signal?: AbortSignal): Promise<AlertSubscriptionStatus> {
+  return postJson('/api/alerts/subscriptions/unsubscribe', { phone }, signal)
+}
+
+/** Mensajes que se enviarían. Solo el personal, con la clave de administración. */
+export function getBandejaAvisos(apiKey: string, signal?: AbortSignal): Promise<AlertOutboxList> {
+  return request<AlertOutboxList>('/api/alerts/outbox?limit=20', {
+    headers: conClave(apiKey),
+    signal,
+  })
 }

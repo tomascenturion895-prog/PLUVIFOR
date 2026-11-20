@@ -241,6 +241,112 @@ paths:
                         category: { type: string, enum: [simulado] }
                   total: { type: integer }
                   notice: { type: string }
+  /api/alerts/subscriptions:
+    post:
+      summary: Pedir avisos de lluvia; se manda un código de confirmación por un canal simulado
+      description: |
+        Prototipo (ver docs/ingesta-avisos.md). **No se envía nada real:** el código queda en una bandeja
+        rotulada como simulada. La respuesta es siempre la misma exista o no el número, y nunca trae el
+        código. Sin `ALERTS_SECRET` configurada, las suscripciones están cerradas (403).
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string, description: 'De 8 a 15 dígitos; puede llevar + y espacios.' }
+                station_id: { type: integer, minimum: 1, nullable: true }
+      responses:
+        '202': { description: Quedó pendiente de confirmar. }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/subscriptions/confirm:
+    post:
+      summary: Confirmar la suscripción con el código de 6 dígitos
+      description: Vence a los 15 minutos y se bloquea tras 5 intentos fallidos (429).
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200': { description: Suscripción confirmada. }
+        '422': { $ref: '#/components/responses/Invalid' }
+        '429': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/subscriptions/unsubscribe:
+    post:
+      summary: Darse de baja; responde igual exista o no el número
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+      responses:
+        '200': { description: El número queda dado de baja. }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/preview:
+    get:
+      summary: Vista previa del aviso de una estación y un día (clave de administración)
+      description: |
+        Solo un día observado con dato y con 50 mm o más genera aviso. Un hueco (`sin_fila` o
+        `fila_sin_valor`) responde `sin_dato` y nunca se cuenta como 0 mm. No se acepta un día posterior
+        al corte de datos. El mensaje no ordena evacuar y remite a Defensa Civil.
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200': { description: El aviso que se armaría, o el motivo por el que no se envía. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/send:
+    post:
+      summary: Poner el aviso en la bandeja simulada de las suscripciones confirmadas (clave de administración)
+      description: Un revisor del equipo lo confirma llamando a esta ruta. No sale ningún mensaje real.
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200': { description: Cuántos mensajes quedaron en la bandeja simulada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/outbox:
+    get:
+      summary: Mensajes que se enviarían, siempre simulados (clave de administración)
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Más nuevos primero, con el aviso de que el canal es simulado. }
+        '401': { $ref: '#/components/responses/Invalid' }
   /api/estimates:
     get:
       summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado
@@ -301,6 +407,11 @@ paths:
         '422': { $ref: '#/components/responses/Invalid' }
 components:
   securitySchemes:
+    adminKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Clave de administración, tomada de ADMIN_API_KEY. Sin ella la escritura queda cerrada.
     deviceKey:
       type: apiKey
       in: header
