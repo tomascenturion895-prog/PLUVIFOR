@@ -272,9 +272,13 @@ paths:
               properties:
                 phone: { type: string, description: 'De 8 a 15 dígitos; puede llevar + y espacios.' }
                 email: { type: string, nullable: true, description: 'Opcional. Si lo deja, también recibe el registro y los avisos por correo (simulado). Se guarda solo enmascarado.' }
-                station_id: { type: integer, minimum: 1, nullable: true }
+                station_ids:
+                  type: array
+                  maxItems: 20
+                  items: { type: integer, minimum: 1 }
+                  description: 'Estaciones de interés (hasta 20). Vacío o ausente = recibe los avisos de todas.'
       responses:
-        '202': { description: Quedó pendiente de confirmar. }
+        '202': { description: Quedó pendiente de confirmar. Con sesión iniciada, queda a nombre de la cuenta. }
         '403': { $ref: '#/components/responses/Invalid' }
         '404': { $ref: '#/components/responses/Invalid' }
         '422': { $ref: '#/components/responses/Invalid' }
@@ -315,6 +319,78 @@ paths:
       responses:
         '200': { description: El número queda dado de baja. }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine:
+    get:
+      summary: Mis suscripciones (requiere sesión)
+      description: Solo las de la cuenta. Del teléfono solo los últimos 4 dígitos; del correo, la versión enmascarada.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '200': { description: Las suscripciones de la cuenta, con sus estaciones. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/notifications:
+    get:
+      summary: Mis notificaciones dentro del sistema (requiere sesión)
+      description: Solo el canal `sistema` de las suscripciones de la cuenta. No depende de `ALERTS_DEMO`.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 30 } }
+      responses:
+        '200': { description: Más nuevas primero. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/{subscription_id}/stations:
+    put:
+      summary: Cambiar las estaciones de una de mis suscripciones (vacío = todas)
+      description: 'Una suscripción ajena o inexistente responde 404 igual, para no revelar cuáles existen.'
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: subscription_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                station_ids: { type: array, maxItems: 20, items: { type: integer, minimum: 1 } }
+      responses:
+        '200': { description: La suscripción actualizada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/{subscription_id}/unsubscribe:
+    post:
+      summary: Darme de baja de una de mis suscripciones, sin necesidad del teléfono
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: subscription_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      responses:
+        '200': { description: La suscripción, ahora de baja. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/dispatches:
+    get:
+      summary: Historial de avisos mandados (clave de administración o sesión de personal)
+      description: De qué estación y día, cuánto llovió, a cuántas personas y quién lo mandó (nulo = clave de administración).
+      x-implemented-in: python
+      security:
+        - adminKey: []
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Más nuevos primero. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
   /api/alerts/inbox:
     post:
       summary: Demostración, lo que la persona vería en su celular y su correo (simulados)

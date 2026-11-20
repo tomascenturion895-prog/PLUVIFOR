@@ -106,7 +106,7 @@ describe('Avisos', () => {
     await registrar('tomas@correo.com')
     expect(suscribirseAvisos).toHaveBeenCalledWith('+54 370 4123456', {
       email: 'tomas@correo.com',
-      stationId: undefined,
+      stationIds: [],
     })
     const celular = await screen.findByLabelText('Vista simulada de WhatsApp')
     expect(within(celular).getByText(/no se envía nada a WhatsApp/)).toBeInTheDocument()
@@ -114,6 +114,22 @@ describe('Avisos', () => {
     const correo = screen.getByRole('region', { name: /Correo/ })
     expect(within(correo).getByText('PLUVIFOR · recibimos tu registro')).toBeInTheDocument()
     expect(within(correo).getByText(/no se envía ningún correo real/)).toBeInTheDocument()
+  })
+
+  it('permite elegir varias estaciones con casillas y las manda todas', async () => {
+    vi.mocked(suscribirseAvisos).mockResolvedValue(ok('pendiente'))
+    render(<Avisos />)
+    const casilla = await screen.findByRole('checkbox', { name: /El Colorado \(424\)/ })
+    expect(
+      screen.getByText(/Ninguna marcada: vas a recibir los avisos de todas/),
+    ).toBeInTheDocument()
+    await userEvent.click(casilla)
+    expect(screen.getByText('1 marcada.')).toBeInTheDocument()
+    await registrar()
+    expect(suscribirseAvisos).toHaveBeenCalledWith('+54 370 4123456', {
+      email: undefined,
+      stationIds: [2],
+    })
   })
 
   it('sin correo no muestra la bandeja de correo', async () => {
@@ -181,7 +197,7 @@ describe('Avisos · panel del personal', () => {
     await abrirPanel()
     await userEvent.click(await screen.findByRole('button', { name: /Usar el día de ejemplo/ }))
     expect(screen.getByLabelText('Día')).toHaveValue('2014-04-10')
-    expect(await screen.findAllByRole('option', { name: /El Colorado \(424\)/ })).toHaveLength(2)
+    expect(await screen.findAllByRole('option', { name: /El Colorado \(424\)/ })).toHaveLength(1)
     expect(screen.getByLabelText('Estación')).toHaveValue('2')
   })
 

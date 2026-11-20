@@ -5,13 +5,16 @@ import {
   confirmarAvisos,
   enviarAviso,
   getBandejaAvisos,
+  getHistorialAvisos,
   getStations,
   previsualizarAviso,
   suscribirseAvisos,
 } from '../api/client'
-import type { AlertOutboxList, AlertPreview, Station } from '../api/types'
+import type { AlertOutboxList, AlertPreview, HistorialAvisos, Station } from '../api/types'
 import BandejaCorreo from '../components/avisos/BandejaCorreo'
 import CelularWhatsApp from '../components/avisos/CelularWhatsApp'
+import MisSuscripciones from '../components/avisos/MisSuscripciones'
+import SelectorEstaciones from '../components/avisos/SelectorEstaciones'
 import NotificacionesSistema from '../components/avisos/NotificacionesSistema'
 import { useSesion } from '../auth/usar-sesion'
 import { ErrorEstado } from '../components/Estados'
@@ -40,6 +43,7 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
   const [vista, setVista] = useState<AlertPreview | null>(null)
   const [enviados, setEnviados] = useState<number | null>(null)
   const [bandeja, setBandeja] = useState<AlertOutboxList | null>(null)
+  const [historial, setHistorial] = useState<HistorialAvisos | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const conPermiso = esPersonal || clave !== ''
@@ -79,6 +83,10 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
   const verBandeja = () =>
     void ejecutar(async () => {
       setBandeja(await getBandejaAvisos(clave))
+    })
+  const verHistorial = () =>
+    void ejecutar(async () => {
+      setHistorial(await getHistorialAvisos(clave))
     })
 
   return (
@@ -160,11 +168,49 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
           )}
         </div>
       )}
-      <p>
+      <div className="acciones">
+        <button type="button" disabled={!conPermiso} onClick={verHistorial}>
+          Ver historial de avisos
+        </button>
         <button type="button" disabled={!conPermiso} onClick={verBandeja}>
           Ver todos los mensajes simulados
         </button>
-      </p>
+      </div>
+      {historial && (
+        <div className="tabla-scroll" role="region" aria-label="Historial de avisos" tabIndex={0}>
+          <table className="tabla-dias">
+            <caption className="nota">
+              Últimos {historial.items.length} de {historial.total} avisos mandados
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Mandado</th>
+                <th scope="col">Estación</th>
+                <th scope="col">Día</th>
+                <th scope="col">Lluvia</th>
+                <th scope="col">Personas</th>
+                <th scope="col">Por</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historial.items.map((d) => (
+                <tr key={d.id}>
+                  <th scope="row">{fechaHoraArgentina(d.created_at)}</th>
+                  <td>{d.station_name}</td>
+                  <td>{d.obs_date}</td>
+                  <td>{d.mm} mm</td>
+                  <td>{d.queued}</td>
+                  <td>
+                    {d.created_by_user_id === null
+                      ? 'Clave de administración'
+                      : `Cuenta ${d.created_by_user_id}`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       {bandeja && (
         <div className="tabla-scroll" role="region" aria-label="Mensajes simulados" tabIndex={0}>
           <table className="tabla-dias">
@@ -199,9 +245,10 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
 /** Avisos de lluvia por WhatsApp, correo y el propio sistema. Hoy los canales son simulados. */
 export default function Avisos() {
   const { t } = useIdioma()
+  const { cuenta } = useSesion()
   const [telefono, setTelefono] = useState('')
   const [correo, setCorreo] = useState('')
-  const [estacion, setEstacion] = useState('')
+  const [elegidas, setElegidas] = useState<number[]>([])
   const [codigo, setCodigo] = useState('')
   const [paso, setPaso] = useState<Paso>('pedir')
   const [error, setError] = useState<string | null>(null)
@@ -236,7 +283,7 @@ export default function Avisos() {
       () =>
         suscribirseAvisos(telefono, {
           email: correo.trim() || undefined,
-          stationId: estacion ? Number(estacion) : undefined,
+          stationIds: elegidas,
         }),
       'confirmar',
     )
@@ -287,17 +334,7 @@ export default function Avisos() {
                   onChange={(e) => setCorreo(e.target.value)}
                 />
               </label>
-              <label>
-                Estación de interés (opcional)
-                <select value={estacion} onChange={(e) => setEstacion(e.target.value)}>
-                  <option value="">Todas las estaciones</option>
-                  {lista.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.code})
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SelectorEstaciones estaciones={lista} elegidas={elegidas} onCambio={setElegidas} />
               <p className="nota">
                 Del teléfono se guarda solo un resumen y los últimos 4 dígitos; el correo, solo
                 enmascarado. Podés darte de baja cuando quieras.
@@ -373,6 +410,8 @@ export default function Avisos() {
           </div>
         )}
       </div>
+
+      {cuenta && <MisSuscripciones estaciones={lista} />}
 
       <PanelPersonal estaciones={lista} />
     </section>

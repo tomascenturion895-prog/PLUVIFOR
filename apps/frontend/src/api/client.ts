@@ -13,6 +13,10 @@ import type {
   AlertPreview,
   AlertSend,
   AlertSubscriptionStatus,
+  HistorialAvisos,
+  MiSuscripcion,
+  MisNotificaciones,
+  MisSuscripciones,
   RecurrenceOut,
   SensorDeviceList,
   SensorReadingList,
@@ -309,12 +313,12 @@ function postJson<T>(path: string, cuerpo: unknown, signal?: AbortSignal): Promi
 /** Pide avisos de lluvia: se «manda» un código por WhatsApp (simulado). El correo es opcional. */
 export function suscribirseAvisos(
   phone: string,
-  opciones: { email?: string; stationId?: number } = {},
+  opciones: { email?: string; stationIds?: number[] } = {},
   signal?: AbortSignal,
 ): Promise<AlertSubscriptionStatus> {
   return postJson(
     '/api/alerts/subscriptions',
-    { phone, email: opciones.email || undefined, station_id: opciones.stationId },
+    { phone, email: opciones.email || undefined, station_ids: opciones.stationIds ?? [] },
     signal,
   )
 }
@@ -417,6 +421,50 @@ export function cambiarCuenta(
     method: 'PATCH',
     headers: { ...encabezadosSesion(), 'Content-Type': 'application/json' },
     body: JSON.stringify(cambio),
+    signal,
+  })
+}
+
+/** Mis suscripciones a avisos. Requiere sesión. */
+export function getMisSuscripciones(signal?: AbortSignal): Promise<MisSuscripciones> {
+  return request<MisSuscripciones>('/api/alerts/mine', { headers: encabezadosSesion(), signal })
+}
+
+/** Mis notificaciones dentro del sistema. Requiere sesión. */
+export function getMisNotificaciones(signal?: AbortSignal): Promise<MisNotificaciones> {
+  return request<MisNotificaciones>('/api/alerts/mine/notifications', {
+    headers: encabezadosSesion(),
+    signal,
+  })
+}
+
+/** Cambia las estaciones de una de mis suscripciones. Una lista vacía = todas. */
+export function cambiarEstacionesSuscripcion(
+  id: number,
+  stationIds: number[],
+  signal?: AbortSignal,
+): Promise<MiSuscripcion> {
+  return request<MiSuscripcion>(`/api/alerts/mine/${id}/stations`, {
+    method: 'PUT',
+    headers: { ...encabezadosSesion(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ station_ids: stationIds }),
+    signal,
+  })
+}
+
+/** Me doy de baja de una de mis suscripciones, sin necesidad del teléfono. */
+export function bajaMiSuscripcion(id: number, signal?: AbortSignal): Promise<MiSuscripcion> {
+  return request<MiSuscripcion>(`/api/alerts/mine/${id}/unsubscribe`, {
+    method: 'POST',
+    headers: encabezadosSesion(),
+    signal,
+  })
+}
+
+/** Historial de avisos mandados. Solo el personal. */
+export function getHistorialAvisos(apiKey: string, signal?: AbortSignal): Promise<HistorialAvisos> {
+  return request<HistorialAvisos>('/api/alerts/dispatches?limit=20', {
+    headers: conClave(apiKey),
     signal,
   })
 }

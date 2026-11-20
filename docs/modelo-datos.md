@@ -28,7 +28,12 @@ erDiagram
     STATIONS ||--o{ QUALITY_FLAGS : "tiene"
     STATIONS ||--o{ CLIMATE_REFERENCES : "tiene"
     IMPORT_LOGS ||--o{ RAINFALL_RECORDS : "incorpora"
-    STATIONS ||--o{ ALERT_SUBSCRIPTIONS : "avisa sobre"
+    STATIONS ||--o{ ALERT_SUBSCRIPTION_STATIONS : "interesa a"
+    ALERT_SUBSCRIPTIONS ||--o{ ALERT_SUBSCRIPTION_STATIONS : "pide"
+    USERS ||--o{ ALERT_SUBSCRIPTIONS : "es dueña de"
+    STATIONS ||--o{ ALERT_DISPATCHES : "se avisó sobre"
+    USERS ||--o{ ALERT_DISPATCHES : "manda"
+    ALERT_DISPATCHES ||--o{ ALERT_OUTBOX : "genera"
     ALERT_SUBSCRIPTIONS ||--o{ ALERT_OUTBOX : "recibe"
     USERS ||--o{ AUTH_SESSIONS : "abre"
     USERS ||--o{ IMPORT_LOGS : "carga"
@@ -216,10 +221,12 @@ Una fila por estación y día: `station_id`, `obs_date`, `mm` (≥ 0), `category
 - **Es un dato derivado:** se regenera por rango; `(station_id, obs_date)` es único.
 - Método, parámetros y límites: `docs/datos/estimacion-huecos.md`.
 
-### `alert_subscriptions` y `alert_outbox` — avisos a la población (canales simulados)
+### Avisos a la población (canales simulados)
 
-- `alert_subscriptions`: quien pidió avisos. Del teléfono guarda un resumen (`phone_hash`, único) y los últimos 4 dígitos; del correo, solo la versión enmascarada. `station_id` es opcional (sin estación = todas) y apunta a `stations`. `status`: `pendiente`, `confirmada` o `baja`.
-- `alert_outbox`: lo que se enviaría, por canal (`whatsapp`, `email`, `sistema`). `category` es siempre `simulado` (lo exige una restricción). `subscription_id` apunta a la suscripción con **borrado en cascada**: al borrar una suscripción se borran sus mensajes.
+- `alert_subscriptions`: quien pidió avisos. Del teléfono guarda un resumen (`phone_hash`, único) y los últimos 4 dígitos; del correo, solo la versión enmascarada. `status`: `pendiente`, `confirmada` o `baja`. **`user_id`** es la cuenta dueña (nulo si se suscribió sin sesión); al borrar la cuenta se borra la suscripción.
+- `alert_subscription_stations`: las **estaciones de interés** de una suscripción (clave primaria `suscripción + estación`, así no se repite). Una suscripción puede tener varias; **sin ninguna recibe los avisos de todas las estaciones**. Se borra con la suscripción, y una estación con suscriptores no se puede borrar.
+- `alert_dispatches`: el **historial de avisos**. Cada vez que el personal manda un aviso queda un renglón: estación, día, milímetros, nivel (50 o 100), a cuántas personas llegó y quién lo mandó (`created_by_user_id`; nulo = clave de administración).
+- `alert_outbox`: lo que se enviaría, por canal (`whatsapp`, `email`, `sistema`). `category` es siempre `simulado` (lo exige una restricción). `subscription_id` apunta a la suscripción con **borrado en cascada**; `dispatch_id` une cada aviso con su renglón del historial.
 
 ### `users` y `auth_sessions` — cuentas y sesiones
 
