@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api import (
     alerts,
+    auth,
     field_reports,
     gap_estimates,
     health,
@@ -55,7 +56,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         RateLimitMiddleware,
         default=settings.rate_limit_per_minute,
-        limits=(("/api/import", settings.rate_limit_import_per_minute),),
+        limits=(
+            ("/api/import", settings.rate_limit_import_per_minute),
+            ("/api/auth", settings.rate_limit_auth_per_minute),
+        ),
     )
     app.add_middleware(SecurityHeadersMiddleware, hsts=settings.app_env == "production")
     register_error_handlers(app)
@@ -70,6 +74,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(reports.router)
     app.include_router(recurrence.router)
     app.include_router(alerts.router)
+    app.include_router(auth.router)
+    app.include_router(auth.users_router)
     app.include_router(references.router)
     return app
 

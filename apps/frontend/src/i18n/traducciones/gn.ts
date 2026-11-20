@@ -18,6 +18,7 @@ export const gn: Diccionario = {
   'nav.importar': 'Mbohasa ha jehecha',
   'nav.salud': 'Red rekove',
   'nav.sensores': 'Sensores',
+  'nav.cuenta': 'Cuenta',
   'nav.avisos': 'Avisos',
   'nav.ayuda': 'Pytyvõ',
   'nav.noEncontrada': 'Kuatiarogue ndojejuhúi',

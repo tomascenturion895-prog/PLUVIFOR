@@ -17,6 +17,7 @@ export const es = {
   'nav.importar': 'Importar y auditar',
   'nav.salud': 'Salud de la red',
   'nav.sensores': 'Sensores',
+  'nav.cuenta': 'Cuenta',
   'nav.avisos': 'Avisos',
   'nav.ayuda': 'Ayuda',
   'nav.noEncontrada': 'Página no encontrada',

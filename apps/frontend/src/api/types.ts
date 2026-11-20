@@ -442,3 +442,27 @@ export interface AlertSend {
   queued: number
   notice: string
 }
+
+export type Rol = 'ciudadano' | 'operador' | 'administrador'
+
+/** Una cuenta. El rol lo asigna un administrador: quien se registra siempre es ciudadano. */
+export interface Cuenta {
+  id: number
+  email: string
+  display_name: string | null
+  role: Rol
+  is_active: boolean
+  created_at: string
+  last_login_at: string | null
+}
+
+export interface SesionIniciada {
+  token: string
+  expires_at: string
+  user: Cuenta
+}
+
+export interface CuentaList {
+  items: Cuenta[]
+  total: number
+}

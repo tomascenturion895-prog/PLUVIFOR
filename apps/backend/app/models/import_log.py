@@ -18,6 +18,7 @@ class ImportLog(Base):
         ),
         CheckConstraint("rows_accepted + rows_rejected <= rows_read", name="counts_consistent"),
         Index("ix_import_logs_source_id", "source_id"),
+        Index("ix_import_logs_created_by_user_id", "created_by_user_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -32,3 +33,7 @@ class ImportLog(Base):
     rejections: Mapped[str | None] = mapped_column(Text)  # JSON agrupado por motivo
     cutoff_applied: Mapped[date]
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    # Quién hizo la carga; nulo si se usó la clave de administración o la línea de comandos.
+    created_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )

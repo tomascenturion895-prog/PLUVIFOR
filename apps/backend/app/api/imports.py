@@ -5,7 +5,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, Query, Request
 from starlette.concurrency import run_in_threadpool
 
-from app.api.deps import get_import_service, get_quality_service, require_admin
+from app.api.deps import Actor, get_import_service, get_quality_service, require_admin
 from app.config import Settings, get_settings
 from app.domain.enums import ImportMode
 from app.errors import ApiError
@@ -53,6 +53,7 @@ async def _run(
     kind: Kind,
     source: str,
     filename: str,
+    actor: Actor,
 ) -> ImportReportOut:
     content = await _read_body(request, settings.max_upload_bytes)
 
@@ -60,7 +61,12 @@ async def _run(
         if kind == "stations":
             return service.import_stations(source, filename, content, mode)
         report = service.import_rainfall(
-            source, filename, content, mode, record_audit=mode is ImportMode.COMMIT
+            source,
+            filename,
+            content,
+            mode,
+            record_audit=mode is ImportMode.COMMIT,
+            created_by_user_id=actor.user_id,
         )
         if mode is ImportMode.COMMIT:
             # Sin esto, la racha de ceros de lo recién cargado no se advertiría hasta correr
@@ -87,11 +93,14 @@ async def audit(
     service: Annotated[ImportService, Depends(get_import_service)],
     quality: Annotated[QualityService, Depends(get_quality_service)],
     settings: Annotated[Settings, Depends(get_settings)],
+    actor: Annotated[Actor, Depends(require_admin)],
     source: Source = "siga_inta",
     kind: Kind = "rainfall",
     filename: Filename = "archivo.csv",
 ) -> ImportReportOut:
-    return await _run(request, service, quality, settings, ImportMode.AUDIT, kind, source, filename)
+    return await _run(
+        request, service, quality, settings, ImportMode.AUDIT, kind, source, filename, actor
+    )
 
 
 @router.post(
@@ -104,12 +113,13 @@ async def commit(
     service: Annotated[ImportService, Depends(get_import_service)],
     quality: Annotated[QualityService, Depends(get_quality_service)],
     settings: Annotated[Settings, Depends(get_settings)],
+    actor: Annotated[Actor, Depends(require_admin)],
     source: Source = "siga_inta",
     kind: Kind = "rainfall",
     filename: Filename = "archivo.csv",
 ) -> ImportReportOut:
     return await _run(
-        request, service, quality, settings, ImportMode.COMMIT, kind, source, filename
+        request, service, quality, settings, ImportMode.COMMIT, kind, source, filename, actor
     )
 
 

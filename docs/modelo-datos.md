@@ -30,6 +30,9 @@ erDiagram
     IMPORT_LOGS ||--o{ RAINFALL_RECORDS : "incorpora"
     STATIONS ||--o{ ALERT_SUBSCRIPTIONS : "avisa sobre"
     ALERT_SUBSCRIPTIONS ||--o{ ALERT_OUTBOX : "recibe"
+    USERS ||--o{ AUTH_SESSIONS : "abre"
+    USERS ||--o{ IMPORT_LOGS : "carga"
+    USERS ||--o{ FIELD_REPORTS : "carga"
 
     SOURCES {
         int id PK
@@ -217,6 +220,14 @@ Una fila por estación y día: `station_id`, `obs_date`, `mm` (≥ 0), `category
 
 - `alert_subscriptions`: quien pidió avisos. Del teléfono guarda un resumen (`phone_hash`, único) y los últimos 4 dígitos; del correo, solo la versión enmascarada. `station_id` es opcional (sin estación = todas) y apunta a `stations`. `status`: `pendiente`, `confirmada` o `baja`.
 - `alert_outbox`: lo que se enviaría, por canal (`whatsapp`, `email`, `sistema`). `category` es siempre `simulado` (lo exige una restricción). `subscription_id` apunta a la suscripción con **borrado en cascada**: al borrar una suscripción se borran sus mensajes.
+
+### `users` y `auth_sessions` — cuentas y sesiones
+
+- `users`: correo único (en minúsculas), `password_hash` (scrypt con sal; nunca la contraseña), `role` (`ciudadano`, `operador`, `administrador`), `is_active`, `failed_attempts` y `locked_until` (bloqueo tras 5 intentos).
+- `auth_sessions`: `token_hash` (resumen SHA-256; el token no se guarda), `expires_at` y `revoked_at`. **Se borran en cascada con la cuenta.**
+- `import_logs.created_by_user_id` y `field_reports.created_by_user_id` guardan quién hizo la carga. Si se borra la cuenta quedan en nulo (`SET NULL`): la carga no desaparece, solo se pierde el autor. Nulo también significa «clave de administración».
+
+Detalle de uso en `docs/cuentas.md`.
 
 ### `import_logs` — registro de cada carga (auditoría)
 

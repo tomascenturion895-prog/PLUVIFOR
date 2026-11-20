@@ -24,7 +24,12 @@ class IngestionRepository(Protocol):
     def upsert_stations(self, source_id: int, rows: list[StationRow]) -> tuple[int, int]: ...
 
     def record_import(
-        self, source_id: int, report: ImportReport, cutoff: date, started_at: datetime
+        self,
+        source_id: int,
+        report: ImportReport,
+        cutoff: date,
+        started_at: datetime,
+        created_by_user_id: int | None = None,
     ) -> int: ...
 
     def record_failed_attempt(
@@ -108,7 +113,12 @@ class SqlIngestionRepository:
         return inserted, updated
 
     def record_import(
-        self, source_id: int, report: ImportReport, cutoff: date, started_at: datetime
+        self,
+        source_id: int,
+        report: ImportReport,
+        cutoff: date,
+        started_at: datetime,
+        created_by_user_id: int | None = None,
     ) -> int:
         log = ImportLog(
             source_id=source_id,
@@ -122,6 +132,7 @@ class SqlIngestionRepository:
             rejections=json.dumps(report.rejections_by_reason(), ensure_ascii=False),
             cutoff_applied=cutoff,
             started_at=started_at,
+            created_by_user_id=created_by_user_id,
         )
         self._session.add(log)
         self._session.flush()

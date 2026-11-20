@@ -13,6 +13,7 @@ import type { AlertOutboxList, AlertPreview, Station } from '../api/types'
 import BandejaCorreo from '../components/avisos/BandejaCorreo'
 import CelularWhatsApp from '../components/avisos/CelularWhatsApp'
 import NotificacionesSistema from '../components/avisos/NotificacionesSistema'
+import { useSesion } from '../auth/usar-sesion'
 import { ErrorEstado } from '../components/Estados'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
@@ -32,6 +33,7 @@ type Paso = 'pedir' | 'confirmar' | 'listo' | 'baja'
 
 function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
   // La clave solo vive en esta variable: no se guarda en el navegador ni viaja en la URL.
+  const { esPersonal } = useSesion()
   const [clave, setClave] = useState('')
   const [estacion, setEstacion] = useState('')
   const [fecha, setFecha] = useState('')
@@ -40,7 +42,8 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
   const [bandeja, setBandeja] = useState<AlertOutboxList | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const listo = clave !== '' && estacion !== '' && fecha !== ''
+  const conPermiso = esPersonal || clave !== ''
+  const listo = conPermiso && estacion !== '' && fecha !== ''
 
   function cargarEjemplo() {
     const real = estaciones.find((e) => e.code === EJEMPLO.codigoEstacion)
@@ -86,15 +89,17 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
         día <strong>observado</strong> con 50 mm o más; un día sin dato no avisa nada.
       </p>
       <form onSubmit={ver} aria-label="Disparar aviso">
-        <label>
-          Clave de administración
-          <input
-            type="password"
-            autoComplete="off"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-          />
-        </label>
+        {!esPersonal && (
+          <label>
+            Clave de administración
+            <input
+              type="password"
+              autoComplete="off"
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+            />
+          </label>
+        )}
         <label>
           Estación
           <select value={estacion} onChange={(e) => setEstacion(e.target.value)}>
@@ -156,7 +161,7 @@ function PanelPersonal({ estaciones }: { estaciones: Station[] }) {
         </div>
       )}
       <p>
-        <button type="button" disabled={clave === ''} onClick={verBandeja}>
+        <button type="button" disabled={!conPermiso} onClick={verBandeja}>
           Ver todos los mensajes simulados
         </button>
       </p>

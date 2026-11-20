@@ -124,3 +124,5 @@ class ImportLogEntry:
     rejections_by_reason: dict[str, int]
     cutoff_applied: date
     started_at: datetime
+    # Quién hizo la carga; None si fue la clave de administración o la línea de comandos.
+    created_by_user_id: int | None = None

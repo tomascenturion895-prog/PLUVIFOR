@@ -4,6 +4,8 @@ Importar es una acción de quien administra la base; no se expone por la API pú
 """
 
 import argparse
+import getpass
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -11,13 +13,18 @@ from pathlib import Path
 from app.config import get_settings
 from app.db.session import create_db_engine, create_session_factory
 from app.demo import DEFAULT_DATA_DIR, DemoResetError, reset_demo
+from app.domain.alerts import normalize_email
+from app.domain.auth import Role
 from app.domain.enums import ImportMode
+from app.errors import ApiError
 from app.ingestion.siga_live import SigaLiveClient
 from app.ingestion.types import ImportReport, InvalidFileError
 from app.repositories.gap_estimates import SqlGapEstimateRepository
 from app.repositories.ingestion import SqlIngestionRepository
 from app.repositories.quality import SqlQualityRepository
 from app.repositories.references import SqlReferenceRepository
+from app.repositories.users import SqlUserRepository
+from app.services.auth import AuthService
 from app.services.gap_estimation import GapEstimationService
 from app.services.importer import ImportService
 from app.services.quality import QualityService
@@ -83,6 +90,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     normals.add_argument("file", type=Path, nargs="?", default=DEFAULT_NORMALS_FILE)
 
+    user = commands.add_parser(
+        "create-user",
+        help="Crea una cuenta (por ejemplo, el primer administrador). La clave se pide por teclado",
+    )
+    user.add_argument("--email", required=True)
+    user.add_argument("--role", choices=[r.value for r in Role], default=Role.ADMINISTRADOR.value)
+
     demo = commands.add_parser(
         "reset-demo", help="Borra la base SQLite y la recarga desde docs/datos (sin internet)"
     )
@@ -126,6 +140,35 @@ def _recompute_flags(session) -> None:
     print(f"Banderas recalculadas · tramos de ceros prolongados: {sum(counts.values())}")
 
 
+def _read_new_password() -> str:
+    """La contraseña nunca va en la línea de comandos (quedaría en el historial de la terminal).
+
+    Se pide por teclado dos veces; para automatizar se puede usar PLUVIFOR_NEW_USER_PASSWORD.
+    """
+    from_env = os.environ.get("PLUVIFOR_NEW_USER_PASSWORD")
+    if from_env:
+        return from_env
+    if not sys.stdin.isatty():
+        raise ValueError("Sin una terminal: definí la variable PLUVIFOR_NEW_USER_PASSWORD.")
+    first = getpass.getpass("Contraseña (mínimo 10 caracteres): ")
+    if first != getpass.getpass("Repetí la contraseña: "):
+        raise ValueError("Las contraseñas no coinciden.")
+    return first
+
+
+def _create_user(session, args: argparse.Namespace) -> int:
+    try:
+        email = normalize_email(args.email)
+        user = AuthService(SqlUserRepository(session), session_hours=12).create_user(
+            email, _read_new_password(), Role(args.role)
+        )
+    except (ValueError, ApiError) as exc:
+        print(f"Error: {getattr(exc, 'message', None) or exc}", file=sys.stderr)
+        return 1
+    print(f"Cuenta creada: {user.email} · rol {user.role.value}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "reset-demo":
@@ -142,6 +185,9 @@ def main(argv: list[str] | None = None) -> int:
                 f"Normal cargada: estación {done.station_code}, {done.months} meses, {done.period}"
             )
             return 0
+        if args.command == "create-user":
+            with create_session_factory(engine)() as session:
+                return _create_user(session, args)
         if args.command == "recompute-flags":
             with create_session_factory(engine)() as session:
                 counts = QualityService(SqlQualityRepository(session)).recompute_zero_streaks()

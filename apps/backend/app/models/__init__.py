@@ -10,8 +10,10 @@ from app.models.rainfall_record import RainfallRecord
 from app.models.sensor_reading import SensorReading
 from app.models.source import Source
 from app.models.station import Station
+from app.models.user import AuthSession, User
 
 __all__ = [
+    "AuthSession",
     "AlertOutbox",
     "AlertSubscription",
     "ClimateReference",
@@ -23,4 +25,5 @@ __all__ = [
     "SensorReading",
     "Source",
     "Station",
+    "User",
 ]

@@ -92,6 +92,7 @@ class ImportService:
         content: bytes,
         mode: ImportMode,
         record_audit: bool = True,
+        created_by_user_id: int | None = None,
     ) -> ImportReport:
         """`record_audit=False` deja una auditoría sin ninguna escritura (la usa la API)."""
         started_at = self._clock()
@@ -125,7 +126,9 @@ class ImportService:
         if mode is ImportMode.AUDIT and not record_audit:
             return report
         try:
-            import_id = self._repository.record_import(source_id, report, self._cutoff, started_at)
+            import_id = self._repository.record_import(
+                source_id, report, self._cutoff, started_at, created_by_user_id
+            )
             if mode is ImportMode.COMMIT:
                 report.inserted, report.updated = self._repository.upsert_rainfall(
                     [row for row in report.accepted if isinstance(row, RainRow)],
@@ -154,6 +157,7 @@ class ImportService:
                 rejections_by_reason=json.loads(log.rejections) if log.rejections else {},
                 cutoff_applied=log.cutoff_applied,
                 started_at=log.started_at,
+                created_by_user_id=log.created_by_user_id,
             )
             for log, source_code in self._repository.recent_imports(limit)
         ]

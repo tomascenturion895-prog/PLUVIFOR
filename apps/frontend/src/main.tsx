@@ -11,6 +11,7 @@ import './theme.css'
 import './temas.css'
 import { instalarOndas } from './material/ondas'
 import { aplicarTema, almacenLocal, leerTema } from './components/tema/tema-datos'
+import { ProveedorSesion } from './auth/ProveedorSesion'
 import { ProveedorIdioma } from './i18n/contexto'
 import { almacenLocal as almacenIdioma, aplicarIdioma, leerIdioma } from './i18n/idioma-datos'
 import App from './App.tsx'
@@ -25,9 +26,11 @@ instalarOndas(raiz)
 createRoot(raiz).render(
   <StrictMode>
     <ProveedorIdioma>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ProveedorSesion>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ProveedorSesion>
     </ProveedorIdioma>
   </StrictMode>,
 )

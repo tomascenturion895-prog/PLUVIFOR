@@ -79,6 +79,7 @@ class ImportLogOut(BaseModel):
     rejections_by_reason: dict[str, int]
     cutoff_applied: date
     started_at: datetime
+    created_by_user_id: int | None = None
 
     @classmethod
     def from_entry(cls, entry: ImportLogEntry) -> "ImportLogOut":
