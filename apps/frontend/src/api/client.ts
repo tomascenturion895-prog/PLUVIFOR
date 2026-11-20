@@ -8,6 +8,17 @@ import type {
   ClimateReferenceOut,
   EventsOut,
   GapEstimateList,
+  AlertInbox,
+  AlertOutboxList,
+  AlertPreview,
+  AlertSend,
+  AlertSubscriptionStatus,
+  HistorialAvisos,
+  MiSuscripcion,
+  MisNotificaciones,
+  MisSuscripciones,
+  RecurrenceOut,
+  SensorDeviceList,
   SensorReadingList,
   ImportReport,
   NetworkHealth,
@@ -16,6 +27,10 @@ import type {
   SeriesCompare,
   Station,
   StationList,
+  Cuenta,
+  CuentaList,
+  Rol,
+  SesionIniciada,
 } from './types'
 
 /** Error de la API o de la red, con un mensaje listo para mostrar (en español). */
@@ -114,8 +129,19 @@ export function getRainfall(
 /** Fuente que hoy sabe leer la API. No se agregan otras hasta que exista su conector. */
 export const FUENTE_IMPORTACION = 'siga_inta'
 
+/** Token de la sesión abierta (vive en memoria; el contexto de sesión lo mantiene). */
+let tokenSesion: string | null = null
+export function fijarTokenSesion(token: string | null): void {
+  tokenSesion = token
+}
+
+function encabezadosSesion(): Record<string, string> {
+  return tokenSesion ? { Authorization: `Bearer ${tokenSesion}` } : {}
+}
+
+/** Credenciales de escritura: la sesión (si hay) y la clave de administración (si se escribió). */
 function conClave(apiKey: string): Record<string, string> {
-  return { 'X-API-Key': apiKey }
+  return { ...encabezadosSesion(), ...(apiKey ? { 'X-API-Key': apiKey } : {}) }
 }
 
 function importar(
@@ -212,11 +238,22 @@ export function postFieldReport(
 
 /** Últimas lecturas de dispositivos. Siempre simuladas: no se suman a las series de lluvia. */
 export function getSensorReadings(
-  params: { deviceId?: string; limit?: number } = {},
+  params: { deviceId?: string; limit?: number; offset?: number } = {},
   signal?: AbortSignal,
 ): Promise<SensorReadingList> {
   return request<SensorReadingList>(
-    `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit })}`,
+    `/api/sensor-readings${query({ device_id: params.deviceId, limit: params.limit, offset: params.offset })}`,
+    { signal },
+  )
+}
+
+/** Dispositivos que enviaron lecturas, con la última de cada uno. Siempre simulados. */
+export function getSensorDevices(
+  params: { silentAfterDays?: number } = {},
+  signal?: AbortSignal,
+): Promise<SensorDeviceList> {
+  return request<SensorDeviceList>(
+    `/api/sensor-readings/devices${query({ silent_after_days: params.silentAfterDays })}`,
     { signal },
   )
 }
@@ -262,4 +299,172 @@ export function getNetworkHealth(
     `/api/network/health${query({ silent_after_days: params.silentAfterDays })}`,
     { signal },
   )
+}
+
+function postJson<T>(path: string, cuerpo: unknown, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+    signal,
+  })
+}
+
+/** Pide avisos de lluvia: se «manda» un código por WhatsApp (simulado). El correo es opcional. */
+export function suscribirseAvisos(
+  phone: string,
+  opciones: { email?: string; stationIds?: number[] } = {},
+  signal?: AbortSignal,
+): Promise<AlertSubscriptionStatus> {
+  return postJson(
+    '/api/alerts/subscriptions',
+    { phone, email: opciones.email || undefined, station_ids: opciones.stationIds ?? [] },
+    signal,
+  )
+}
+
+export function confirmarAvisos(
+  phone: string,
+  code: string,
+  signal?: AbortSignal,
+): Promise<AlertSubscriptionStatus> {
+  return postJson('/api/alerts/subscriptions/confirm', { phone, code }, signal)
+}
+
+export function bajaAvisos(phone: string, signal?: AbortSignal): Promise<AlertSubscriptionStatus> {
+  return postJson('/api/alerts/subscriptions/unsubscribe', { phone }, signal)
+}
+
+/** Mensajes que se enviarían. Solo el personal, con la clave de administración. */
+export function getBandejaAvisos(apiKey: string, signal?: AbortSignal): Promise<AlertOutboxList> {
+  return request<AlertOutboxList>('/api/alerts/outbox?limit=20', {
+    headers: conClave(apiKey),
+    signal,
+  })
+}
+
+/** Cada cuánto llovió 50 y 100 mm o más en una estación. Histórico y descriptivo, no es predicción. */
+export function getRecurrence(
+  params: { stationId: number; from: string; to: string },
+  signal?: AbortSignal,
+): Promise<RecurrenceOut> {
+  return request<RecurrenceOut>(
+    `/api/recurrence${query({ station_id: params.stationId, from: params.from, to: params.to })}`,
+    { signal },
+  )
+}
+
+/** Demostración: el celular y el correo (simulados) de quien se registró. Solo con ALERTS_DEMO. */
+export function getInboxAvisos(phone: string, signal?: AbortSignal): Promise<AlertInbox> {
+  return postJson('/api/alerts/inbox', { phone }, signal)
+}
+
+/** Qué avisaría el sistema para una estación y un día. Solo el personal. */
+export function previsualizarAviso(
+  apiKey: string,
+  params: { stationId: number; date: string },
+  signal?: AbortSignal,
+): Promise<AlertPreview> {
+  return request<AlertPreview>(
+    `/api/alerts/preview${query({ station_id: params.stationId, date: params.date })}`,
+    { headers: conClave(apiKey), signal },
+  )
+}
+
+/** Entrega el aviso (simulado) a las suscripciones confirmadas. Solo el personal. */
+export function enviarAviso(
+  apiKey: string,
+  params: { stationId: number; date: string },
+  signal?: AbortSignal,
+): Promise<AlertSend> {
+  return request<AlertSend>(
+    `/api/alerts/send${query({ station_id: params.stationId, date: params.date })}`,
+    { method: 'POST', headers: conClave(apiKey), signal },
+  )
+}
+
+/** Crea una cuenta de ciudadano. El rol no se puede elegir. */
+export function registrarCuenta(
+  datos: { email: string; password: string; display_name?: string },
+  signal?: AbortSignal,
+): Promise<Cuenta> {
+  return postJson('/api/auth/register', datos, signal)
+}
+
+export function iniciarSesion(
+  email: string,
+  password: string,
+  signal?: AbortSignal,
+): Promise<SesionIniciada> {
+  return postJson('/api/auth/login', { email, password }, signal)
+}
+
+export async function cerrarSesionApi(): Promise<void> {
+  await fetch(`${apiBase()}/api/auth/logout`, { method: 'POST', headers: encabezadosSesion() })
+}
+
+export function getMiCuenta(signal?: AbortSignal): Promise<Cuenta> {
+  return request<Cuenta>('/api/auth/me', { headers: encabezadosSesion(), signal })
+}
+
+/** Cuentas. Solo administradores. */
+export function getCuentas(signal?: AbortSignal): Promise<CuentaList> {
+  return request<CuentaList>('/api/users?limit=200', { headers: encabezadosSesion(), signal })
+}
+
+export function cambiarCuenta(
+  id: number,
+  cambio: { role?: Rol; is_active?: boolean },
+  signal?: AbortSignal,
+): Promise<Cuenta> {
+  return request<Cuenta>(`/api/users/${id}`, {
+    method: 'PATCH',
+    headers: { ...encabezadosSesion(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(cambio),
+    signal,
+  })
+}
+
+/** Mis suscripciones a avisos. Requiere sesión. */
+export function getMisSuscripciones(signal?: AbortSignal): Promise<MisSuscripciones> {
+  return request<MisSuscripciones>('/api/alerts/mine', { headers: encabezadosSesion(), signal })
+}
+
+/** Mis notificaciones dentro del sistema. Requiere sesión. */
+export function getMisNotificaciones(signal?: AbortSignal): Promise<MisNotificaciones> {
+  return request<MisNotificaciones>('/api/alerts/mine/notifications', {
+    headers: encabezadosSesion(),
+    signal,
+  })
+}
+
+/** Cambia las estaciones de una de mis suscripciones. Una lista vacía = todas. */
+export function cambiarEstacionesSuscripcion(
+  id: number,
+  stationIds: number[],
+  signal?: AbortSignal,
+): Promise<MiSuscripcion> {
+  return request<MiSuscripcion>(`/api/alerts/mine/${id}/stations`, {
+    method: 'PUT',
+    headers: { ...encabezadosSesion(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ station_ids: stationIds }),
+    signal,
+  })
+}
+
+/** Me doy de baja de una de mis suscripciones, sin necesidad del teléfono. */
+export function bajaMiSuscripcion(id: number, signal?: AbortSignal): Promise<MiSuscripcion> {
+  return request<MiSuscripcion>(`/api/alerts/mine/${id}/unsubscribe`, {
+    method: 'POST',
+    headers: encabezadosSesion(),
+    signal,
+  })
+}
+
+/** Historial de avisos mandados. Solo el personal. */
+export function getHistorialAvisos(apiKey: string, signal?: AbortSignal): Promise<HistorialAvisos> {
+  return request<HistorialAvisos>('/api/alerts/dispatches?limit=20', {
+    headers: conClave(apiKey),
+    signal,
+  })
 }

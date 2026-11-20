@@ -1,11 +1,30 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import PanelAccesibilidad from './a11y/PanelAccesibilidad'
+import SelectorIdioma from './idioma/SelectorIdioma'
 import SelectorTema from './tema/SelectorTema'
 import { useTema } from './tema/tema-colores'
-import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
-import { tituloDe } from '../titulos'
+import { SECCIONES } from '../constants'
+import { useIdioma } from '../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../i18n/traducciones/es'
 import Icono from '../material/Icono'
+
+const CLAVE_SECCION: Record<string, ClaveTraduccion> = {
+  '/': 'nav.inicio',
+  '/vista-3d': 'nav.vista3d',
+  '/maqueta': 'nav.maqueta',
+  '/mapa': 'nav.mapa',
+  '/estacion': 'nav.estacion',
+  '/comparador': 'nav.comparador',
+  '/parte': 'nav.parte',
+  '/reporte': 'nav.reporte',
+  '/importar': 'nav.importar',
+  '/salud': 'nav.salud',
+  '/sensores': 'nav.sensores',
+  '/avisos': 'nav.avisos',
+  '/cuenta': 'nav.cuenta',
+  '/ayuda': 'nav.ayuda',
+}
 
 /** Barras de lluvia diaria; la del medio va rayada porque un día sin dato no es 0 mm. */
 function MarcaPluvifor() {
@@ -45,10 +64,19 @@ export default function Layout() {
   const [menuAbierto, setMenuAbierto] = useState(false)
   // Al cambiar de tema se vuelve a dibujar el contenido: mapas, gráficos y 3D toman sus colores.
   const tema = useTema()
+  const { t } = useIdioma()
+
+  const seccionActual =
+    pathname === '/'
+      ? SECCIONES[0]
+      : SECCIONES.find(
+          (s) => s.ruta !== '/' && (pathname === s.ruta || pathname.startsWith(`${s.ruta}/`)),
+        )
+  const actual = seccionActual ? t(CLAVE_SECCION[seccionActual.ruta]) : t('nav.noEncontrada')
+
   useEffect(() => {
-    document.title = tituloDe(pathname)
-  }, [pathname])
-  const actual = tituloDe(pathname).replace(' · PLUVIFOR', '')
+    document.title = `${actual} · PLUVIFOR`
+  }, [actual])
 
   return (
     <>
@@ -58,15 +86,16 @@ export default function Layout() {
             <MarcaPluvifor />
             <div>
               <h1>PLUVIFOR</h1>
-              <p>Reporte pluvial de Formosa</p>
+              <p>{t('app.subtitulo')}</p>
             </div>
           </div>
           <div className="encabezado-acciones">
+            <SelectorIdioma />
             <SelectorTema />
             <PanelAccesibilidad />
           </div>
         </div>
-        <nav aria-label="Secciones">
+        <nav aria-label={t('nav.etiqueta')}>
           <button
             type="button"
             className="menu-boton"
@@ -76,7 +105,8 @@ export default function Layout() {
           >
             <Icono nombre={menuAbierto ? 'cerrar' : 'menu'} />
             <span>
-              Menú<span className="menu-actual">: {actual}</span>
+              {t('nav.menu')}
+              <span className="menu-actual">: {actual}</span>
             </span>
           </button>
           <ul id="menu-secciones" className={menuAbierto ? 'abierto' : ''}>
@@ -88,7 +118,7 @@ export default function Layout() {
                   onClick={() => setMenuAbierto(false)}
                 >
                   <Icono nombre={seccion.icono} />
-                  <span>{seccion.nombre}</span>
+                  <span>{t(CLAVE_SECCION[seccion.ruta])}</span>
                 </NavLink>
               </li>
             ))}
@@ -99,7 +129,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="pie">
-        <small>{LEYENDA_PROTOTIPO}</small>
+        <small>{t('app.leyendaPrototipo')}</small>
       </footer>
     </>
   )

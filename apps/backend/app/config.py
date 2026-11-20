@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     admin_api_key: SecretStr | None = None
     # Clave de los dispositivos (sensores) que envían lecturas. Sin ella, la ingesta queda cerrada.
     device_api_key: SecretStr | None = None
+    # Clave para resumir teléfonos y códigos de los avisos. Vacía = suscripciones cerradas.
+    alerts_secret: SecretStr | None = None
+    # Modo demostración: deja que quien se registra vea sus propios mensajes simulados (celular y
+    # correo de mentira). Apagado por defecto: con canales reales, nadie lee mensajes ajenos.
+    alerts_demo: bool = False
     # Tamaño máximo de un archivo a importar (el CSV real del SIGA pesa ~0,6 MB).
     max_upload_bytes: int = 5 * 1024 * 1024
     # Tamaño máximo del cuerpo de cualquier otro pedido (los JSON de la API pesan pocos bytes).
@@ -30,6 +35,12 @@ class Settings(BaseSettings):
     # Pedidos por minuto y por dirección. 0 desactiva el límite.
     rate_limit_per_minute: int = 120
     rate_limit_import_per_minute: int = 10
+    # Registro e inicio de sesión: pocos pedidos por minuto y por dirección frenan la fuerza bruta.
+    rate_limit_auth_per_minute: int = 10
+    # Cuánto dura una sesión abierta.
+    session_hours: int = 12
+    # Si es false, nadie puede crear cuentas por la API (siguen las altas por línea de comandos).
+    registration_open: bool = True
 
     @field_validator("cors_origins", mode="before")
     @classmethod

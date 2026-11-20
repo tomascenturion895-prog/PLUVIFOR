@@ -16,7 +16,7 @@ class FieldReportService:
         self._repository = repository
         self._cutoff = cutoff
 
-    def create(self, data: FieldReportIn) -> FieldReport:
+    def create(self, data: FieldReportIn, created_by_user_id: int | None = None) -> FieldReport:
         if data.obs_date > self._cutoff:
             raise ApiError(
                 422,
@@ -39,6 +39,7 @@ class FieldReportService:
                 else None,
                 category=DataCategory.OBSERVADO,
                 validation=Validation.SIN_VALIDAR,
+                created_by_user_id=created_by_user_id,
                 source=SOURCE,
             )
         )

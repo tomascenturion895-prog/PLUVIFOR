@@ -1,8 +1,10 @@
+import { useSesion } from '../auth/usar-sesion'
 import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ApiError, auditImport, commitImport, getImportLogs } from '../api/client'
 import type { ImportKind, ImportLog, ImportReport } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { MAX_ARCHIVO_BYTES } from '../constants'
+import { useIdioma } from '../i18n/usar-idioma'
 import { esConfirmable } from './importar-datos'
 
 const TIPOS: { valor: ImportKind; nombre: string }[] = [
@@ -33,10 +35,13 @@ function validarArchivo(archivo: File): string | null {
 }
 
 export function Informe({ informe }: { informe: ImportReport }) {
+  const { t } = useIdioma()
   const guardado = informe.saved
   return (
     <section aria-labelledby="informe-titulo" className="informe">
-      <h3 id="informe-titulo">{guardado ? 'Carga confirmada' : 'Informe de auditoría'}</h3>
+      <h3 id="informe-titulo">
+        {guardado ? t('importar.cargaConfirmada') : t('importar.informeAuditoria')}
+      </h3>
       <p className="nota">
         {guardado
           ? 'Los datos aceptados se guardaron.'
@@ -44,25 +49,25 @@ export function Informe({ informe }: { informe: ImportReport }) {
       </p>
       <dl className="resumen">
         <div>
-          <dt>Filas leídas</dt>
+          <dt>{t('importar.filasLeidas')}</dt>
           <dd>{informe.rows_read}</dd>
         </div>
         <div>
-          <dt>Aceptadas</dt>
+          <dt>{t('importar.aceptadas')}</dt>
           <dd>{informe.rows_accepted}</dd>
         </div>
         <div>
-          <dt>Rechazadas</dt>
+          <dt>{t('importar.rechazadas')}</dt>
           <dd>{informe.rows_rejected}</dd>
         </div>
         {guardado && (
           <>
             <div>
-              <dt>Nuevas</dt>
+              <dt>{t('importar.nuevas')}</dt>
               <dd>{informe.inserted}</dd>
             </div>
             <div>
-              <dt>Actualizadas</dt>
+              <dt>{t('importar.actualizadas')}</dt>
               <dd>{informe.updated}</dd>
             </div>
           </>
@@ -75,12 +80,12 @@ export function Informe({ informe }: { informe: ImportReport }) {
       )}
       {informe.rejections.length > 0 && (
         <>
-          <h4>Filas rechazadas</h4>
+          <h4>{t('importar.filasRechazadas')}</h4>
           <table className="tabla-dias">
             <thead>
               <tr>
-                <th scope="col">Línea</th>
-                <th scope="col">Motivo</th>
+                <th scope="col">{t('importar.linea')}</th>
+                <th scope="col">{t('importar.motivo')}</th>
               </tr>
             </thead>
             <tbody>
@@ -104,17 +109,18 @@ export function Informe({ informe }: { informe: ImportReport }) {
 }
 
 export function Historial({ logs }: { logs: ImportLog[] }) {
-  if (logs.length === 0) return <Vacio>Todavía no hay cargas registradas.</Vacio>
+  const { t } = useIdioma()
+  if (logs.length === 0) return <Vacio>{t('importar.sinCargas')}</Vacio>
   return (
     <table className="tabla-dias">
       <thead>
         <tr>
-          <th scope="col">Fecha</th>
-          <th scope="col">Archivo</th>
-          <th scope="col">Fuente</th>
-          <th scope="col">Leídas</th>
-          <th scope="col">Aceptadas</th>
-          <th scope="col">Rechazadas</th>
+          <th scope="col">{t('comun.fecha')}</th>
+          <th scope="col">{t('importar.archivo')}</th>
+          <th scope="col">{t('comun.fuente')}</th>
+          <th scope="col">{t('importar.filasLeidas')}</th>
+          <th scope="col">{t('importar.aceptadas')}</th>
+          <th scope="col">{t('importar.rechazadas')}</th>
         </tr>
       </thead>
       <tbody>
@@ -141,6 +147,7 @@ type Historia =
 
 export default function Importar() {
   // La clave solo vive en esta variable: no se guarda en el navegador ni viaja en la URL.
+  const { esPersonal } = useSesion()
   const [clave, setClave] = useState('')
   const [tipo, setTipo] = useState<ImportKind>('rainfall')
   const [archivo, setArchivo] = useState<File | null>(null)
@@ -151,7 +158,7 @@ export default function Importar() {
   const [errorApi, setErrorApi] = useState<string | null>(null)
   const [historia, setHistoria] = useState<Historia>({ tipo: 'sin_clave' })
 
-  const tienePermiso = clave.trim().length > 0
+  const tienePermiso = esPersonal || clave.trim().length > 0
   // Sin clave el historial no se muestra aunque ya se hubiera cargado antes.
   const vista: Historia = tienePermiso ? historia : { tipo: 'sin_clave' }
 
@@ -226,15 +233,17 @@ export default function Importar() {
       </p>
 
       <form className="filtros" onSubmit={alAuditar}>
-        <label>
-          Clave de administración
-          <input
-            type="password"
-            autoComplete="off"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-          />
-        </label>
+        {!esPersonal && (
+          <label>
+            Clave de administración
+            <input
+              type="password"
+              autoComplete="off"
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+            />
+          </label>
+        )}
         <label>
           Tipo de archivo
           <select

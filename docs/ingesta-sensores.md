@@ -45,7 +45,11 @@ python -m simulador --url http://localhost:8000 --dispositivos 3 --dias 7
 
 Envía una lectura diaria por dispositivo (07:00 hora de Argentina, hasta el corte) con una semilla fija: el mismo comando genera siempre las mismas lecturas. Algunos días un dispositivo «no reporta»: ese día no hay lectura. Volver a correrlo no duplica nada. La clave sale de `DEVICE_API_KEY`, no de la línea de comandos.
 
-En la interfaz, las lecturas se ven en **Salud de la red → Sensores (simulados)**, cada una con la insignia **Simulado**.
+En la interfaz hay una pantalla propia, **Sensores** (`/sensores`): una tarjeta por dispositivo con su última lectura, un gráfico de las lecturas (un día sin lectura es un hueco rayado, nunca 0 mm) y la tabla paginada, todo con la insignia **Simulado**. Las últimas lecturas también se ven en **Salud de la red → Sensores (simulados)**.
+
+`GET /api/sensor-readings/devices` (público) devuelve un resumen por dispositivo: cantidad de lecturas, primera, última y los mm de la última.
+
+Cada dispositivo trae su **estado**, calculado contra la fecha de corte (31/10/2026) y no contra hoy, con la misma regla que la salud de las estaciones: `en_silencio` si su última lectura es de hace más de `silent_after_days` días (30 por defecto, provisional y a confirmar; se puede pedir otro valor de 1 a 365). Un silencio no es 0 mm: el dispositivo sigue mostrando su última lectura real y los días sin lectura son «sin lectura».
 
 ## Qué no hace
 

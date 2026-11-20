@@ -182,3 +182,67 @@ def test_listar_valida_la_paginacion_y_sin_lecturas_devuelve_lista_vacia(client)
     assert vacio["items"] == [] and vacio["total"] == 0 and vacio["notice"]
     assert client.get("/api/sensor-readings", params={"limit": 201}).status_code == 422
     assert client.get("/api/sensor-readings", params={"offset": -1}).status_code == 422
+
+
+def test_dispositivos_resume_cada_uno_con_su_ultima_lectura(client):
+    for device, hora, mm in [
+        ("SIM-001", "2026-10-20T07:00:00-03:00", 12.5),
+        ("SIM-001", "2026-10-22T07:00:00-03:00", 0),
+        ("SIM-002", "2026-10-21T07:00:00-03:00", 3),
+    ]:
+        client.post(
+            "/api/sensor-readings",
+            json={"device_id": device, "read_at": hora, "mm": mm},
+            headers=H,
+        )
+    r = client.get("/api/sensor-readings/devices")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total"] == 2 and "simuladas" in body["notice"]
+    uno, dos = body["items"]
+    assert uno["device_id"] == "SIM-001" and uno["readings"] == 2
+    # La última lectura es un 0 real (midió y no llovió): se devuelve como 0, no como vacío.
+    assert uno["last_mm"] == 0 and uno["last_read_at"].startswith("2026-10-22T10:00:00")
+    assert uno["first_read_at"].startswith("2026-10-20T10:00:00")
+    assert (dos["device_id"], dos["last_mm"], dos["category"]) == ("SIM-002", 3, "simulado")
+
+
+def test_dispositivos_sin_lecturas_devuelve_lista_vacia_y_no_inventa_ninguno(client):
+    body = client.get("/api/sensor-readings/devices").json()
+    assert body["items"] == [] and body["total"] == 0
+
+
+def _enviar(client, device, dia, mm=1.0):
+    client.post(
+        "/api/sensor-readings",
+        json={"device_id": device, "read_at": f"{dia}T07:00:00-03:00", "mm": mm},
+        headers=H,
+    )
+
+
+def test_dispositivo_sin_lecturas_recientes_queda_en_silencio_contra_el_corte(client):
+    _enviar(client, "SIM-001", "2026-10-30")  # a 1 día del corte (31/10/2026)
+    _enviar(client, "SIM-002", "2026-09-20")  # a 41 días del corte
+    body = client.get("/api/sensor-readings/devices").json()
+    activo, silencio = body["items"]
+    assert (activo["state"], activo["days_since_last"]) == ("activa", 1)
+    assert (silencio["state"], silencio["days_since_last"]) == ("en_silencio", 41)
+    assert silencio["last_read_date"] == "2026-09-20"
+    assert (body["active"], body["silent"], body["silent_after_days"]) == (1, 1, 30)
+    assert body["data_cutoff_date"] == "2026-10-31"
+
+
+def test_el_umbral_de_silencio_se_puede_cambiar_y_se_valida(client):
+    _enviar(client, "SIM-002", "2026-09-20")
+    ok = client.get("/api/sensor-readings/devices", params={"silent_after_days": 60}).json()
+    assert ok["items"][0]["state"] == "activa" and ok["silent_after_days"] == 60
+    for invalido in (0, -1, 366, "abc"):
+        r = client.get("/api/sensor-readings/devices", params={"silent_after_days": invalido})
+        assert r.status_code == 422
+
+
+def test_un_silencio_no_se_devuelve_como_0_mm(client):
+    _enviar(client, "SIM-002", "2026-09-20", mm=7.5)
+    item = client.get("/api/sensor-readings/devices").json()["items"][0]
+    # En silencio sigue mostrando la última lectura real, no la rellena con 0.
+    assert item["state"] == "en_silencio" and item["last_mm"] == 7.5

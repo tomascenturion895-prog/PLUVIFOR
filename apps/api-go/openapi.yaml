@@ -211,6 +211,416 @@ paths:
                   total: { type: integer }
                   notice: { type: string }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/sensor-readings/devices:
+    get:
+      summary: Dispositivos que enviaron lecturas, con su última lectura (siempre simulados)
+      description: |
+        Una fila por dispositivo: cuántas lecturas tiene, la primera, la última y los milímetros de
+        la última (puede ser un 0 real). Un dispositivo que nunca envió nada no aparece: no se inventa.
+        Cada uno trae su estado, calculado contra la fecha de corte de los datos (no contra hoy) con la
+        misma regla que las estaciones: `en_silencio` si su última lectura es de hace más de
+        `silent_after_days` días. Un silencio no es 0 mm: sigue mostrando su última lectura real.
+      x-implemented-in: python
+      parameters:
+        - { name: silent_after_days, in: query, schema: { type: integer, minimum: 1, maximum: 365, default: 30 } }
+      responses:
+        '200':
+          description: Dispositivos ordenados por nombre, con el aviso de que son simulados.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, notice, data_cutoff_date, silent_after_days, active, silent]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [device_id, readings, first_read_at, last_read_at, last_mm, category, state, last_read_date, days_since_last]
+                      properties:
+                        device_id: { type: string }
+                        readings: { type: integer }
+                        first_read_at: { type: string, format: date-time }
+                        last_read_at: { type: string, format: date-time }
+                        last_mm: { type: number }
+                        category: { type: string, enum: [simulado] }
+                        state: { type: string, enum: [activa, en_silencio] }
+                        last_read_date: { type: string, format: date }
+                        days_since_last: { type: integer }
+                  total: { type: integer }
+                  notice: { type: string }
+                  data_cutoff_date: { type: string, format: date }
+                  silent_after_days: { type: integer }
+                  active: { type: integer }
+                  silent: { type: integer }
+  /api/alerts/subscriptions:
+    post:
+      summary: Pedir avisos de lluvia; se manda un código de confirmación por un canal simulado
+      description: |
+        Prototipo (ver docs/ingesta-avisos.md). **No se envía nada real:** el código queda en una bandeja
+        rotulada como simulada. La respuesta es siempre la misma exista o no el número, y nunca trae el
+        código. Sin `ALERTS_SECRET` configurada, las suscripciones están cerradas (403).
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string, description: 'De 8 a 15 dígitos; puede llevar + y espacios.' }
+                email: { type: string, nullable: true, description: 'Opcional. Si lo deja, también recibe el registro y los avisos por correo (simulado). Se guarda solo enmascarado.' }
+                station_ids:
+                  type: array
+                  maxItems: 20
+                  items: { type: integer, minimum: 1 }
+                  description: 'Estaciones de interés (hasta 20). Vacío o ausente = recibe los avisos de todas.'
+      responses:
+        '202': { description: Quedó pendiente de confirmar. Con sesión iniciada, queda a nombre de la cuenta. }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/subscriptions/confirm:
+    post:
+      summary: Confirmar la suscripción con el código de 6 dígitos
+      description: Vence a los 15 minutos y se bloquea tras 5 intentos fallidos (429).
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200': { description: Suscripción confirmada. }
+        '422': { $ref: '#/components/responses/Invalid' }
+        '429': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/subscriptions/unsubscribe:
+    post:
+      summary: Darse de baja; responde igual exista o no el número
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+      responses:
+        '200': { description: El número queda dado de baja. }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine:
+    get:
+      summary: Mis suscripciones (requiere sesión)
+      description: Solo las de la cuenta. Del teléfono solo los últimos 4 dígitos; del correo, la versión enmascarada.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '200': { description: Las suscripciones de la cuenta, con sus estaciones. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/notifications:
+    get:
+      summary: Mis notificaciones dentro del sistema (requiere sesión)
+      description: Solo el canal `sistema` de las suscripciones de la cuenta. No depende de `ALERTS_DEMO`.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 30 } }
+      responses:
+        '200': { description: Más nuevas primero. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/{subscription_id}/stations:
+    put:
+      summary: Cambiar las estaciones de una de mis suscripciones (vacío = todas)
+      description: 'Una suscripción ajena o inexistente responde 404 igual, para no revelar cuáles existen.'
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: subscription_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                station_ids: { type: array, maxItems: 20, items: { type: integer, minimum: 1 } }
+      responses:
+        '200': { description: La suscripción actualizada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/mine/{subscription_id}/unsubscribe:
+    post:
+      summary: Darme de baja de una de mis suscripciones, sin necesidad del teléfono
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: subscription_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      responses:
+        '200': { description: La suscripción, ahora de baja. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/dispatches:
+    get:
+      summary: Historial de avisos mandados (clave de administración o sesión de personal)
+      description: De qué estación y día, cuánto llovió, a cuántas personas y quién lo mandó (nulo = clave de administración).
+      x-implemented-in: python
+      security:
+        - adminKey: []
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Más nuevos primero. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/inbox:
+    post:
+      summary: Demostración, lo que la persona vería en su celular y su correo (simulados)
+      description: |
+        Solo con `ALERTS_DEMO` activado; apagado por defecto responde 403. Con canales reales, nadie
+        puede leer los mensajes de otra persona, por eso esta ruta existe únicamente para presentar el
+        prototipo. Devuelve los mensajes de ese teléfono con su canal (`whatsapp`, `email` o `sistema`),
+        el destinatario enmascarado y, en los correos, el asunto. Un número desconocido responde una
+        lista vacía: no se revela si existe.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+      responses:
+        '200': { description: Los mensajes simulados de esa persona, más viejos primero. }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/preview:
+    get:
+      summary: Vista previa del aviso de una estación y un día (clave de administración)
+      description: |
+        Solo un día observado con dato y con 50 mm o más genera aviso. Un hueco (`sin_fila` o
+        `fila_sin_valor`) responde `sin_dato` y nunca se cuenta como 0 mm. No se acepta un día posterior
+        al corte de datos. El mensaje no ordena evacuar y remite a Defensa Civil.
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200': { description: El aviso que se armaría, o el motivo por el que no se envía. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/send:
+    post:
+      summary: Poner el aviso en la bandeja simulada de las suscripciones confirmadas (clave de administración)
+      description: Un revisor del equipo lo confirma llamando a esta ruta. No sale ningún mensaje real.
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200': { description: Cuántos mensajes quedaron en la bandeja simulada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/outbox:
+    get:
+      summary: Mensajes que se enviarían, siempre simulados (clave de administración)
+      x-implemented-in: python
+      security:
+        - adminKey: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Más nuevos primero, con el aviso de que el canal es simulado. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/recurrence:
+    get:
+      summary: Cada cuánto llovió 50 y 100 mm o más en una estación (histórico, no es predicción)
+      description: |
+        Frecuencia **pasada** de días de lluvia intensa, calculada solo con la serie `observado`. No proyecta
+        hacia adelante ni es una alerta. Un hueco (`sin_fila` o `fila_sin_valor`) no cuenta como lluvia ni
+        como día seco. Los días con dato dentro de una racha de ceros prolongados se excluyen (pueden ser
+        falsos ceros). Con menos de 5 años de dato válido no se informa ninguna frecuencia
+        (`sufficient_history: false`). Los períodos de más de 3.660 días se piden por tramos (tope: 4 tramos).
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Conteo y frecuencia pasada, con el detalle por año.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [station_id, station_name, category, date_from, date_to, valid_days, observed_years, excluded_zero_run_days, gap_days, sufficient_history, min_observed_years, ge50, ge100, by_year, notice]
+                properties:
+                  station_id: { type: integer }
+                  station_name: { type: string }
+                  category: { type: string, enum: [observado] }
+                  date_from: { type: string, format: date }
+                  date_to: { type: string, format: date }
+                  clipped_to_cutoff: { type: boolean }
+                  valid_days: { type: integer }
+                  observed_years: { type: number }
+                  excluded_zero_run_days: { type: integer }
+                  gap_days: { type: integer }
+                  sufficient_history: { type: boolean }
+                  min_observed_years: { type: number }
+                  ge50: { type: integer }
+                  ge100: { type: integer }
+                  ge50_per_year: { type: number, nullable: true }
+                  ge100_per_year: { type: number, nullable: true }
+                  ge50_every_years: { type: number, nullable: true }
+                  ge100_every_years: { type: number, nullable: true }
+                  by_year:
+                    type: array
+                    items:
+                      type: object
+                      required: [year, valid_days, ge50, ge100]
+                      properties:
+                        year: { type: integer }
+                        valid_days: { type: integer }
+                        ge50: { type: integer }
+                        ge100: { type: integer }
+                  notice: { type: string }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/auth/register:
+    post:
+      summary: Crear una cuenta de ciudadano
+      description: |
+        El rol no se puede elegir: toda cuenta nueva es de ciudadano (un campo `role` se rechaza con 422).
+        Contraseña de 10 a 128 caracteres. El correo se guarda en minúsculas y no se repite (409).
+        Con `REGISTRATION_OPEN=false` responde 403. La contraseña nunca vuelve en una respuesta.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              additionalProperties: false
+              properties:
+                email: { type: string }
+                password: { type: string, minLength: 10, maxLength: 128 }
+                display_name: { type: string, maxLength: 80, nullable: true }
+      responses:
+        '201': { description: Cuenta creada con rol ciudadano. }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '409': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión; devuelve un token de sesión
+      description: |
+        Un correo inexistente y una clave incorrecta responden lo mismo (401). Tras 5 intentos fallidos la
+        cuenta se bloquea 15 minutos (429). El token se envía como `Authorization: Bearer ...`, vence a las
+        `SESSION_HOURS` horas y en la base solo queda su resumen.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              additionalProperties: false
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: 'Sesión iniciada: token, vencimiento y la cuenta.' }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '429': { $ref: '#/components/responses/Invalid' }
+  /api/auth/logout:
+    post:
+      summary: Cerrar la sesión actual (revoca el token)
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '204': { description: Sesión cerrada (también sin sesión). }
+  /api/auth/me:
+    get:
+      summary: La cuenta de la sesión actual
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      responses:
+        '200': { description: La cuenta. }
+        '401': { $ref: '#/components/responses/Invalid' }
+  /api/users:
+    get:
+      summary: Cuentas (solo administradores con sesión)
+      description: La clave de administración no alcanza para gestionar cuentas.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200': { description: Las cuentas, sin contraseñas. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+  /api/users/{user_id}:
+    patch:
+      summary: Cambiar el rol o activar o desactivar una cuenta (solo administradores)
+      description: |
+        Solo se puede cambiar `role` y `is_active`. Cambiar el rol o desactivar cierra las sesiones de esa
+        cuenta. Nadie puede cambiarse a sí mismo (409), así siempre queda un administrador.
+      x-implemented-in: python
+      security:
+        - sessionToken: []
+      parameters:
+        - { name: user_id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                role: { type: string, enum: [ciudadano, operador, administrador] }
+                is_active: { type: boolean }
+      responses:
+        '200': { description: La cuenta actualizada. }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '409': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/estimates:
     get:
       summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado
@@ -271,6 +681,15 @@ paths:
         '422': { $ref: '#/components/responses/Invalid' }
 components:
   securitySchemes:
+    sessionToken:
+      type: http
+      scheme: bearer
+      description: Token de sesión de POST /api/auth/login. Las rutas de escritura aceptan también la clave de administración.
+    adminKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Clave de administración, tomada de ADMIN_API_KEY. Sin ella la escritura queda cerrada.
     deviceKey:
       type: apiKey
       in: header

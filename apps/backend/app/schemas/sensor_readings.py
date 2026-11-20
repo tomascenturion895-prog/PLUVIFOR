@@ -1,10 +1,11 @@
 import re
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Annotated
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.domain.enums import SensorCategory
+from app.domain.network_health import NetworkState
 
 # Tope descriptivo para frenar un error de tipeo (un cero de más), no una regla meteorológica.
 MAX_MM = 1000.0
@@ -65,4 +66,36 @@ class SensorReadingOut(BaseModel):
 class SensorReadingList(BaseModel):
     items: list[SensorReadingOut]
     total: int
+    notice: str = AVISO_SIMULADAS
+
+
+class SensorDeviceOut(BaseModel):
+    """Un dispositivo y su última lectura. Hoy todo es simulado y se rotula así."""
+
+    device_id: str
+    readings: int
+    first_read_at: datetime
+    last_read_at: datetime
+    # Milímetros de la última lectura (puede ser un 0 real: «midió y no llovió»).
+    last_mm: float
+    category: SensorCategory = SensorCategory.SIMULADO
+    # `activa` o `en_silencio` según los días sin lectura antes del corte de datos.
+    state: NetworkState
+    # Día de la última lectura en hora de Argentina.
+    last_read_date: date
+    days_since_last: int
+
+    @field_validator("first_read_at", "last_read_at")
+    @classmethod
+    def _en_utc(cls, value: datetime) -> datetime:
+        return value.replace(tzinfo=UTC) if value.tzinfo is None else value
+
+
+class SensorDeviceList(BaseModel):
+    items: list[SensorDeviceOut]
+    total: int
+    data_cutoff_date: date
+    silent_after_days: int
+    active: int
+    silent: int
     notice: str = AVISO_SIMULADAS

@@ -1,0 +1,30 @@
+# PostgreSQL local para desarrollo (opcional: la demo corre con SQLite sin esto).
+#
+#   docker compose up -d db        # levanta la base
+#   docker compose down            # la apaga (los datos quedan en el volumen)
+#   docker compose down -v         # la apaga y BORRA los datos
+#
+# Las credenciales salen del archivo .env (ver .env.example). No se escriben acá.
+name: pluvifor
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pluvifor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Definí POSTGRES_PASSWORD en tu archivo .env}
+      POSTGRES_DB: ${POSTGRES_DB:-pluvifor}
+    ports:
+      # Solo accesible desde esta computadora, no desde la red.
+      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pluvifor-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-pluvifor} -d ${POSTGRES_DB:-pluvifor}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pluvifor-db:

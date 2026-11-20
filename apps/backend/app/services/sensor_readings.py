@@ -1,10 +1,15 @@
 from datetime import UTC, date, timedelta, timezone
 
 from app.domain.enums import SensorCategory
+from app.domain.network_health import NetworkState, classify
 from app.errors import ApiError
 from app.models import SensorReading
 from app.repositories.sensor_readings import SensorReadingRepository
-from app.schemas.sensor_readings import SensorReadingIn
+from app.schemas.sensor_readings import (
+    SensorDeviceList,
+    SensorDeviceOut,
+    SensorReadingIn,
+)
 
 SOURCE = "sensor_simulado"
 # Argentina no tiene horario de verano: un desfase fijo evita depender de la base de zonas horarias.
@@ -53,3 +58,37 @@ class SensorReadingService:
         self, limit: int, offset: int, device_id: str | None
     ) -> tuple[list[SensorReading], int]:
         return self._repository.latest(limit, offset, device_id)
+
+    def devices(self, silent_after_days: int) -> SensorDeviceList:
+        """Dispositivos con su estado, calculado contra el corte de datos y no contra hoy.
+
+        Un dispositivo en silencio no tiene lluvia «cero»: tiene «sin lectura». Se usa la misma
+        regla que las estaciones (`classify`), con el día contado en hora de Argentina.
+        """
+        items: list[SensorDeviceOut] = []
+        for d in self._repository.devices():
+            last_at = d.last_read_at
+            if last_at.tzinfo is None:  # SQLite devuelve la hora sin zona; se guarda siempre en UTC
+                last_at = last_at.replace(tzinfo=UTC)
+            last_day = last_at.astimezone(_ARGENTINA).date()
+            health = classify(last_day, self._cutoff, silent_after_days)
+            items.append(
+                SensorDeviceOut(
+                    device_id=d.device_id,
+                    readings=d.readings,
+                    first_read_at=d.first_read_at,
+                    last_read_at=d.last_read_at,
+                    last_mm=d.last_mm,
+                    state=health.state,
+                    last_read_date=last_day,
+                    days_since_last=health.days_since_last,
+                )
+            )
+        return SensorDeviceList(
+            items=items,
+            total=len(items),
+            data_cutoff_date=self._cutoff,
+            silent_after_days=silent_after_days,
+            active=sum(1 for i in items if i.state == NetworkState.ACTIVA),
+            silent=sum(1 for i in items if i.state == NetworkState.EN_SILENCIO),
+        )

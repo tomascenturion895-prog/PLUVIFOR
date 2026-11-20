@@ -206,3 +206,53 @@ textarea::placeholder {
 input[type='range'] {
   height: 1.5rem;
 }
+
+/* Sensores (simulados): tarjetas por dispositivo y paginación de lecturas. Solo tokens del sistema. */
+.lista-sensores {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+.tarjeta-sensor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font: inherit;
+}
+.tarjeta-sensor-activa {
+  border-color: var(--accu-orange);
+  box-shadow: 0 0 0 1px var(--accu-orange);
+}
+.tarjeta-sensor:focus-visible {
+  outline: 3px solid var(--accu-orange);
+  outline-offset: 2px;
+}
+.paginacion {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.paginacion button {
+  padding: 0.5rem 1rem;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  font: inherit;
+  cursor: pointer;
+}
+.paginacion button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
