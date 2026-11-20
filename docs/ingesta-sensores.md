@@ -49,6 +49,8 @@ En la interfaz hay una pantalla propia, **Sensores** (`/sensores`): una tarjeta 
 
 `GET /api/sensor-readings/devices` (público) devuelve un resumen por dispositivo: cantidad de lecturas, primera, última y los mm de la última.
 
+Cada dispositivo trae su **estado**, calculado contra la fecha de corte (31/10/2026) y no contra hoy, con la misma regla que la salud de las estaciones: `en_silencio` si su última lectura es de hace más de `silent_after_days` días (30 por defecto, provisional y a confirmar; se puede pedir otro valor de 1 a 365). Un silencio no es 0 mm: el dispositivo sigue mostrando su última lectura real y los días sin lectura son «sin lectura».
+
 ## Qué no hace
 
 No valida contra hardware real, no estima huecos con estas lecturas ni las mezcla con las estaciones, y no tiene una clave por dispositivo. Todo eso queda para cuando exista un sensor real y el equipo decida cómo incorporarlo.

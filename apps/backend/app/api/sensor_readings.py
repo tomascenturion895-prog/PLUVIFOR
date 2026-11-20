@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Response
 
 from app.api.deps import get_sensor_reading_service, require_device
+from app.domain.network_health import MAX_SILENT_AFTER_DAYS, SILENT_AFTER_DAYS
 from app.schemas.sensor_readings import (
     SensorDeviceList,
-    SensorDeviceOut,
     SensorReadingIn,
     SensorReadingList,
     SensorReadingOut,
@@ -46,17 +46,17 @@ def list_readings(
 @router.get(
     "/devices",
     response_model=SensorDeviceList,
-    summary="Dispositivos que enviaron lecturas, con su última lectura",
+    summary="Dispositivos con su última lectura y su estado (activo o en silencio)",
 )
-def list_devices(service: Service) -> SensorDeviceList:
-    items = [
-        SensorDeviceOut(
-            device_id=d.device_id,
-            readings=d.readings,
-            first_read_at=d.first_read_at,
-            last_read_at=d.last_read_at,
-            last_mm=d.last_mm,
-        )
-        for d in service.devices()
-    ]
-    return SensorDeviceList(items=items, total=len(items))
+def list_devices(
+    service: Service,
+    silent_after_days: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=MAX_SILENT_AFTER_DAYS,
+            description="Días sin lectura (antes del corte) para marcar un dispositivo en silencio",
+        ),
+    ] = SILENT_AFTER_DAYS,
+) -> SensorDeviceList:
+    return service.devices(silent_after_days)
