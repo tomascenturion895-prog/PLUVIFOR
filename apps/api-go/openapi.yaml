@@ -271,6 +271,7 @@ paths:
               additionalProperties: false
               properties:
                 phone: { type: string, description: 'De 8 a 15 dígitos; puede llevar + y espacios.' }
+                email: { type: string, nullable: true, description: 'Opcional. Si lo deja, también recibe el registro y los avisos por correo (simulado). Se guarda solo enmascarado.' }
                 station_id: { type: integer, minimum: 1, nullable: true }
       responses:
         '202': { description: Quedó pendiente de confirmar. }
@@ -313,6 +314,30 @@ paths:
                 phone: { type: string }
       responses:
         '200': { description: El número queda dado de baja. }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/alerts/inbox:
+    post:
+      summary: Demostración, lo que la persona vería en su celular y su correo (simulados)
+      description: |
+        Solo con `ALERTS_DEMO` activado; apagado por defecto responde 403. Con canales reales, nadie
+        puede leer los mensajes de otra persona, por eso esta ruta existe únicamente para presentar el
+        prototipo. Devuelve los mensajes de ese teléfono con su canal (`whatsapp`, `email` o `sistema`),
+        el destinatario enmascarado y, en los correos, el asunto. Un número desconocido responde una
+        lista vacía: no se revela si existe.
+      x-implemented-in: python
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              additionalProperties: false
+              properties:
+                phone: { type: string }
+      responses:
+        '200': { description: Los mensajes simulados de esa persona, más viejos primero. }
+        '403': { $ref: '#/components/responses/Invalid' }
         '422': { $ref: '#/components/responses/Invalid' }
   /api/alerts/preview:
     get:

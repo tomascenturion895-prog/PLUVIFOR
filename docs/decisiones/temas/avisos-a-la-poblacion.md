@@ -19,13 +19,14 @@ Lleva la respuesta a quien la necesita sin que tenga que abrir la aplicación: �
 3. **Cada mensaje lleva fuente, categoría, fecha y «sin validar»** si corresponde, y la leyenda de prototipo. No ordena ni recomienda evacuar: remite a Defensa Civil.
 4. **Una persona del equipo revisa y confirma cada aviso** antes de que salga. No hay envío automático.
 5. **Doble confirmación.** Quien se suscribe confirma con un código de un solo uso; sin confirmar, no recibe nada. Se puede dar de baja con una palabra («BAJA») y la baja se respeta siempre.
-6. **Datos personales mínimos.** Del teléfono se guarda un resumen irreversible (HMAC con una clave del entorno) y los últimos dígitos para mostrar. Guardar el número completo para enviar de verdad queda **pendiente**: hace falta cifrarlo y decidir quién lo custodia (Ley 25.326).
+6. **Datos personales mínimos.** Del teléfono se guarda un resumen irreversible (HMAC con una clave del entorno) y los últimos dígitos para mostrar; del correo, solo la versión enmascarada. Guardar el número completo para enviar de verdad queda **pendiente**: hace falta cifrarlo y decidir quién lo custodia (Ley 25.326).
 7. **Los secretos van en `.env`**, nunca en el código ni en un commit.
 
 ## Qué incluye hoy (prototipo)
 
-- Suscripción con código de confirmación y baja.
-- Un **canal simulado**: los avisos quedan registrados como «mensaje que se enviaría», rotulados como simulados. No se envía nada a nadie.
+- Suscripción con código de confirmación y baja, con un correo opcional.
+- **Tres canales simulados** (WhatsApp, correo y notificación dentro del sistema): los avisos quedan registrados como «mensaje que se enviaría», rotulados como simulados. No se envía nada a nadie.
+- Una **vista de demostración** (celular con chat, bandeja de correo y campana de notificaciones) para presentar la idea. Solo con `ALERTS_DEMO` activado, porque con canales reales nadie puede leer los mensajes de otra persona.
 - Una vista previa del aviso que se generaría para un evento intenso, con su texto completo, para que el personal la revise.
 
 ## Qué no incluye (y por qué)

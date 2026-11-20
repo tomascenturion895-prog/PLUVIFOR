@@ -1,0 +1,243 @@
+/* Avisos (demostración): celular con chat, bandeja de correo y notificaciones del sistema.
+   Todo es una maqueta rotulada como simulación. Los fondos y textos de los contenedores usan los
+   tokens del sistema (regla 8 de AGENTS.md); el único color propio es la cabecera «tipo WhatsApp»,
+   que imita una pantalla ajena y por eso no cambia con el tema. */
+
+.avisos-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+@media (min-width: 56rem) {
+  .avisos-grilla {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    align-items: start;
+  }
+}
+.avisos-formulario form {
+  display: grid;
+  gap: 0.75rem;
+}
+.avisos-vista {
+  display: grid;
+  gap: 1rem;
+}
+
+/* --- celular ---------------------------------------------------------------------------- */
+.celular {
+  margin: 0;
+}
+.celular-marco {
+  border: 0.5rem solid var(--tinta);
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background: var(--papel);
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.25);
+}
+.celular-cabecera {
+  --wa-cabecera: #0b6b5a;
+  --wa-texto: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--wa-cabecera);
+  color: var(--wa-texto);
+}
+.celular-cabecera small {
+  display: block;
+  opacity: 0.85;
+}
+.celular-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--wa-texto);
+  color: var(--wa-cabecera);
+  font-weight: 700;
+}
+.celular-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 22rem;
+  max-height: 32rem;
+  overflow-y: auto;
+  padding: 0.75rem;
+  background: var(--papel);
+}
+.celular-simulado {
+  align-self: center;
+  margin: 0;
+  padding: 0.125rem 0.625rem;
+  border: 1px dashed var(--borde);
+  border-radius: 999px;
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  text-align: center;
+}
+.celular-vacio {
+  align-self: center;
+  color: var(--texto-suave);
+  text-align: center;
+}
+.burbuja {
+  max-width: 88%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 0.25rem 0.875rem 0.875rem 0.875rem;
+  background: var(--superficie-elevada);
+  color: var(--tinta);
+  animation: burbuja-entra 0.3s ease-out;
+}
+.burbuja p {
+  margin: 0.25rem 0;
+  overflow-wrap: anywhere;
+}
+.burbuja time {
+  display: block;
+  text-align: right;
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+}
+.burbuja-tipo {
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.burbuja-aviso {
+  border-color: var(--accu-orange);
+  box-shadow: inset 0.25rem 0 0 var(--accu-orange);
+}
+@keyframes burbuja-entra {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burbuja {
+    animation: none;
+  }
+}
+
+/* --- correo ----------------------------------------------------------------------------- */
+.correo {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  background: var(--superficie);
+  color: var(--tinta);
+}
+.correo h4 {
+  margin: 0 0 0.5rem;
+}
+.correo-lista {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.correo-lista summary {
+  display: grid;
+  cursor: pointer;
+}
+.correo-cuerpo {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* --- notificaciones del sistema --------------------------------------------------------- */
+.campana {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+.campana-boton {
+  position: relative;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+  cursor: pointer;
+}
+.campana-boton:focus-visible {
+  outline: 3px solid var(--accu-orange);
+  outline-offset: 2px;
+}
+.campana-cuenta {
+  margin-left: 0.25rem;
+  font-weight: 700;
+}
+.campana-lista {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  width: min(22rem, 80vw);
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  list-style: none;
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  background: var(--superficie-elevada);
+  color: var(--tinta);
+  font-weight: 400;
+}
+.campana-lista li + li {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--borde);
+}
+.emergente {
+  position: fixed;
+  z-index: 20;
+  right: 1rem;
+  bottom: 1rem;
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--accu-orange);
+  border-radius: 0.75rem;
+  background: var(--superficie-elevada);
+  color: var(--tinta);
+  font-weight: 400;
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.3);
+  animation: burbuja-entra 0.3s ease-out;
+}
+
+/* --- panel del personal ----------------------------------------------------------------- */
+.panel-personal {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  background: var(--superficie);
+  color: var(--tinta);
+}
+.panel-personal form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 32rem;
+}
+.panel-personal .acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.vista-previa {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--borde);
+  border-radius: 0.5rem;
+}
+.vista-previa p {
+  overflow-wrap: anywhere;
+}

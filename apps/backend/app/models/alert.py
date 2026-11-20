@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, St
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.domain.alerts import MessageKind, SubscriptionStatus
+from app.domain.alerts import Channel, MessageKind, SubscriptionStatus
 from app.models._types import text_enum
 
 
@@ -21,6 +21,8 @@ class AlertSubscription(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String(64), unique=True)
     phone_last4: Mapped[str] = mapped_column(String(4))
+    # Solo el correo enmascarado (t****@dominio); el completo queda pendiente, como el teléfono.
+    email_masked: Mapped[str | None] = mapped_column(String(120))
     station_id: Mapped[int | None] = mapped_column(ForeignKey("stations.id"))
     status: Mapped[SubscriptionStatus] = mapped_column(
         text_enum(SubscriptionStatus, "alert_subscription_status"),
@@ -45,6 +47,12 @@ class AlertOutbox(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     subscription_id: Mapped[int] = mapped_column(ForeignKey("alert_subscriptions.id"))
     kind: Mapped[MessageKind] = mapped_column(text_enum(MessageKind, "alert_message_kind"))
+    channel: Mapped[Channel] = mapped_column(
+        text_enum(Channel, "alert_message_channel"), default=Channel.WHATSAPP
+    )
+    # A quién iría: «+54 …3456» o «t****@dominio». Nunca el dato completo.
+    recipient: Mapped[str | None] = mapped_column(String(120))
+    subject: Mapped[str | None] = mapped_column(String(200))
     body: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(16), default="simulado")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

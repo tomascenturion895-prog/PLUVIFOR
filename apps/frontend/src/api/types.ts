@@ -376,7 +376,12 @@ export interface AlertSubscriptionStatus {
 export interface AlertMessage {
   id: number
   subscription_id: number
-  kind: 'codigo' | 'aviso'
+  kind: 'codigo' | 'bienvenida' | 'aviso'
+  /** Por dónde saldría. Todos son simulados: no se envía nada real. */
+  channel: 'whatsapp' | 'email' | 'sistema'
+  /** A quién iría, enmascarado: «…3456» o «t****@dominio». */
+  recipient: string | null
+  subject: string | null
   body: string
   category: string
   created_at: string
@@ -410,5 +415,30 @@ export interface RecurrenceOut {
   ge50_every_years: number | null
   ge100_every_years: number | null
   by_year: { year: number; valid_days: number; ge50: number; ge100: number }[]
+  notice: string
+}
+
+/** Lo que la persona vería en su celular y su correo (modo demostración). */
+export interface AlertInbox {
+  status: 'pendiente' | 'confirmada' | 'baja'
+  items: AlertMessage[]
+  notice: string
+}
+
+export interface AlertPreview {
+  station_id: number
+  date: string
+  would_send: boolean
+  /** `enviar`, `sin_dato` (un hueco no avisa) o `bajo_umbral`. */
+  reason: 'enviar' | 'sin_dato' | 'bajo_umbral'
+  level: number | null
+  mm: number | null
+  message: string | null
+  category: string
+}
+
+export interface AlertSend {
+  preview: AlertPreview
+  queued: number
   notice: string
 }
