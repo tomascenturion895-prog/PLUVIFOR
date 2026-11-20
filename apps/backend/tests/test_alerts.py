@@ -169,7 +169,7 @@ def test_confirmar_un_numero_que_no_pidio_avisos_falla_igual_que_un_codigo_malo(
 
 
 def test_la_estacion_elegida_tiene_que_existir(client):
-    r = client.post("/api/alerts/subscriptions", json={"phone": TEL, "station_id": 9999})
+    r = client.post("/api/alerts/subscriptions", json={"phone": TEL, "station_ids": [9999]})
     assert r.status_code == 404
 
 
@@ -222,7 +222,7 @@ def test_la_vista_previa_y_el_envio_piden_la_clave_de_administracion(client):
 
 def test_el_envio_llega_solo_a_las_suscripciones_confirmadas_y_a_nadie_real(client):
     _suscribir_y_confirmar(client, "+54 370 4111111")  # confirmada, cualquier estación
-    _suscribir_y_confirmar(client, "+54 370 4222222", station_id=1)  # confirmada, estación 1
+    _suscribir_y_confirmar(client, "+54 370 4222222", station_ids=[1])  # confirmada, estación 1
     client.post("/api/alerts/subscriptions", json={"phone": "+54 370 4333333"})  # sin confirmar
     antes = len(_mensajes(client))
     r = client.post("/api/alerts/send", params={"station_id": 1, "date": DIA}, headers=H)

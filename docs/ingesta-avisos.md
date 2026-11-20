@@ -16,6 +16,16 @@ Pensado para presentar la idea: todo funciona de punta a punta, pero **sale solo
 
 Para ver el celular y el correo hace falta activar `ALERTS_DEMO=true` en el `.env`. Está apagado por defecto: con canales reales nadie debe poder leer los mensajes de otra persona (la ruta responde 403).
 
+## Con una cuenta
+
+Quien se suscribe con la sesión iniciada deja la suscripción a nombre de su cuenta (ver `docs/cuentas.md`). Desde **Avisos → Mis avisos** puede:
+
+- **Elegir varias estaciones** (o ninguna: recibe las de todas) y cambiarlas cuando quiera.
+- **Darse de baja sin teléfono.** Esto resuelve el límite de la baja pública: con cuenta, solo su dueño puede darla de baja.
+- **Ver sus notificaciones dentro del sistema**, el canal que sí sería real, sin depender de `ALERTS_DEMO`.
+
+Una suscripción ajena o inexistente responde 404 igual, para no revelar cuáles existen. El personal ve en el panel el **historial de avisos**: qué estación y día, cuánto llovió, a cuántas personas llegó y quién lo mandó.
+
 ## Cómo funciona
 
 1. **Suscripción.** La persona deja su teléfono (y, si quiere, una estación). Se le «manda» un código de 6 dígitos que vence a los 15 minutos. Hoy el código queda en la bandeja simulada; la respuesta de la API nunca lo trae.
@@ -38,13 +48,18 @@ Está en `apps/api-go/openapi.yaml` (`/api/alerts/*`). Go reenvía estos pedidos
 
 | Ruta | Quién | Para qué |
 |---|---|---|
-| `POST /api/alerts/subscriptions` | público | pedir avisos `{phone, email?, station_id?}` → 202 |
+| `POST /api/alerts/subscriptions` | público (con sesión queda a nombre de la cuenta) | pedir avisos `{phone, email?, station_ids?}` → 202 |
 | `POST /api/alerts/inbox` | público, solo con `ALERTS_DEMO` | ver el celular y el correo simulados de un teléfono |
 | `POST /api/alerts/subscriptions/confirm` | público | `{phone, code}` → 200, 422 o 429 |
 | `POST /api/alerts/subscriptions/unsubscribe` | público | `{phone}` → 200 |
 | `GET /api/alerts/preview?station_id=&date=` | personal | ver qué avisaría el sistema |
 | `POST /api/alerts/send?station_id=&date=` | personal | poner el aviso en la bandeja simulada |
 | `GET /api/alerts/outbox` | personal | ver lo que se enviaría |
+| `GET /api/alerts/dispatches` | personal | historial de avisos mandados (quién, cuándo, a cuántos) |
+| `GET /api/alerts/mine` | con sesión | mis suscripciones |
+| `GET /api/alerts/mine/notifications` | con sesión | mis notificaciones dentro del sistema |
+| `PUT /api/alerts/mine/{id}/stations` | con sesión | cambiar las estaciones de mi suscripción (vacío = todas) |
+| `POST /api/alerts/mine/{id}/unsubscribe` | con sesión | darme de baja sin necesitar el teléfono |
 
 ## Demo
 

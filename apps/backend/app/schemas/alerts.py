@@ -31,8 +31,8 @@ class _Telefono(BaseModel):
 class SubscribeIn(_Telefono):
     # Correo opcional: si lo deja, también recibe el registro y los avisos por correo (simulado).
     email: str | None = None
-    # Estación de interés; sin ella, recibe los avisos de cualquier estación.
-    station_id: Annotated[int | None, Field(ge=1, le=MAX_ID)] = None
+    # Estaciones de interés (hasta 20); sin ninguna, recibe los avisos de cualquier estación.
+    station_ids: Annotated[list[Annotated[int, Field(ge=1, le=MAX_ID)]], Field(max_length=20)] = []
 
     @field_validator("email")
     @classmethod
@@ -101,3 +101,59 @@ class InboxOut(BaseModel):
     status: SubscriptionStatus
     items: list[OutboxMessageOut]
     notice: str = AVISO_CANAL_SIMULADO
+
+
+class StationRefOut(BaseModel):
+    id: int
+    code: str
+    name: str
+
+
+class MySubscriptionOut(BaseModel):
+    """Una suscripción de la cuenta. Del teléfono solo los últimos 4 dígitos."""
+
+    id: int
+    status: SubscriptionStatus
+    phone_last4: str
+    email_masked: str | None
+    # Vacío = recibe los avisos de todas las estaciones.
+    stations: list[StationRefOut]
+    created_at: datetime
+    confirmed_at: datetime | None
+
+
+class MySubscriptionList(BaseModel):
+    items: list[MySubscriptionOut]
+    total: int
+
+
+class StationsIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    station_ids: Annotated[list[Annotated[int, Field(ge=1, le=MAX_ID)]], Field(max_length=20)] = []
+
+
+class NotificationList(BaseModel):
+    """Notificaciones dentro del sistema de la cuenta, más nuevas primero."""
+
+    items: list[OutboxMessageOut]
+    notice: str = AVISO_CANAL_SIMULADO
+
+
+class DispatchOut(BaseModel):
+    """Un aviso mandado por el personal (historial)."""
+
+    id: int
+    station_id: int
+    station_name: str
+    obs_date: date
+    mm: float
+    level: int
+    queued: int
+    created_by_user_id: int | None
+    created_at: datetime
+
+
+class DispatchList(BaseModel):
+    items: list[DispatchOut]
+    total: int

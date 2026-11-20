@@ -13,6 +13,7 @@ from app.domain.enums import DataCategory, RainState, Validation
 from app.models import (
     AlertOutbox,
     AlertSubscription,
+    AlertSubscriptionStation,
     RainfallRecord,
     Source,
     Station,
@@ -108,6 +109,45 @@ def test_no_se_puede_borrar_una_estacion_que_tiene_lluvia_registrada(db: Session
 
 
 def test_una_suscripcion_no_puede_pedir_una_estacion_que_no_existe(db: Session):
-    db.add(AlertSubscription(phone_hash="c" * 64, phone_last4="1111", station_id=9999))
+    db.add(AlertSubscriptionStation(subscription_id=9999, station_id=9999))
     with pytest.raises(IntegrityError):
         db.commit()
+
+
+def test_borrar_una_suscripcion_borra_sus_estaciones_pero_no_las_estaciones(db: Session):
+    estacion = _fuente_y_estacion(db)
+    sub = AlertSubscription(phone_hash="d" * 64, phone_last4="2222")
+    db.add(sub)
+    db.flush()
+    db.add(AlertSubscriptionStation(subscription_id=sub.id, station_id=estacion.id))
+    db.commit()
+    db.execute(delete(AlertSubscription).where(AlertSubscription.id == sub.id))
+    db.commit()
+    assert db.scalar(select(func.count()).select_from(AlertSubscriptionStation)) == 0
+    assert db.get(Station, estacion.id) is not None
+
+
+def test_no_se_puede_borrar_una_estacion_que_tiene_suscriptores(db: Session):
+    estacion = _fuente_y_estacion(db)
+    sub = AlertSubscription(phone_hash="e" * 64, phone_last4="3333")
+    db.add(sub)
+    db.flush()
+    db.add(AlertSubscriptionStation(subscription_id=sub.id, station_id=estacion.id))
+    db.commit()
+    with pytest.raises(IntegrityError):
+        db.execute(delete(Station).where(Station.id == estacion.id))
+        db.commit()
+    db.rollback()
+
+
+def test_una_suscripcion_no_repite_la_misma_estacion(db: Session):
+    estacion = _fuente_y_estacion(db)
+    sub = AlertSubscription(phone_hash="f" * 64, phone_last4="4444")
+    db.add(sub)
+    db.flush()
+    db.add(AlertSubscriptionStation(subscription_id=sub.id, station_id=estacion.id))
+    db.commit()
+    db.add(AlertSubscriptionStation(subscription_id=sub.id, station_id=estacion.id))
+    with pytest.raises(IntegrityError):
+        db.commit()
+    db.rollback()

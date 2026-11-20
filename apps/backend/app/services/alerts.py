@@ -30,13 +30,18 @@ from app.domain.alerts import (
 )
 from app.domain.enums import DataCategory, RainState
 from app.errors import ApiError
-from app.models import AlertOutbox, AlertSubscription
+from app.models import AlertDispatch, AlertOutbox, AlertSubscription, Station, User
 from app.repositories.alerts import SqlAlertRepository
 from app.schemas.alerts import (
     AlertPreviewOut,
     AlertSendOut,
+    DispatchList,
+    DispatchOut,
     InboxOut,
+    MySubscriptionList,
+    MySubscriptionOut,
     OutboxMessageOut,
+    StationRefOut,
     SubscriptionStatusOut,
 )
 from app.services.series import SeriesService
@@ -75,6 +80,7 @@ class AlertService:
         channel: Channel,
         body: str,
         subject: str | None = None,
+        dispatch_id: int | None = None,
     ) -> None:
         """Deja el mensaje en la bandeja simulada. Un canal real reemplazaría esta escritura."""
         recipient = (
@@ -85,6 +91,7 @@ class AlertService:
         self._repository.add_message(
             AlertOutbox(
                 subscription_id=subscription.id,
+                dispatch_id=dispatch_id,
                 kind=kind,
                 channel=channel,
                 recipient=recipient,
@@ -93,16 +100,28 @@ class AlertService:
             )
         )
 
+    def _stations(self, station_ids: list[int]) -> list[Station]:
+        ids = sorted(set(station_ids))
+        stations = self._repository.stations_by_ids(ids)
+        if len(stations) != len(ids):
+            raise ApiError(404, "station_not_found", "No existe alguna de las estaciones pedidas.")
+        return stations
+
     def subscribe(
-        self, phone: str, station_id: int | None, email: str | None = None
+        self,
+        phone: str,
+        station_ids: list[int],
+        email: str | None = None,
+        user_id: int | None = None,
     ) -> SubscriptionStatusOut:
         key = self._key()
-        station_name = None
-        if station_id is not None:
-            station = self._repository.station(station_id)
-            if station is None:
-                raise ApiError(404, "station_not_found", "No existe la estación pedida.")
-            station_name = station.name
+        stations = self._stations(station_ids)
+        if not stations:
+            station_name = None
+        elif len(stations) == 1:
+            station_name = stations[0].name
+        else:
+            station_name = f"{len(stations)} estaciones"
         subscription = self._repository.find(digest(phone, key))
         if subscription is not None and subscription.status == SubscriptionStatus.CONFIRMADA:
             # No se revela si el número ya estaba suscripto: la respuesta es la misma.
@@ -112,13 +131,14 @@ class AlertService:
                 AlertSubscription(phone_hash=digest(phone, key), phone_last4=phone[-4:])
             )
         code = new_code()
-        subscription.station_id = station_id
+        subscription.user_id = user_id
         subscription.email_masked = mask_email(email) if email else None
         subscription.status = SubscriptionStatus.PENDIENTE
         subscription.code_hash = digest(code, key)
         subscription.code_expires_at = self._now() + timedelta(minutes=CODE_TTL_MINUTES)
         subscription.attempts = 0
         self._repository.flush()
+        self._repository.set_stations(subscription.id, [s.id for s in stations])
         self._emit(subscription, MessageKind.CODIGO, Channel.WHATSAPP, code_message(code))
         if email:
             subject, body = email_registration(station_name)
@@ -226,20 +246,101 @@ class AlertService:
             message=alert_message(station.name, station.code, day, value.mm, level, validated),
         )
 
-    def send(self, station_id: int, day: date) -> AlertSendOut:
-        """Entrega el aviso (simulado) a cada suscripción confirmada, por todos sus canales."""
+    def send(
+        self, station_id: int, day: date, created_by_user_id: int | None = None
+    ) -> AlertSendOut:
+        """Entrega el aviso (simulado) a cada suscripción confirmada, por todos sus canales.
+
+        Deja un renglón en el historial (`alert_dispatches`): quién lo mandó y a cuántas personas.
+        """
         preview = self.preview(station_id, day)
         queued = 0
-        if preview.would_send and preview.message is not None:
-            for subscription in self._repository.confirmed_for(station_id):
-                self._emit(subscription, MessageKind.AVISO, Channel.WHATSAPP, preview.message)
-                if subscription.email_masked:
-                    subject, body = email_alert(preview.message)
-                    self._emit(subscription, MessageKind.AVISO, Channel.EMAIL, body, subject)
-                self._emit(subscription, MessageKind.AVISO, Channel.SISTEMA, preview.message)
+        if preview.would_send and preview.message is not None and preview.mm is not None:
+            message = preview.message
+            recipients = self._repository.confirmed_for(station_id)
+            dispatch = self._repository.add_dispatch(
+                AlertDispatch(
+                    station_id=station_id,
+                    obs_date=day,
+                    mm=preview.mm,
+                    level=preview.level or 0,
+                    queued=len(recipients),
+                    created_by_user_id=created_by_user_id,
+                )
+            )
+            for sub_ in recipients:
+                self._emit(sub_, MessageKind.AVISO, Channel.WHATSAPP, message, None, dispatch.id)
+                if sub_.email_masked:
+                    subject, body = email_alert(message)
+                    self._emit(sub_, MessageKind.AVISO, Channel.EMAIL, body, subject, dispatch.id)
+                self._emit(sub_, MessageKind.AVISO, Channel.SISTEMA, message, None, dispatch.id)
                 queued += 1
             self._repository.commit()
         return AlertSendOut(preview=preview, queued=queued)
+
+    def dispatches(self, limit: int, offset: int) -> DispatchList:
+        rows, total = self._repository.dispatches(limit, offset)
+        items = [
+            DispatchOut(
+                id=d.id,
+                station_id=d.station_id,
+                station_name=name,
+                obs_date=d.obs_date,
+                mm=d.mm,
+                level=d.level,
+                queued=d.queued,
+                created_by_user_id=d.created_by_user_id,
+                created_at=d.created_at,
+            )
+            for d, name in rows
+        ]
+        return DispatchList(items=items, total=total)
+
+    # --- «mis avisos»: una persona con cuenta gestiona sus propias suscripciones -----------
+
+    def _mine(self, user: User, subscription_id: int) -> AlertSubscription:
+        subscription = self._repository.get(subscription_id)
+        if subscription is None or subscription.user_id != user.id:
+            # Ajena e inexistente responden igual: no se revela qué suscripciones existen.
+            raise ApiError(404, "subscription_not_found", "No existe esa suscripción.")
+        return subscription
+
+    def _mine_out(self, subscription: AlertSubscription) -> MySubscriptionOut:
+        stations = self._repository.stations_of(subscription.id)
+        return MySubscriptionOut(
+            id=subscription.id,
+            status=subscription.status,
+            phone_last4=subscription.phone_last4,
+            email_masked=subscription.email_masked,
+            stations=[StationRefOut(id=s.id, code=s.code, name=s.name) for s in stations],
+            created_at=subscription.created_at,
+            confirmed_at=subscription.confirmed_at,
+        )
+
+    def list_mine(self, user: User) -> MySubscriptionList:
+        items = [self._mine_out(s) for s in self._repository.of_user(user.id)]
+        return MySubscriptionList(items=items, total=len(items))
+
+    def set_mine_stations(
+        self, user: User, subscription_id: int, station_ids: list[int]
+    ) -> MySubscriptionOut:
+        subscription = self._mine(user, subscription_id)
+        self._repository.set_stations(subscription.id, [s.id for s in self._stations(station_ids)])
+        self._repository.commit()
+        return self._mine_out(subscription)
+
+    def unsubscribe_mine(self, user: User, subscription_id: int) -> MySubscriptionOut:
+        """Quien tiene la cuenta se da de baja sin teléfono: no hace falta adivinar nada."""
+        subscription = self._mine(user, subscription_id)
+        subscription.status = SubscriptionStatus.BAJA
+        subscription.code_hash = None
+        subscription.code_expires_at = None
+        self._repository.commit()
+        return self._mine_out(subscription)
+
+    def notifications_mine(self, user: User, limit: int) -> list[AlertOutbox]:
+        """Las notificaciones dentro del sistema de la cuenta (el canal que sí sería real)."""
+        return self._repository.notifications_of_user(user.id, limit)
 
     def outbox(self, limit: int, offset: int) -> tuple[list[AlertOutbox], int]:
         return self._repository.outbox(limit, offset)

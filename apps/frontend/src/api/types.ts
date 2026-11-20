@@ -466,3 +466,49 @@ export interface CuentaList {
   items: Cuenta[]
   total: number
 }
+
+export interface EstacionRef {
+  id: number
+  code: string
+  name: string
+}
+
+/** Una suscripción de la cuenta. Del teléfono solo los últimos 4 dígitos. */
+export interface MiSuscripcion {
+  id: number
+  status: 'pendiente' | 'confirmada' | 'baja'
+  phone_last4: string
+  email_masked: string | null
+  /** Vacío = recibe los avisos de todas las estaciones. */
+  stations: EstacionRef[]
+  created_at: string
+  confirmed_at: string | null
+}
+
+export interface MisSuscripciones {
+  items: MiSuscripcion[]
+  total: number
+}
+
+export interface MisNotificaciones {
+  items: AlertMessage[]
+  notice: string
+}
+
+/** Un aviso mandado por el personal. */
+export interface EnvioAviso {
+  id: number
+  station_id: number
+  station_name: string
+  obs_date: string
+  mm: number
+  level: number
+  queued: number
+  created_by_user_id: number | null
+  created_at: string
+}
+
+export interface HistorialAvisos {
+  items: EnvioAviso[]
+  total: number
+}
