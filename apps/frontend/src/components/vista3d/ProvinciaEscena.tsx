@@ -87,6 +87,8 @@ interface Estado {
   claves: string[]
 }
 
+import { DALTONICO, esDaltonico } from '../tema/tema-colores'
+
 export default function ProvinciaEscena(props: Props) {
   const contenedor = useRef<HTMLDivElement>(null)
   const capa = useRef<HTMLDivElement>(null)
@@ -146,7 +148,12 @@ export default function ProvinciaEscena(props: Props) {
     piso.rotation.x = -Math.PI / 2
     piso.receiveShadow = true
     escena.add(piso)
-    const grilla = new THREE.GridHelper(lado, 36, 0x4d7a85, 0x2a4f58)
+    const grilla = new THREE.GridHelper(
+      lado,
+      36,
+      esDaltonico() ? DALTONICO.tres.grilla : 0x4d7a85,
+      esDaltonico() ? DALTONICO.tres.grillaFina : 0x2a4f58,
+    )
     const matGrilla = grilla.material as THREE.Material
     matGrilla.transparent = true
     matGrilla.opacity = 0.45
@@ -225,8 +232,8 @@ export default function ProvinciaEscena(props: Props) {
     }
     const rios: Estado['rios'] = []
     const capasRio: [FeatureCollection | null, number, number][] = [
-      [intermitentes, 0x7fb8dc, 0.55],
-      [perennes, 0x0b5fa5, 1],
+      [intermitentes, esDaltonico() ? DALTONICO.tres.rioIntermitente : 0x7fb8dc, 0.55],
+      [perennes, esDaltonico() ? DALTONICO.tres.rio : 0x0b5fa5, 1],
     ]
     for (const [capaRio, color, opacidad] of capasRio) {
       const ls = lineasDe(capaRio)

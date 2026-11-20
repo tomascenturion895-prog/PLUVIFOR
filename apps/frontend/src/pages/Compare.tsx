@@ -14,11 +14,22 @@ import type { SeriesCompare } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria } from '../components/Insignias'
 import { textoMm } from '../components/insignias-datos'
+import { esDaltonico } from '../components/tema/tema-colores'
 import { FECHA_CORTE, MAX_ESTACIONES_COMPARADOR } from '../constants'
 import { useAsync } from '../hooks/useAsync'
 import { alinearSeries, claveDe, diferenciaCobertura } from './compare-datos'
 
-const COLORES = ['#f05514', '#0284c7', '#16a34a', '#8b5cf6']
+const COLORES_BASE = ['#f05514', '#0284c7', '#16a34a', '#8b5cf6']
+// Daltónico: Okabe-Ito; además cada serie tiene un trazo distinto (ver temas.css).
+const COLORES_DALTONICO = ['#56b4e9', '#e69f00', '#cc79a7', '#f0e442']
+const COLORES = {
+  get length() {
+    return COLORES_BASE.length
+  },
+  at(i: number) {
+    return (esDaltonico() ? COLORES_DALTONICO : COLORES_BASE)[i]
+  },
+}
 
 function restarDias(fecha: string, dias: number): string {
   const d = new Date(`${fecha}T00:00:00Z`)
@@ -74,10 +85,11 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
               {datos.stations.map((e, i) => (
                 <Line
                   key={e.station_id}
+                  className={`serie-linea serie-linea-${i % COLORES.length}`}
                   type="linear"
                   dataKey={claveDe(e.station_id)}
                   name={e.station_name}
-                  stroke={COLORES[i % COLORES.length]}
+                  stroke={COLORES.at(i % COLORES.length)}
                   dot={false}
                   connectNulls={false}
                   isAnimationActive={false}

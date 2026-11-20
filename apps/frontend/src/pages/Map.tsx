@@ -30,6 +30,7 @@ import {
 import { FECHA_CORTE } from '../constants'
 import { MAPA_BASE, TESELAS_OSM } from '../geo/mapaBase'
 import { useAsync } from '../hooks/useAsync'
+import { DALTONICO, esDaltonico } from '../components/tema/tema-colores'
 import { colorMm, radiusMm, textoMmMapa } from './map-helpers'
 
 const LIMITE_ESTACIONES = 200
@@ -356,9 +357,26 @@ function MapaLeyenda() {
 
 /** Cada categoría se dibuja distinto: no solo por color, también por el tipo de trazo. */
 const ESTILO_CAPA: Record<DataCategory, { color: string; dashArray?: string; extra: number }> = {
-  observado: { color: '#37474f', extra: 0 },
-  referencia: { color: '#5b3a8e', dashArray: '8 4', extra: 5 },
-  estimado: { color: '#b45309', dashArray: '2 4', extra: 9 },
+  observado: {
+    get color() {
+      return esDaltonico() ? DALTONICO.capa.observado : '#37474f'
+    },
+    extra: 0,
+  },
+  referencia: {
+    get color() {
+      return esDaltonico() ? DALTONICO.capa.referencia : '#5b3a8e'
+    },
+    dashArray: '8 4',
+    extra: 5,
+  },
+  estimado: {
+    get color() {
+      return esDaltonico() ? DALTONICO.capa.estimado : '#b45309'
+    },
+    dashArray: '2 4',
+    extra: 9,
+  },
 }
 
 const SIN_CAPAS_DE_LLUVIA: Map<DataCategory, AccumulatedOut> = new Map()
@@ -454,7 +472,7 @@ export function Mapa() {
           ? (maximosDepartamentales.get(normalizarDepartamento(nombre)) ?? null)
           : null
       return {
-        color: '#455a64',
+        color: esDaltonico() ? DALTONICO.departamento : '#455a64',
         weight: 1,
         fillColor: colorMm(maximo),
         fillOpacity: maximo == null ? 0.3 : 0.75,
@@ -607,7 +625,12 @@ export function Mapa() {
                   key={`silencio-${h.station_id}`}
                   center={[est.lat, est.lon]}
                   radius={16}
-                  pathOptions={{ color: '#9b1c1c', weight: 4, dashArray: '1 0', fillOpacity: 0 }}
+                  pathOptions={{
+                    color: esDaltonico() ? DALTONICO.silencio : '#9b1c1c',
+                    weight: 4,
+                    dashArray: '1 0',
+                    fillOpacity: 0,
+                  }}
                   aria-label={`Estación ${est.name} en silencio`}
                 >
                   <Popup>
