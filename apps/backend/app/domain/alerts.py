@@ -18,6 +18,7 @@ MAX_CODE_ATTEMPTS = 5
 LEYENDA = "PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial"
 
 _TELEFONO = re.compile(r"^\+?[0-9][0-9 ()-]{6,24}$")
+_EMAIL = re.compile(r"^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$")
 
 
 class SubscriptionStatus(StrEnum):
@@ -26,8 +27,17 @@ class SubscriptionStatus(StrEnum):
     BAJA = "baja"
 
 
+class Channel(StrEnum):
+    """Por dónde saldría un mensaje. Hoy todos son simulados: no se envía nada real."""
+
+    WHATSAPP = "whatsapp"
+    EMAIL = "email"
+    SISTEMA = "sistema"  # notificación dentro de la propia aplicación
+
+
 class MessageKind(StrEnum):
     CODIGO = "codigo"
+    BIENVENIDA = "bienvenida"
     AVISO = "aviso"
 
 
@@ -76,3 +86,41 @@ def alert_message(
         "No es una orden ni una recomendación de evacuar: ante dudas, consultá a Defensa Civil. "
         f"Para no recibir más avisos respondé BAJA. {LEYENDA}"
     )
+
+
+def normalize_email(raw: str) -> str:
+    """Correo en minúsculas y sin espacios. Lanza ValueError si no parece uno."""
+    texto = raw.strip().lower()
+    if len(texto) > 254 or not _EMAIL.match(texto):
+        raise ValueError("El correo no parece válido.")
+    return texto
+
+
+def mask_email(email: str) -> str:
+    """«tomas@correo.com» → «t****@correo.com»: se guarda y se muestra solo así."""
+    usuario, dominio = email.split("@", 1)
+    return f"{usuario[0]}{'*' * min(len(usuario) - 1, 6)}@{dominio}"
+
+
+def welcome_message() -> str:
+    return (
+        "PLUVIFOR: listo, quedaste suscripto a los avisos de lluvia. Vas a recibir un mensaje "
+        "cuando una estación registre 50 mm o más en un día. Son avisos informativos, no órdenes "
+        f"de evacuar. Para no recibir más, respondé BAJA. {LEYENDA}"
+    )
+
+
+def email_registration(station_name: str | None) -> tuple[str, str]:
+    """Asunto y cuerpo del correo que recibe quien se registra."""
+    zona = f"la estación {station_name}" if station_name else "todas las estaciones"
+    return (
+        "PLUVIFOR · recibimos tu registro",
+        "Hola. Recibimos tu pedido para recibir avisos de lluvia de "
+        f"{zona}. Te enviamos un código por WhatsApp: ingresalo en la aplicación para confirmar. "
+        "Si no lo pediste, ignorá este correo.\n\n"
+        f"{LEYENDA}",
+    )
+
+
+def email_alert(message: str) -> tuple[str, str]:
+    return ("PLUVIFOR · aviso de lluvia intensa", message)

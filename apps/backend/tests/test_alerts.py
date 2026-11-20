@@ -75,7 +75,8 @@ def _suscribir_y_confirmar(client: TestClient, telefono: str = TEL, **extra) -> 
         client.post("/api/alerts/subscriptions", json={"phone": telefono, **extra}).status_code
         == 202
     )
-    codigo = _mensajes(client)[-1].body.split("es ")[1][:6]
+    codigos = [m for m in _mensajes(client) if m.kind == "codigo"]
+    codigo = codigos[-1].body.split("es ")[1][:6]
     r = client.post("/api/alerts/subscriptions/confirm", json={"phone": telefono, "code": codigo})
     assert r.status_code == 200 and r.json()["status"] == "confirmada"
 
@@ -227,7 +228,9 @@ def test_el_envio_llega_solo_a_las_suscripciones_confirmadas_y_a_nadie_real(clie
     r = client.post("/api/alerts/send", params={"station_id": 1, "date": DIA}, headers=H)
     assert r.status_code == 200 and r.json()["queued"] == 2
     nuevos = _mensajes(client)[antes:]
-    assert [m.kind for m in nuevos] == ["aviso", "aviso"]
+    # Cada persona recibe el aviso por WhatsApp y por el sistema (sin correo, no hay correo).
+    assert [m.kind for m in nuevos] == ["aviso"] * 4
+    assert sorted(m.channel for m in nuevos) == ["sistema", "sistema", "whatsapp", "whatsapp"]
     assert {m.category for m in nuevos} == {"simulado"}
     assert "simulado" in r.json()["notice"]
 
@@ -260,5 +263,98 @@ def test_un_dia_sin_dato_no_manda_nada_aunque_haya_suscriptos(client):
 def test_la_bandeja_lista_lo_que_se_enviaria(client):
     _suscribir_y_confirmar(client)
     body = client.get("/api/alerts/outbox", headers=H).json()
-    assert body["total"] == 1 and body["items"][0]["category"] == "simulado"
+    # Código por WhatsApp, y la bienvenida por WhatsApp y por el sistema.
+    assert body["total"] == 3 and body["items"][0]["category"] == "simulado"
     assert "simulado" in body["notice"]
+
+
+# --- canales: WhatsApp, correo y sistema (todo simulado) -------------------------------------
+
+CORREO = "Tomas.Ejemplo@Correo.com"
+
+
+def test_un_correo_invalido_se_rechaza(client):
+    for malo in ("sin-arroba", "a@b", "x@@y.com", "a b@c.com", "a@" + "d" * 300 + ".com"):
+        r = client.post("/api/alerts/subscriptions", json={"phone": TEL, "email": malo})
+        assert r.status_code == 422, malo
+
+
+def test_al_registrarse_con_correo_llega_un_correo_simulado_y_el_correo_se_enmascara(client):
+    client.post("/api/alerts/subscriptions", json={"phone": TEL, "email": CORREO})
+    codigo, correo = _mensajes(client)
+    assert (codigo.channel, codigo.kind) == ("whatsapp", "codigo")
+    assert (correo.channel, correo.kind) == ("email", "bienvenida")
+    assert correo.subject and "registro" in correo.subject
+    assert correo.recipient == "t******@correo.com" and "Tomas" not in (correo.recipient or "")
+    assert "código" in correo.body and codigo.body.split("es ")[1][:6] not in correo.body
+    with client.app.state.session_factory() as db:
+        sub = db.scalars(select(AlertSubscription)).one()
+        assert sub.email_masked == "t******@correo.com"  # el correo completo no se guarda
+
+
+def test_sin_correo_no_se_genera_ningun_correo(client):
+    client.post("/api/alerts/subscriptions", json={"phone": TEL})
+    assert {m.channel for m in _mensajes(client)} == {"whatsapp"}
+
+
+def test_el_aviso_llega_por_whatsapp_correo_y_sistema(client):
+    _suscribir_y_confirmar(client, email=CORREO)
+    antes = len(_mensajes(client))
+    r = client.post("/api/alerts/send", params={"station_id": 1, "date": DIA}, headers=H)
+    assert r.json()["queued"] == 1
+    nuevos = _mensajes(client)[antes:]
+    assert sorted(m.channel for m in nuevos) == ["email", "sistema", "whatsapp"]
+    correo = next(m for m in nuevos if m.channel == "email")
+    assert correo.subject and "aviso" in correo.subject.lower()
+    assert all("evacuar" in m.body for m in nuevos)  # nunca ordena evacuar, en ningún canal
+    assert all(m.category == "simulado" for m in nuevos)
+
+
+def test_la_confirmacion_manda_la_bienvenida_por_whatsapp_y_por_el_sistema(client):
+    _suscribir_y_confirmar(client)
+    bienvenidas = [m for m in _mensajes(client) if m.kind == "bienvenida"]
+    assert sorted(m.channel for m in bienvenidas) == ["sistema", "whatsapp"]
+
+
+# --- demostración: ver el propio celular y correo ---------------------------------------------
+
+
+@pytest.fixture
+def demo(tmp_path) -> TestClient:
+    settings = Settings(
+        _env_file=None,
+        app_env="test",
+        database_url=f"sqlite:///{tmp_path / 'd.db'}",
+        admin_api_key=KEY,
+        alerts_secret="secreto-de-prueba-para-avisos",  # noqa: S106
+        alerts_demo=True,
+    )
+    app = create_app(settings)
+    Base.metadata.create_all(app.state.engine)
+    return TestClient(app)
+
+
+def test_la_vista_de_demostracion_esta_apagada_por_defecto(client):
+    client.post("/api/alerts/subscriptions", json={"phone": TEL})
+    r = client.post("/api/alerts/inbox", json={"phone": TEL})
+    assert r.status_code == 403 and "ALERTS_DEMO" in r.json()["error"]["message"]
+
+
+def test_en_demostracion_cada_persona_ve_solo_sus_mensajes(demo):
+    demo.post("/api/alerts/subscriptions", json={"phone": TEL, "email": CORREO})
+    demo.post("/api/alerts/subscriptions", json={"phone": "+54 370 4999888"})
+    mio = demo.post("/api/alerts/inbox", json={"phone": TEL}).json()
+    assert mio["status"] == "pendiente" and "simulado" in mio["notice"]
+    assert [m["channel"] for m in mio["items"]] == ["whatsapp", "email"]
+    assert all("8888" not in (m["recipient"] or "") for m in mio["items"])
+    otro = demo.post("/api/alerts/inbox", json={"phone": "+54 370 4999888"}).json()
+    assert [m["channel"] for m in otro["items"]] == ["whatsapp"]
+
+
+def test_en_demostracion_un_numero_desconocido_no_ve_nada_ni_se_revela_si_existe(demo):
+    r = demo.post("/api/alerts/inbox", json={"phone": "+54 370 4000000"})
+    assert r.status_code == 200 and r.json()["items"] == []
+
+
+def test_la_vista_de_demostracion_valida_el_telefono(demo):
+    assert demo.post("/api/alerts/inbox", json={"phone": "abc"}).status_code == 422

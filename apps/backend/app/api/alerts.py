@@ -8,6 +8,8 @@ from app.schemas.alerts import (
     AlertPreviewOut,
     AlertSendOut,
     ConfirmIn,
+    InboxIn,
+    InboxOut,
     OutboxList,
     OutboxMessageOut,
     SubscribeIn,
@@ -31,7 +33,7 @@ Day = Annotated[date, Query(alias="date")]
     summary="Pedir avisos: se manda un código de confirmación (canal simulado)",
 )
 def subscribe(data: SubscribeIn, service: Service) -> SubscriptionStatusOut:
-    return service.subscribe(data.phone, data.station_id)
+    return service.subscribe(data.phone, data.station_id, data.email)
 
 
 @router.post(
@@ -50,6 +52,15 @@ def confirm(data: ConfirmIn, service: Service) -> SubscriptionStatusOut:
 )
 def unsubscribe(data: UnsubscribeIn, service: Service) -> SubscriptionStatusOut:
     return service.unsubscribe(data.phone)
+
+
+@router.post(
+    "/inbox",
+    response_model=InboxOut,
+    summary="Demostración: lo que vería la persona en su celular y su correo (ALERTS_DEMO)",
+)
+def inbox(data: InboxIn, service: Service) -> InboxOut:
+    return service.inbox(data.phone)
 
 
 @router.get(

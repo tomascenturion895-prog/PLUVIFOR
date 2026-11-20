@@ -8,7 +8,10 @@ import type {
   ClimateReferenceOut,
   EventsOut,
   GapEstimateList,
+  AlertInbox,
   AlertOutboxList,
+  AlertPreview,
+  AlertSend,
   AlertSubscriptionStatus,
   RecurrenceOut,
   SensorDeviceList,
@@ -288,13 +291,17 @@ function postJson<T>(path: string, cuerpo: unknown, signal?: AbortSignal): Promi
   })
 }
 
-/** Pide avisos de lluvia: se «manda» un código de confirmación por un canal simulado. */
+/** Pide avisos de lluvia: se «manda» un código por WhatsApp (simulado). El correo es opcional. */
 export function suscribirseAvisos(
   phone: string,
-  stationId?: number,
+  opciones: { email?: string; stationId?: number } = {},
   signal?: AbortSignal,
 ): Promise<AlertSubscriptionStatus> {
-  return postJson('/api/alerts/subscriptions', { phone, station_id: stationId }, signal)
+  return postJson(
+    '/api/alerts/subscriptions',
+    { phone, email: opciones.email || undefined, station_id: opciones.stationId },
+    signal,
+  )
 }
 
 export function confirmarAvisos(
@@ -325,5 +332,34 @@ export function getRecurrence(
   return request<RecurrenceOut>(
     `/api/recurrence${query({ station_id: params.stationId, from: params.from, to: params.to })}`,
     { signal },
+  )
+}
+
+/** Demostración: el celular y el correo (simulados) de quien se registró. Solo con ALERTS_DEMO. */
+export function getInboxAvisos(phone: string, signal?: AbortSignal): Promise<AlertInbox> {
+  return postJson('/api/alerts/inbox', { phone }, signal)
+}
+
+/** Qué avisaría el sistema para una estación y un día. Solo el personal. */
+export function previsualizarAviso(
+  apiKey: string,
+  params: { stationId: number; date: string },
+  signal?: AbortSignal,
+): Promise<AlertPreview> {
+  return request<AlertPreview>(
+    `/api/alerts/preview${query({ station_id: params.stationId, date: params.date })}`,
+    { headers: conClave(apiKey), signal },
+  )
+}
+
+/** Entrega el aviso (simulado) a las suscripciones confirmadas. Solo el personal. */
+export function enviarAviso(
+  apiKey: string,
+  params: { stationId: number; date: string },
+  signal?: AbortSignal,
+): Promise<AlertSend> {
+  return request<AlertSend>(
+    `/api/alerts/send${query({ station_id: params.stationId, date: params.date })}`,
+    { method: 'POST', headers: conClave(apiKey), signal },
   )
 }

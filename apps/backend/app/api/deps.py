@@ -144,4 +144,5 @@ def get_alert_service(
         SeriesService(SqlSeriesRepository(session), settings.data_cutoff_date),
         secret,
         settings.data_cutoff_date,
+        demo=settings.alerts_demo,
     )

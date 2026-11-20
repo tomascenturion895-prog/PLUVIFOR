@@ -3,7 +3,13 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from app.domain.alerts import MessageKind, SubscriptionStatus, normalize_phone
+from app.domain.alerts import (
+    Channel,
+    MessageKind,
+    SubscriptionStatus,
+    normalize_email,
+    normalize_phone,
+)
 from app.schemas.ids import MAX_ID
 
 AVISO_CANAL_SIMULADO = (
@@ -23,8 +29,15 @@ class _Telefono(BaseModel):
 
 
 class SubscribeIn(_Telefono):
+    # Correo opcional: si lo deja, también recibe el registro y los avisos por correo (simulado).
+    email: str | None = None
     # Estación de interés; sin ella, recibe los avisos de cualquier estación.
     station_id: Annotated[int | None, Field(ge=1, le=MAX_ID)] = None
+
+    @field_validator("email")
+    @classmethod
+    def _correo_valido(cls, value: str | None) -> str | None:
+        return None if value is None or value.strip() == "" else normalize_email(value)
 
 
 class ConfirmIn(_Telefono):
@@ -32,6 +45,10 @@ class ConfirmIn(_Telefono):
 
 
 class UnsubscribeIn(_Telefono):
+    pass
+
+
+class InboxIn(_Telefono):
     pass
 
 
@@ -64,6 +81,9 @@ class OutboxMessageOut(BaseModel):
     id: int
     subscription_id: int
     kind: MessageKind
+    channel: Channel
+    recipient: str | None
+    subject: str | None
     body: str
     category: str
     created_at: datetime
@@ -72,4 +92,12 @@ class OutboxMessageOut(BaseModel):
 class OutboxList(BaseModel):
     items: list[OutboxMessageOut]
     total: int
+    notice: str = AVISO_CANAL_SIMULADO
+
+
+class InboxOut(BaseModel):
+    """Lo que vería la persona en su celular y su correo, si el canal fuera real. Solo en demo."""
+
+    status: SubscriptionStatus
+    items: list[OutboxMessageOut]
     notice: str = AVISO_CANAL_SIMULADO

@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     device_api_key: SecretStr | None = None
     # Clave para resumir teléfonos y códigos de los avisos. Vacía = suscripciones cerradas.
     alerts_secret: SecretStr | None = None
+    # Modo demostración: deja que quien se registra vea sus propios mensajes simulados (celular y
+    # correo de mentira). Apagado por defecto: con canales reales, nadie lee mensajes ajenos.
+    alerts_demo: bool = False
     # Tamaño máximo de un archivo a importar (el CSV real del SIGA pesa ~0,6 MB).
     max_upload_bytes: int = 5 * 1024 * 1024
     # Tamaño máximo del cuerpo de cualquier otro pedido (los JSON de la API pesan pocos bytes).

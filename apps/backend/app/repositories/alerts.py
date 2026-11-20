@@ -9,8 +9,8 @@ class SqlAlertRepository:
     def __init__(self, session: Session):
         self._session = session
 
-    def station_exists(self, station_id: int) -> bool:
-        return self._session.get(Station, station_id) is not None
+    def station(self, station_id: int) -> Station | None:
+        return self._session.get(Station, station_id)
 
     def find(self, phone_hash: str) -> AlertSubscription | None:
         return self._session.scalar(
@@ -43,6 +43,16 @@ class SqlAlertRepository:
                     ),
                 )
                 .order_by(AlertSubscription.id)
+            )
+        )
+
+    def messages_for(self, subscription_id: int, limit: int = 100) -> list[AlertOutbox]:
+        return list(
+            self._session.scalars(
+                select(AlertOutbox)
+                .where(AlertOutbox.subscription_id == subscription_id)
+                .order_by(AlertOutbox.id)
+                .limit(limit)
             )
         )
 
