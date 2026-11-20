@@ -35,7 +35,7 @@ export default function SerieDiaria({ days }: { days: Day[] }) {
             <XAxis dataKey="fecha" minTickGap={32} tick={{ fontSize: 11 }} />
             <YAxis width={36} tick={{ fontSize: 11 }} />
             <Tooltip content={<Detalle />} />
-            <Bar dataKey="mm" stackId="d" fill="#0b4f8a" isAnimationActive={false} />
+            <Bar dataKey="mm" stackId="d" fill="#0284c7" isAnimationActive={false} />
             <Bar dataKey="hueco" stackId="d" fill="url(#rayas)" isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>

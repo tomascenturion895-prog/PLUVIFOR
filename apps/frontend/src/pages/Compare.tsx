@@ -18,7 +18,7 @@ import { FECHA_CORTE, MAX_ESTACIONES_COMPARADOR } from '../constants'
 import { useAsync } from '../hooks/useAsync'
 import { alinearSeries, claveDe, diferenciaCobertura } from './compare-datos'
 
-const COLORES = ['#0b4f8a', '#b4440e', '#2a7f3f', '#6b3fa0']
+const COLORES = ['#f05514', '#0284c7', '#16a34a', '#8b5cf6']
 
 function restarDias(fecha: string, dias: number): string {
   const d = new Date(`${fecha}T00:00:00Z`)

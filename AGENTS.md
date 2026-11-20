@@ -19,6 +19,7 @@ Leyenda obligatoria, siempre visible en la interfaz y en los documentos:
 5. **No se inventa nada:** ni datos, ni coordenadas, ni endpoints, ni dependencias. Si falta algo, se deja vacío, se marca como pendiente y se pregunta.
 6. **Horarios de corte distintos entre redes.** El «día» de lluvia no es igual en todas: red provincial, UPCA y SNIH 07:00–07:00; SMN e INTA convencional 09:00 (12–12 UTC). Al comparar redes, se advierte.
 7. **Seis advertencias de comparabilidad:** horario de corte distinto, observado vs. estimado, cobertura despareja, dato sin validar, racha de ceros de 60 días o más, e inconsistencia con estaciones vecinas.
+8. **Consistencia visual y tokens de diseño.** Nunca hardcodear colores (`#fff`, `#000`, etc.) en fondos de contenedores, tarjetas, campos ni botones. Usar siempre las variables CSS semánticas del sistema (`var(--papel)`, `var(--superficie)`, `var(--superficie-elevada)`, `var(--tinta)`, `var(--texto-suave)`, `var(--borde)`, `var(--accu-orange)`, etc.). Esto garantiza que cualquier cambio de tema funcione automáticamente en todas las pantallas sin romper la visibilidad del texto ni crear campos en blanco. Ver guía completa en `docs/diseno-sistema-visual.md` y la skill `.agents/skills/pluvifor-diseno-visual/SKILL.md`.
 
 ## Alcance
 

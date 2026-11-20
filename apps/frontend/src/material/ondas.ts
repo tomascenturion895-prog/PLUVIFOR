@@ -8,13 +8,17 @@ const SELECTOR = ['button:not(.v3d-enlace)', '.encabezado nav a', '.accesos li',
 )
 
 function decorar(el: Element) {
-  if (el.querySelector(':scope > md-ripple')) return
-  el.classList.add('con-onda')
-  const onda = document.createElement('md-ripple')
-  onda.setAttribute('aria-hidden', 'true')
-  const foco = document.createElement('md-focus-ring')
-  foco.setAttribute('aria-hidden', 'true')
-  el.append(onda, foco)
+  try {
+    if (el.querySelector(':scope > md-ripple')) return
+    el.classList.add('con-onda')
+    const onda = document.createElement('md-ripple')
+    onda.setAttribute('aria-hidden', 'true')
+    const foco = document.createElement('md-focus-ring')
+    foco.setAttribute('aria-hidden', 'true')
+    el.append(onda, foco)
+  } catch {
+    // Si el nodo se desmontó o muta, no interrumpir la navegación
+  }
 }
 
 export function instalarOndas(raiz: HTMLElement): () => void {

@@ -1,39 +1,76 @@
-/* Identidad visual de PLUVIFOR. Va después de index.css y solo redefine variables y presentación:
-   no cambia ningún dato ni regla. Colores de insignias (observado, referencia, estimado) intactos. */
+/* Identidad visual de PLUVIFOR · Inspirada en el sistema AccuWeather.
+   Opción 1: Modo "Centro Meteorológico / Radar Dark".
+   Mantiene intactas las reglas de datos, fuentes, insignias (observado/referencia/estimado)
+   y la armonía con la escala meteorológica de los mapas. */
+
 :root {
-  --tinta: #0f2a31;
-  --azul: #0d5c6e;
-  --azul-claro: #e1eff1;
-  --texto-suave: #43565d;
-  --borde: #c6d4d7;
-  --papel: #eef3f3;
-  --serif: 'Charter', 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
-  --radio: 0.6rem;
+  /* Paleta AccuWeather: Naranja solar distintivo, Pizarra Profundo y Azul Radar */
+  --accu-orange: #f05514;
+  --accu-orange-hover: #ff6a2b;
+  --accu-orange-light: rgba(240, 85, 20, 0.15);
+  --accu-orange-border: rgba(240, 85, 20, 0.4);
+  --accu-navy: #0b1322;
+  --accu-navy-surface: #131d2e;
+  --accu-radar-blue: #0ea5e9;
+  --accu-radar-light: rgba(14, 165, 233, 0.15);
+
+  /* Variables del sistema con estética meteorológica moderna (Radar Dark) */
+  --tinta: #f8fafc;
+  --azul: #f05514;
+  --azul-radar: #0ea5e9;
+  --azul-claro: #1e293b;
+  --texto-suave: #94a3b8;
+  --borde: #334155;
+  --borde-suave: #1e293b;
+  --papel: #0b1322;
+  --superficie: #131d2e;
+  --superficie-elevada: #1e293b;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --serif: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radio: 0.75rem;
+  --sombra: 0 4px 16px -2px rgb(0 0 0 / 40%), 0 2px 6px -1px rgb(0 0 0 / 25%);
+  --sombra-elevada: 0 10px 25px -3px rgb(0 0 0 / 50%), 0 4px 10px -2px rgb(0 0 0 / 30%);
+
   color: var(--tinta);
   background: var(--papel);
+  font-family: var(--sans);
 }
 
+body {
+  background: var(--papel);
+  color: var(--tinta);
+}
+
+h1,
 h2,
-h3 {
-  font-family: var(--serif);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+h3,
+h4 {
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #f8fafc;
 }
 
 h2 {
-  font-size: 1.7rem;
+  font-size: 1.65rem;
+}
+
+h3 {
+  font-size: 1.25rem;
 }
 
 .contenido {
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.5rem 1rem 3.5rem;
 }
 
-/* ---- Cabecera ---- */
+/* ---- Cabecera estilo AccuWeather (Navy profundo + Naranja Solar) ---- */
 .encabezado {
   padding: 0;
-  background: var(--tinta);
-  border-bottom: 0;
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
   color: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
 }
 
 .encabezado-fila {
@@ -41,32 +78,35 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1rem 0.25rem;
+  padding: 0.85rem 1rem 0.35rem;
 }
 
 .encabezado-marca {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .marca-logo {
   width: 2.5rem;
-  height: 2rem;
-  color: #7fd0dc;
+  height: 2.2rem;
+  color: var(--accu-orange);
+  filter: drop-shadow(0 2px 4px rgb(240 85 20 / 35%));
 }
 
 .encabezado-marca h1 {
-  font-family: var(--serif);
-  font-size: 1.5rem;
-  letter-spacing: 0.04em;
+  font-family: var(--sans);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   line-height: 1.1;
   color: #fff;
 }
 
 .encabezado-marca p {
-  color: #b8d3d8;
+  color: #94a3b8;
   font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .encabezado nav {
@@ -79,18 +119,24 @@ h2 {
 }
 
 .encabezado nav a {
-  color: #d5e6e9;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  font-weight: 500;
   border-bottom-width: 3px;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.15s ease-in-out;
 }
 
 .encabezado nav a:hover {
   color: #fff;
-  background: rgb(255 255 255 / 8%);
+  background: rgb(255 255 255 / 10%);
 }
 
 .encabezado nav a.active {
   color: #fff;
-  border-bottom-color: #7fd0dc;
+  font-weight: 700;
+  border-bottom-color: var(--accu-orange);
+  background: rgb(255 255 255 / 6%);
 }
 
 .a11y {
@@ -102,15 +148,17 @@ h2 {
   padding: 0 0.9rem;
   color: #fff;
   font: inherit;
-  font-size: 0.9rem;
-  background: transparent;
-  border: 1px solid rgb(255 255 255 / 45%);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 25%);
   border-radius: 999px;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 .a11y-boton:hover {
-  background: rgb(255 255 255 / 12%);
+  background: rgb(255 255 255 / 18%);
 }
 
 .a11y-panel {
@@ -120,11 +168,15 @@ h2 {
   width: min(22rem, calc(100vw - 2rem));
   margin: 0.4rem 0 0;
   color: var(--tinta);
-  box-shadow: 0 8px 24px rgb(15 42 49 / 25%);
+  background: #1e293b;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-elevada);
 }
 
 .encabezado :focus-visible {
-  outline-color: #ffd37a;
+  outline: 2px solid var(--accu-orange);
+  outline-offset: 2px;
 }
 
 @media (min-width: 720px) {
@@ -134,7 +186,7 @@ h2 {
   }
 
   .encabezado-fila {
-    padding: 1rem 1.5rem 0.25rem;
+    padding: 1rem 1.5rem 0.35rem;
   }
 
   .encabezado nav {
@@ -146,38 +198,50 @@ h2 {
   }
 }
 
-/* ---- Pie ---- */
+/* ---- Pie de página ---- */
 .pie {
-  background: var(--tinta);
+  background: #0f172a;
+  border-top: 1px solid #1e293b;
+  color: #94a3b8;
   font-size: 0.85rem;
+  z-index: 1100;
 }
 
-/* ---- Inicio ---- */
+.pie strong {
+  color: #fed7aa;
+}
+
+/* ---- Inicio / Hero estilo Weather Card ---- */
 .hero {
   display: grid;
   gap: 1.5rem;
   align-items: center;
   margin-bottom: 1.5rem;
-  padding: 1.5rem;
-  background: #fff;
+  padding: 1.75rem;
+  background: var(--superficie);
   border: 1px solid var(--borde);
-  border-left: 6px solid var(--azul);
+  border-left: 6px solid var(--accu-orange);
   border-radius: var(--radio);
+  box-shadow: var(--sombra);
 }
 
 .hero h2 {
   margin-top: 0;
-  font-size: clamp(1.7rem, 5vw, 2.6rem);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  font-weight: 800;
+  color: #f8fafc;
 }
 
 .hero-texto p {
   max-width: 38rem;
   font-size: 1.05rem;
+  color: var(--texto-suave);
+  line-height: 1.55;
 }
 
 .hero-figura {
   margin: 0;
-  color: var(--azul);
+  color: var(--accu-radar-blue);
 }
 
 .hero-figura svg {
@@ -199,44 +263,53 @@ h2 {
 @media (min-width: 860px) {
   .hero {
     grid-template-columns: 1.3fr 1fr;
-    padding: 2rem;
+    padding: 2.25rem;
   }
 }
 
-.accesos li {
-  display: contents;
-}
-
+/* Tarjetas de accesos directos */
 .accesos {
-  gap: 0.75rem;
+  display: grid;
+  gap: 0.85rem;
 }
 
 .accesos li {
   display: block;
-  padding: 1rem 1.1rem;
-  background: #fff;
+  padding: 1.15rem 1.25rem;
+  background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
-  transition: border-color 0.15s;
+  box-shadow: var(--sombra);
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .accesos li:hover {
-  border-color: var(--azul);
+  background: #182235;
+  border-color: var(--accu-orange);
+  box-shadow: var(--sombra-elevada);
+  transform: translateY(-2px);
 }
 
 .accesos a {
-  display: inline;
+  display: inline-block;
   padding: 0;
   background: none;
-  font-family: var(--serif);
-  font-size: 1.2rem;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  font-family: var(--sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+  text-decoration: none;
+}
+
+.accesos a:hover {
+  color: var(--accu-orange);
 }
 
 .accesos .nota {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
 }
 
 @media (min-width: 720px) {
@@ -245,69 +318,319 @@ h2 {
   }
 }
 
-/* ---- Controles y tarjetas ---- */
+/* ---- Widgets de Resumen / KPIs (estilo radar weather card) ---- */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.resumen div {
+  padding: 1rem 1.15rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-top: 3.5px solid var(--accu-orange);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.resumen dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--texto-suave);
+  margin-bottom: 0.35rem;
+}
+
+.resumen dd {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Controles, Filtros y Formularios ---- */
+.filtros,
+.mapa-controles {
+  background: var(--superficie);
+  padding: 1.15rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  margin-bottom: 1.25rem;
+}
+
 .filtros select,
 .filtros input,
 .mapa-controles input,
-.mapa-controles select {
-  background: #fff;
-  border: 1px solid #8fa3a8;
-  border-radius: 0.4rem;
+.mapa-controles select,
+input:not([type='checkbox'], [type='radio'], [type='range']),
+select,
+textarea {
+  background: #0f172a;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
+.filtros select option,
+.mapa-controles select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.filtros select:focus,
+.filtros input:focus,
+.mapa-controles input:focus,
+.mapa-controles select:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accu-orange);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(240, 85, 20, 0.25);
+}
+
+/* Botones principales estilo AccuWeather ---- */
 button {
   font: inherit;
 }
 
 .acciones button,
-.estado-error button {
-  padding: 0 1.1rem;
+.estado-error button,
+.boton-primario {
+  min-height: 44px;
+  padding: 0 1.35rem;
+  font-weight: 700;
   color: #fff;
-  background: var(--azul);
+  background: var(--accu-orange);
   border: 0;
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(240, 85, 20, 0.35);
+  transition: all 0.15s ease-in-out;
+}
+
+.acciones button:hover:not(:disabled),
+.estado-error button:hover:not(:disabled),
+.boton-primario:hover:not(:disabled) {
+  background: var(--accu-orange-hover);
+  box-shadow: 0 4px 14px rgba(240, 85, 20, 0.45);
+  transform: translateY(-1px);
+}
+
+.acciones button:active:not(:disabled),
+.boton-primario:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.acciones button:disabled {
+  background: #475569;
+  color: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ---- Paneles de Capas y Visualizaciones ---- */
+.estados-capas,
+.capas,
+.panel,
+fieldset,
+.ayuda-lista li {
+  padding: 1rem 1.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  color: var(--tinta);
+}
+
+/* ---- Paneles de la Maqueta 3D (Selección, Resultados, Probá un cambio) ---- */
+.panel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  color: var(--tinta);
+}
+
+.panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f8fafc;
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 0.5rem;
+}
+
+.panel label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.panel select,
+.panel input[type='date'],
+.maqueta-layout select,
+.maqueta-layout input[type='date'] {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid var(--borde) !important;
+  border-radius: 0.5rem !important;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.panel select:focus,
+.panel input[type='date']:focus,
+.maqueta-layout select:focus,
+.maqueta-layout input[type='date']:focus {
+  border-color: var(--accu-orange) !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(240, 85, 20, 0.25) !important;
+}
+
+.panel select option,
+.maqueta-layout select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.panel fieldset {
+  background: var(--superficie-elevada);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.85rem 1rem;
+  margin: 0.25rem 0;
+}
+
+.panel fieldset legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  padding: 0 0.4rem;
+}
+
+.panel fieldset label.opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f8fafc;
   cursor: pointer;
 }
 
-.acciones button:hover:not(:disabled) {
-  background: #0a4857;
+.panel fieldset label.opcion input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accu-orange);
 }
 
-.resumen div {
-  border-radius: var(--radio);
-  border-top: 3px solid var(--azul);
+.panel .acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
 }
 
-.resumen dd {
-  font-family: var(--serif);
-  font-size: 1.5rem;
+.panel .acciones button {
+  flex: 1 1 auto;
+  min-height: 40px;
+  padding: 0 1rem;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+  transition: all 0.15s;
 }
 
-.estados-capas,
-.capas {
-  padding: 0.75rem 1rem;
-  background: #fff;
+.panel .acciones button:hover:not(:disabled) {
+  background: var(--accu-orange);
+  color: #fff;
+  border-color: var(--accu-orange);
+  box-shadow: 0 2px 8px rgba(240, 85, 20, 0.35);
+}
+
+.panel > button {
+  min-height: 40px;
+  padding: 0 1rem;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.panel > button:hover:not(:disabled) {
+  border-color: var(--accu-orange);
+  color: #fff;
+  background: rgba(240, 85, 20, 0.15);
+}
+
+.mapa-resumen-departamento,
+.mapa-pendientes {
+  background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  color: var(--tinta);
 }
 
-.capas legend {
-  padding: 0 0.4rem;
-  font-family: var(--serif);
-  font-size: 1.1rem;
+.mapa-resumen-departamento h3,
+.mapa-pendientes h3 {
+  margin-top: 0;
+  color: #f8fafc;
+}
+
+.capas legend,
+fieldset > legend {
+  padding: 0 0.5rem;
+  font-family: var(--sans);
+  font-size: 1.05rem;
   font-weight: 700;
+  color: #f8fafc;
 }
 
 .capas ul {
   display: grid;
-  gap: 0.5rem 1.5rem;
-  padding: 0;
+  gap: 0.65rem 1.5rem;
+  padding: 0.25rem 0;
   list-style: none;
 }
 
 .capas .nota {
   margin: 0.2rem 0 0.4rem;
   font-size: 0.85rem;
+  color: var(--texto-suave);
 }
 
 @media (min-width: 900px) {
@@ -319,34 +642,25 @@ button {
 .mapa-contenedor,
 .parte-texto,
 .estaciones-lista,
-.grafico-detalle {
+.grafico-detalle,
+.grafico {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
   border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  color: var(--tinta);
+}
+
+.grafico {
+  padding: 1rem;
 }
 
 .mapa-contenedor {
-  box-shadow: 0 2px 10px rgb(15 42 49 / 10%);
+  overflow: hidden;
+  background: #0b1322;
 }
 
-/* ---- Alto contraste: el tema no puede pisar el modo accesible ---- */
-html[data-contraste='alto'] {
-  --tinta: #000;
-  --papel: #fff;
-}
-
-html[data-contraste='alto'] .encabezado {
-  background: #000;
-  border-bottom: 3px solid #fff;
-}
-
-html[data-contraste='alto'] .hero {
-  border-left-color: #000;
-}
-
-html[data-contraste='alto'] .a11y-panel {
-  border-width: 3px;
-}
-
-/* ---- Mapa: el mapa se ve sin bajar; las capas se abren a pedido ---- */
+/* Desplegable de capas del mapa */
 .capas-plegable {
   margin-bottom: 1rem;
 }
@@ -355,38 +669,33 @@ html[data-contraste='alto'] .a11y-panel {
   display: flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 1rem;
+  padding: 0 1.15rem;
   font-weight: 600;
-  background: #fff;
+  color: #f8fafc;
+  background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   cursor: pointer;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+  transition: border-color 0.15s;
+}
+
+.capas-plegable > summary:hover {
+  border-color: var(--accu-orange);
 }
 
 .capas-plegable[open] > summary {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
+  border-color: var(--accu-orange-border);
 }
 
-.pie {
-  z-index: 1100;
-}
-
-@media (max-width: 719px) {
-  .hero-figura svg {
-    max-height: 7rem;
-  }
-
-  .hero {
-    padding: 1rem;
-  }
-}
-
-/* Casillas de la lista de estaciones (Parte): el estilo de los campos de texto las agrandaba. */
+/* Casillas de opciones */
 .filtros .opcion {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-weight: 400;
+  font-weight: 500;
+  color: #f8fafc;
 }
 
 .filtros .opcion input {
@@ -395,9 +704,187 @@ html[data-contraste='alto'] .a11y-panel {
   min-height: 0;
   height: 1.25rem;
   padding: 0;
+  accent-color: var(--accu-orange);
 }
 
-/* ---- Menú en celular: un botón que despliega todas las secciones, sin desplazamiento oculto ---- */
+/* ---- Botones secundarios, filtros y barras de tiempo ---- */
+.atajos button,
+.maqueta-layout button,
+.barra-tiempo button,
+form button,
+fieldset button {
+  padding: 0.45rem 1rem;
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: #1e293b;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+  transition: all 0.15s;
+}
+
+.atajos button:hover,
+.maqueta-layout button:hover,
+.barra-tiempo button:hover,
+form button:hover:not(:disabled),
+fieldset button:hover:not(:disabled) {
+  border-color: var(--accu-orange);
+  color: #fff;
+  background: rgba(240, 85, 20, 0.2);
+}
+
+.atajos button[aria-pressed='true'],
+.barra-tiempo button[aria-pressed='true'] {
+  background: var(--accu-orange);
+  color: #fff;
+  border-color: var(--accu-orange);
+  box-shadow: 0 2px 8px rgba(240, 85, 20, 0.35);
+}
+
+/* ---- Tablas en modo Radar Dark ---- */
+.tabla-dias,
+.tabla-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-scroll {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.tabla-dias th,
+.tabla-dias td,
+.tabla-scroll th,
+.tabla-scroll td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--borde);
+  color: #f8fafc;
+}
+
+.tabla-dias thead th,
+.tabla-scroll thead th {
+  background: #1e293b;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-align: left;
+}
+
+.tabla-dias tbody tr:hover,
+.tabla-scroll tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- Mapa Leaflet en modo Radar Dark ---- */
+.leaflet-container {
+  background: #0b1322 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid var(--borde) !important;
+  box-shadow: var(--sombra-elevada) !important;
+}
+
+.leaflet-popup-tip {
+  background: #1e293b !important;
+}
+
+.leaflet-bar a {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-bottom-color: var(--borde) !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #334155 !important;
+  color: #fff !important;
+}
+
+/* ---- Gráficos Recharts en Radar Dark ---- */
+.recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border: 1px solid var(--borde) !important;
+  border-radius: var(--radio) !important;
+  color: #f8fafc !important;
+  box-shadow: var(--sombra-elevada) !important;
+}
+
+.recharts-tooltip-item {
+  color: #f8fafc !important;
+}
+
+.recharts-cartesian-grid line {
+  stroke: #334155 !important;
+}
+
+.recharts-text {
+  fill: #94a3b8 !important;
+}
+
+/* ---- Etiquetas 3D de departamentos seleccionados (Vista 3D) ---- */
+.v3d-etiqueta-depto.es-elegida {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.8) !important;
+  background: #0f172a !important;
+  border: 2px solid var(--accu-orange) !important;
+  padding: 0.15rem 0.65rem !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 4px 14px rgb(0 0 0 / 0.7),
+    0 0 0 1px rgba(240, 85, 20, 0.4) !important;
+  z-index: 10;
+}
+
+/* Nombres en la Maqueta SVG */
+.maqueta-nombre {
+  fill: #f8fafc;
+  stroke: #0f172a;
+  stroke-width: 2.5px;
+  font-weight: 700;
+}
+
+.maqueta-bloque-activo .maqueta-nombre {
+  fill: #ffffff;
+  stroke: var(--accu-orange);
+  stroke-width: 3px;
+}
+
+/* ---- Alto contraste ---- */
+html[data-contraste='alto'] {
+  --tinta: #000;
+  --papel: #fff;
+  --accu-orange: #d94709;
+}
+
+html[data-contraste='alto'] body {
+  background: #fff;
+  color: #000;
+}
+
+html[data-contraste='alto'] .encabezado {
+  background: #000;
+  border-bottom: 3px solid #fff;
+}
+
+html[data-contraste='alto'] .hero {
+  background: #fff;
+  border-left-color: #000;
+}
+
+html[data-contraste='alto'] .a11y-panel {
+  border-width: 3px;
+  background: #fff;
+  color: #000;
+}
+
+/* ---- Menú en celular ---- */
 .menu-boton {
   display: none;
 }
@@ -414,14 +901,14 @@ html[data-contraste='alto'] .a11y-panel {
     font-weight: 600;
     color: #fff;
     text-align: left;
-    background: rgb(255 255 255 / 8%);
-    border: 1px solid rgb(255 255 255 / 18%);
+    background: rgb(255 255 255 / 10%);
+    border: 1px solid rgb(255 255 255 / 20%);
     border-radius: var(--radio);
   }
 
   .menu-actual {
     font-weight: 400;
-    color: #b8d3d8;
+    color: #cbd5e1;
   }
 
   .menu-icono,
@@ -474,7 +961,7 @@ html[data-contraste='alto'] .a11y-panel {
   .encabezado nav ul.abierto {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.15rem 0.5rem;
+    gap: 0.25rem 0.5rem;
     margin: 0 0 0.75rem;
     overflow: visible;
   }
@@ -483,11 +970,12 @@ html[data-contraste='alto'] .a11y-panel {
     white-space: normal;
     border-bottom: 0;
     border-left: 3px solid transparent;
-    border-radius: 0.3rem;
+    border-radius: 0.35rem;
   }
 
   .encabezado nav ul.abierto a.active {
-    border-left-color: #7fd0dc;
-    background: rgb(255 255 255 / 8%);
+    border-left-color: var(--accu-orange);
+    background: rgb(240 85 20 / 18%);
+    color: #fff;
   }
 }

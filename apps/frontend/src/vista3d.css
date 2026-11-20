@@ -36,7 +36,7 @@
   display: inline-flex;
   padding: 0.3rem;
   gap: 0.3rem;
-  background: #fff;
+  background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: 0.8rem;
 }
@@ -89,7 +89,7 @@
   text-align: left;
   line-height: 1.25;
   color: var(--tinta);
-  background: #fff;
+  background: var(--superficie-elevada);
   border: 1px solid var(--borde);
   border-radius: 999px;
 }
@@ -177,10 +177,16 @@
 }
 
 .v3d-etiqueta-depto.es-elegida {
-  color: var(--tinta);
-  text-shadow: none;
-  background: #fff;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
+  background: #0f172a;
+  border: 2px solid var(--accu-orange, #f05514);
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  box-shadow:
+    0 4px 14px rgb(0 0 0 / 0.7),
+    0 0 0 1px rgba(240, 85, 20, 0.4);
 }
 
 .v3d-etiqueta-estacion {
@@ -285,8 +291,8 @@
 }
 
 .v3d-segmentado button.es-activo {
-  color: var(--tinta);
-  background: #fff;
+  color: #fff;
+  background: var(--accu-orange);
 }
 
 @media (hover: hover) {
@@ -385,7 +391,7 @@
 .v3d-tabla {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--superficie);
 }
 
 .v3d-tabla th,
@@ -398,7 +404,7 @@
 .v3d-tabla thead th {
   font-size: 0.82rem;
   color: var(--texto-suave);
-  background: var(--azul-claro);
+  background: var(--superficie-elevada);
 }
 
 .v3d-tabla .num {
@@ -406,14 +412,14 @@
 }
 
 .v3d-tabla tr.es-elegida {
-  background: #fff8e1;
+  background: rgba(240, 85, 20, 0.18);
 }
 
 .v3d-enlace {
   padding: 0;
   font: inherit;
   font-weight: 650;
-  color: var(--azul);
+  color: var(--accu-orange);
   text-decoration: underline;
   text-underline-offset: 0.2em;
   background: none;
@@ -423,7 +429,7 @@
 .v3d-metodo {
   margin-top: 0.75rem;
   padding: 0.75rem 1rem;
-  background: #fff;
+  background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
 }
