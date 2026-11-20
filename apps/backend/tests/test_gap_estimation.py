@@ -303,7 +303,7 @@ def test_la_api_sin_estimaciones_devuelve_una_lista_vacia(client):
 
 
 def test_el_comando_estima_y_cuenta(db, mundo, app, monkeypatch, capsys):
-    url = str(app.state.engine.url)
+    url = app.state.engine.url.render_as_string(hide_password=False)
     monkeypatch.setenv("DATABASE_URL", url)
     get_settings.cache_clear()
     try:
