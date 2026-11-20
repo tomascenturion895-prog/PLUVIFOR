@@ -2,9 +2,10 @@ import type { ReactNode } from 'react'
 
 export function Cargando({ texto = 'Cargando…' }: { texto?: string }) {
   return (
-    <p role="status" className="estado estado-cargando">
-      {texto}
-    </p>
+    <div role="status" className="estado estado-cargando">
+      <md-linear-progress indeterminate aria-hidden="true" />
+      <p>{texto}</p>
+    </div>
   )
 }
 

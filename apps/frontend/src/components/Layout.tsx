@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import PanelAccesibilidad from './a11y/PanelAccesibilidad'
 import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
 import { tituloDe } from '../titulos'
+import Icono from '../material/Icono'
 
 /** Barras de lluvia diaria; la del medio va rayada porque un día sin dato no es 0 mm. */
 function MarcaPluvifor() {
@@ -66,7 +67,7 @@ export default function Layout() {
             aria-controls="menu-secciones"
             onClick={() => setMenuAbierto((a) => !a)}
           >
-            <span className="menu-icono" aria-hidden="true" />
+            <Icono nombre={menuAbierto ? 'cerrar' : 'menu'} />
             <span>
               Menú<span className="menu-actual">: {actual}</span>
             </span>
@@ -79,7 +80,8 @@ export default function Layout() {
                   end={seccion.ruta === '/'}
                   onClick={() => setMenuAbierto(false)}
                 >
-                  {seccion.nombre}
+                  <Icono nombre={seccion.icono} />
+                  <span>{seccion.nombre}</span>
                 </NavLink>
               </li>
             ))}

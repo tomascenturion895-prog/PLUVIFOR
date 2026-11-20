@@ -1,28 +1,40 @@
 import { Link } from 'react-router-dom'
+import Icono, { type NombreIcono } from '../material/Icono'
 
 const ACCESOS = [
   {
+    ruta: '/vista-3d',
+    icono: 'vista3d' as NombreIcono,
+    nombre: 'Vista 3D',
+    texto: 'La provincia en 3D: dónde la lluvia observada y los ríos se cruzan.',
+  },
+  {
     ruta: '/maqueta',
+    icono: 'maqueta' as NombreIcono,
     nombre: 'Maqueta',
     texto: 'La provincia de un vistazo: tocá un departamento y mirá cuánto llovió.',
   },
   {
     ruta: '/mapa',
+    icono: 'mapa' as NombreIcono,
     nombre: 'Mapa',
     texto: 'Las estaciones sobre el mapa, con su acumulado del período.',
   },
   {
     ruta: '/comparador',
+    icono: 'comparador' as NombreIcono,
     nombre: 'Comparador',
     texto: 'Compará estaciones y períodos, con sus advertencias.',
   },
   {
     ruta: '/parte',
+    icono: 'parte' as NombreIcono,
     nombre: 'Parte pluvial',
     texto: 'Un texto listo para copiar o imprimir, con la fuente y la calidad.',
   },
   {
     ruta: '/reporte',
+    icono: 'reporte' as NombreIcono,
     nombre: 'Reporte de campo',
     texto: 'Cargá la lluvia anotada donde no hay estación.',
   },
@@ -94,6 +106,7 @@ export default function Home() {
       <ul className="accesos" aria-label="Accesos rápidos">
         {ACCESOS.map((a) => (
           <li key={a.ruta}>
+            <Icono nombre={a.icono} className="acceso-icono" />
             <Link to={a.ruta}>{a.nombre}</Link>
             <span className="nota"> — {a.texto}</span>
           </li>

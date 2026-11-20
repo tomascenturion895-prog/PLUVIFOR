@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import Icono from '../../material/Icono'
 import {
   aplicar,
   almacenLocal,
@@ -54,6 +55,7 @@ export default function PanelAccesibilidad() {
         aria-controls={id}
         onClick={() => setAbierto((v) => !v)}
       >
+        <Icono nombre="accesibilidad" />
         Accesibilidad
       </button>
       {abierto && (
