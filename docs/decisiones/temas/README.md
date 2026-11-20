@@ -12,6 +12,7 @@ Tarea SCRUM-96. `AGENTS.md` pide fundamentar cada tema que no es el núcleo de l
 | Ingesta de sensores simulados | SCRUM-94 | [sensores-simulados.md](sensores-simulados.md) |
 | Estimación rotulada de días sin dato | SCRUM-93 | [estimacion-de-huecos.md](estimacion-de-huecos.md) |
 | Demo local sin internet | SCRUM-92 | [demo-sin-conexion.md](demo-sin-conexion.md) |
+| Recurrencia histórica de lluvia intensa | sin tarea | [recurrencia-historica.md](recurrencia-historica.md) |
 | Avisos a la población (canal simulado) | sin tarea | [avisos-a-la-poblacion.md](avisos-a-la-poblacion.md) |
 
 ## Temas que se piden y todavía no están
