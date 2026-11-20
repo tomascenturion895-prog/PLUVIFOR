@@ -6,7 +6,7 @@ import { InsigniaSimulado } from '../components/Insignias'
 import GraficoSensor from '../components/sensores/GraficoSensor'
 import { useAsync } from '../hooks/useAsync'
 import { useIdioma } from '../i18n/usar-idioma'
-import { formatoMm } from './network-health-datos'
+import { fechaLegible, formatoMm, TEXTO_ESTADO } from './network-health-datos'
 import { AVISO_SIMULADAS, fechaHoraArgentina } from './sensores-datos'
 
 const POR_PAGINA = 10
@@ -31,6 +31,11 @@ function TarjetaDispositivo({
         onClick={onElegir}
       >
         <strong>{dispositivo.device_id}</strong> <InsigniaSimulado />
+        <span>
+          <span className={`marca-estado marca-estado-${dispositivo.state}`} aria-hidden="true" />
+          {TEXTO_ESTADO[dispositivo.state]}
+          <span className="nota"> (hace {dispositivo.days_since_last} días)</span>
+        </span>
         <span className="nota">
           Última lectura: {fechaHoraArgentina(dispositivo.last_read_at)} ·{' '}
           {formatoMm(dispositivo.last_mm)}
@@ -137,7 +142,7 @@ function DetalleDispositivo({ dispositivo }: { dispositivo: SensorDevice }) {
 export default function Sensores() {
   const { t } = useIdioma()
   const [elegido, setElegido] = useState<string | null>(null)
-  const { estado, reintentar } = useAsync((signal) => getSensorDevices(signal), [])
+  const { estado, reintentar } = useAsync((signal) => getSensorDevices({}, signal), [])
 
   return (
     <section>
@@ -157,6 +162,20 @@ export default function Sensores() {
           </Vacio>
         ) : (
           <>
+            <ul className="resumen" aria-label="Resumen de dispositivos">
+              <li>
+                <strong>{estado.datos.active}</strong> activos
+              </li>
+              <li>
+                <strong>{estado.datos.silent}</strong> en silencio
+              </li>
+            </ul>
+            <p className="nota">
+              Se marca «en silencio» al dispositivo cuya última lectura es de hace más de{' '}
+              {estado.datos.silent_after_days} días respecto de la fecha de corte (
+              {fechaLegible(estado.datos.data_cutoff_date)}). Un silencio no es 0 mm: es «sin
+              lectura».
+            </p>
             <ul className="lista-sensores" aria-label="Dispositivos">
               {estado.datos.items.map((d) => (
                 <TarjetaDispositivo
