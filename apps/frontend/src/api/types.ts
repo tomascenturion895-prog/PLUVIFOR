@@ -365,3 +365,25 @@ export interface NetworkHealth {
   no_data: number
   stations: StationHealth[]
 }
+
+/** Estado de una suscripción a avisos. El canal es simulado: no sale ningún mensaje real. */
+export interface AlertSubscriptionStatus {
+  status: 'pendiente' | 'confirmada' | 'baja'
+  notice: string
+}
+
+/** Mensaje que se enviaría (canal simulado). */
+export interface AlertMessage {
+  id: number
+  subscription_id: number
+  kind: 'codigo' | 'aviso'
+  body: string
+  category: string
+  created_at: string
+}
+
+export interface AlertOutboxList {
+  items: AlertMessage[]
+  total: number
+  notice: string
+}

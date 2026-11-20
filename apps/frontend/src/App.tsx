@@ -11,6 +11,7 @@ import Importar from './pages/Importar'
 import NetworkHealth from './pages/NetworkHealth'
 import Maqueta from './pages/Maqueta'
 import Sensores from './pages/Sensores'
+import Avisos from './pages/Avisos'
 import Parte from './pages/Parte'
 import { Mapa, NoEncontrada } from './pages/Paginas'
 
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="importar" element={<Importar />} />
           <Route path="salud" element={<NetworkHealth />} />
           <Route path="sensores" element={<Sensores />} />
+          <Route path="avisos" element={<Avisos />} />
           <Route path="ayuda" element={<Help />} />
           <Route path="*" element={<NoEncontrada />} />
         </Route>

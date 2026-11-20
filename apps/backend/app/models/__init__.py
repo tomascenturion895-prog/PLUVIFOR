@@ -1,5 +1,6 @@
 """Modelos SQLAlchemy. Importarlos acá registra las tablas en `Base.metadata`."""
 
+from app.models.alert import AlertOutbox, AlertSubscription
 from app.models.climate_reference import ClimateReference
 from app.models.field_report import FieldReport
 from app.models.gap_estimate import GapEstimate
@@ -11,6 +12,8 @@ from app.models.source import Source
 from app.models.station import Station
 
 __all__ = [
+    "AlertOutbox",
+    "AlertSubscription",
     "ClimateReference",
     "FieldReport",
     "GapEstimate",

@@ -18,6 +18,7 @@ export const en: Diccionario = {
   'nav.importar': 'Import & audit',
   'nav.salud': 'Network health',
   'nav.sensores': 'Sensors',
+  'nav.avisos': 'Alerts',
   'nav.ayuda': 'Help',
   'nav.noEncontrada': 'Page not found',
 
