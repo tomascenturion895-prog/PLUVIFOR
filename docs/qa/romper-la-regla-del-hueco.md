@@ -10,6 +10,10 @@ Tarea SCRUM-55. El criterio dice que «romper la regla del hueco hace fallar una
 | M2 | El acumulado SQL devuelve 0 cuando no hay ningún dato | `app/repositories/series.py`, acumulado por zona | **Fallan 6 pruebas**, entre ellas `test_zona_sin_ningun_dato_da_null_no_cero` y `test_only_gaps_gives_null_not_zero` |
 | M3 | Un valor vacío del archivo se importa como 0,0 en lugar de hueco | `app/ingestion/validation.py`, `_number` | **Fallan al menos 8 pruebas** (de importación, de la API y de la demo), entre ellas `test_the_gap_is_stored_without_millimeters_never_zero` |
 | M4 | El umbral de la racha de ceros pasa de 60 a 61 días | `app/domain/quality.py`, `ZERO_STREAK_MIN_DAYS` | **Fallan 4 pruebas**, entre ellas `test_streak_of_exactly_60_is_flagged` |
+| M5 | El comparador devuelve 0 en los días sin dato (`mm=d.mm or 0.0`) | `app/api/rainfall.py`, `compare_rainfall` | **Falla** `test_compare_two_stations_returns_aligned_series_and_warnings` (19/11) |
+| M6 | La serie de una estación devuelve 0 en los días sin dato (`"mm": d.mm or 0.0`) | `app/api/rainfall.py`, `get_rainfall` | **Falla** `test_series_keeps_gaps_as_null_never_zero` (19/11) |
+| M7 | En Go, un día `sin_fila` sale con 0 mm | `apps/api-go/internal/rainfall`, `FillCalendar` | **Falla** `TestParidadConPython` (19/11) |
+| M8 | En Go, el umbral de cobertura baja pasa de 0,8 a 0,5, o las banderas de cada día se corren un día | `apps/api-go/internal/rainfall` | **Falla** `TestParidadConPython` en las dos (19/11) |
 
 Las listas de fallas se cortaron a las primeras que muestra `pytest`, así que puede haber más. En las cuatro roturas falló al menos una prueba.
 
@@ -25,5 +29,5 @@ git checkout -- app   # restaurar
 ## Qué no cubre
 
 - Son cuatro roturas elegidas a mano, no una herramienta de mutaciones automática. No prueba que no existan otras roturas que pasen sin que falle nada.
-- La comparación de estaciones (`/api/rainfall/compare`, SCRUM-36) todavía no está entregada: cuando lo esté hay que sumar su caso del hueco y repetir esta comprobación.
+- M5 a M8 se agregaron el 19/11 al entregarse el comparador y las rutas de Go. Siguen sin cubrir el informe (`/api/reports/summary`) ni la salud de la red.
 - El CI ya corre `pytest` en cada PR (`.github/workflows/ci.yml`); no se modificó.

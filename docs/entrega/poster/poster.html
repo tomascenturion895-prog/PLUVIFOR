@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>PLUVIFOR · Póster</title>
+<style>
+@page { size: 297mm 420mm; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { width: 297mm; height: 420mm; font-family: Inter, 'Segoe UI', Roboto, Arial, sans-serif; color: #0F2A31; background: #EEF3F3; display: flex; flex-direction: column; }
+header { background: #0F2A31; color: #EEF3F3; padding: 16mm 18mm 12mm; }
+.marca { font: 700 6.5mm/1 Charter, Georgia, serif; letter-spacing: .3mm; color: #7FD0DC; }
+h1 { font: 700 21mm/1.02 Charter, Georgia, serif; margin: 6mm 0 4mm; letter-spacing: -0.3mm; }
+.sub { font-size: 6.5mm; color: #B8D3D8; max-width: 230mm; line-height: 1.35; }
+main { flex: 1; padding: 10mm 18mm 0; display: grid; grid-template-rows: auto auto 1fr auto; gap: 8mm; }
+.regla { display: flex; gap: 10mm; align-items: center; background: #fff; border: .5mm solid #C6D4D7; border-left: 3mm solid #0D5C6E; border-radius: 3mm; padding: 7mm 9mm; }
+.regla .gran { font: 700 17mm/1 Charter, Georgia, serif; color: #0D5C6E; white-space: nowrap; }
+.regla p { margin: 0; font-size: 5.2mm; line-height: 1.4; }
+.barras { display: flex; align-items: flex-end; gap: 1.6mm; height: 26mm; flex: none; color: #0D5C6E; }
+.barras i { display: block; width: 5mm; background: currentColor; border-radius: .8mm; }
+.barras i.hueco { background: repeating-linear-gradient(45deg, rgba(13,92,110,.5) 0 .7mm, transparent .7mm 1.6mm); border: .35mm dashed currentColor; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+.card h2 { font: 700 7mm/1.1 Charter, Georgia, serif; margin: 0 0 3mm; color: #0D5C6E; }
+.card p { margin: 0 0 2.5mm; font-size: 5mm; line-height: 1.4; }
+.caps { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; align-items: start; min-height: 0; }
+figure { margin: 0; }
+figure img { width: 100%; display: block; border: .4mm solid #C6D4D7; border-radius: 2.5mm; }
+figcaption { margin-top: 2.5mm; font-size: 4.4mm; line-height: 1.35; color: #43565D; }
+.fuentes { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; border-top: .5mm solid #C6D4D7; padding-top: 6mm; }
+.fuentes h3 { font-size: 4.6mm; margin: 0 0 1.5mm; }
+.fuentes p { margin: 0; font-size: 4.1mm; line-height: 1.4; color: #43565D; }
+footer { background: #0F2A31; color: #EEF3F3; text-align: center; padding: 6mm 18mm; font-size: 5mm; font-weight: 600; margin-top: 8mm; }
+</style></head><body>
+<header>
+  <div class="marca">PLUVIFOR · Equipo 5 SpaidyCode · UTN Formosa</div>
+  <h1>¿Cuánto llovió, dónde y desde cuándo?</h1>
+  <div class="sub">Reporte pluvial de la provincia de Formosa que siempre dice qué tan confiable es cada dato. Desafío 2 · Operación Agua, El Niño 2026/27.</div>
+</header>
+<main>
+  <section class="regla">
+    <div class="gran">Un hueco<br>no es 0 mm</div>
+    <div>
+      <div class="barras" aria-hidden="true"><i style="height:9mm"></i><i style="height:17mm"></i><i style="height:6mm"></i><i class="hueco" style="height:24mm"></i><i class="hueco" style="height:24mm"></i><i style="height:13mm"></i><i style="height:20mm"></i><i style="height:8mm"></i></div>
+      <p style="margin-top:3mm">Ilustración, no son datos. Las franjas rayadas son días sin dato: se muestran como «sin dato», nunca como cero.</p>
+    </div>
+  </section>
+  <section class="cols">
+    <div class="card"><h2>El problema</h2><p>La lluvia está repartida entre redes con horarios de corte distintos, huecos de datos y estaciones que dejan de informar sin avisar.</p></div>
+    <div class="card"><h2>La solución</h2><p>Consulta por estación, zona y período en mapa, maqueta 3D, comparador y parte pluvial, con fuente, categoría y advertencias a la vista.</p></div>
+  </section>
+  <section class="caps">
+    <figure><img src="captura-estacion-424.png" alt="Ficha de la estación 424: 0 mm, 281 de 281 días con dato, advertencia Racha de ceros"><figcaption><b>Estación 424 (20/09/2015 al 26/06/2016):</b> 0 mm durante 281 días seguidos. PLUVIFOR lo advierte como racha de ceros y no lo da por bueno.</figcaption></figure>
+    <figure><img src="captura-estacion-425.png" alt="Ficha de la estación 425: 1.265 mm en el mismo período"><figcaption><b>Estación 425, mismo período:</b> 1.265 mm. Dato observado, sin validar.</figcaption></figure>
+  </section>
+  <section class="fuentes">
+    <div><h3>Fuentes y categorías</h3><p>Series reales de 3 estaciones del SIGA/INTA (7.648 días) y normal mensual 1991-2020 del SMN como referencia. Observado, referencia y estimado nunca se suman. Corte de datos: 31/10/2026.</p></div>
+    <div><h3>Límites</h3><p>Prototipo con 3 estaciones reales; otras redes sin verificar. Sin relieve del terreno todavía. Seis advertencias de comparabilidad, descriptivas: no son alertas de riesgo.</p></div>
+  </section>
+</main>
+<footer>PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial</footer>
+</body></html>

@@ -95,6 +95,18 @@ jobs:
         if: steps.existe.outputs.presente == 'true'
         run: go test ./...
 
+      # Con el driver de SQLite ya agregado (go.sum lo nombra), prueba también el adaptador contra
+      # una base SQLite real: las mismas 47 consultas de paridad con Python.
+      - name: Tests con SQLite real (go test -tags sqlite)
+        if: steps.existe.outputs.presente == 'true' && hashFiles('apps/api-go/go.sum') != ''
+        run: |
+          if grep -q 'ncruces/go-sqlite3' go.sum; then
+            go vet -tags sqlite ./...
+            go test -tags sqlite ./...
+          else
+            echo "::notice::Todavía no se agregó el driver de SQLite: se omite."
+          fi
+
   frontend:
     name: Frontend (lint + tests + build)
     runs-on: ubuntu-latest

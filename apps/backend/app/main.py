@@ -4,12 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api import (
     field_reports,
+    gap_estimates,
     health,
     imports,
     network_health,
     rainfall,
     references,
     reports,
+    sensor_readings,
     stations,
 )
 from app.config import Settings, get_settings
@@ -60,6 +62,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(network_health.router)
     app.include_router(rainfall.router)
     app.include_router(field_reports.router)
+    app.include_router(gap_estimates.router)
+    app.include_router(sensor_readings.router)
     app.include_router(imports.router)
     app.include_router(reports.router)
     app.include_router(references.router)

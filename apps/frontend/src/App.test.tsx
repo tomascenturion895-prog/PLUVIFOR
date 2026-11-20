@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import App from './App'
@@ -33,6 +34,22 @@ describe('App', () => {
       expect(nav).toHaveTextContent(seccion.nombre)
     }
     expect(nav.querySelectorAll('a')).toHaveLength(SECCIONES.length)
+  })
+
+  it('pone un título de pestaña distinto en cada pantalla', () => {
+    ir('/comparador')
+    expect(document.title).toBe('Comparador · PLUVIFOR')
+  })
+
+  it('el botón de menú despliega las secciones y se cierra al elegir una', async () => {
+    ir('/mapa')
+    const boton = screen.getByRole('button', { name: /Menú/ })
+    expect(boton).toHaveAttribute('aria-expanded', 'false')
+    expect(boton).toHaveTextContent('Mapa')
+    await userEvent.click(boton)
+    expect(boton).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.click(screen.getByRole('link', { name: 'Comparador' }))
+    expect(screen.getByRole('button', { name: /Menú/ })).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('marca la sección actual', () => {

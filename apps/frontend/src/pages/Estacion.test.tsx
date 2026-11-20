@@ -11,8 +11,17 @@ vi.mock('../api/client', async (original) => ({
   ...(await original<typeof import('../api/client')>()),
   getStations: vi.fn(),
   getRainfall: vi.fn(),
+  getEstimates: vi.fn(),
+  getEvents: vi.fn(),
+  getClimateReference: vi.fn(),
 }))
-import { getRainfall, getStations } from '../api/client'
+import {
+  getClimateReference,
+  getEstimates,
+  getEvents,
+  getRainfall,
+  getStations,
+} from '../api/client'
 
 const ESTACIONES = {
   items: [
@@ -78,6 +87,33 @@ function ir(ruta = '/estacion/1') {
 beforeEach(() => {
   vi.mocked(getStations).mockResolvedValue(ESTACIONES)
   vi.mocked(getRainfall).mockReset()
+  vi.mocked(getEstimates).mockReset()
+  vi.mocked(getEvents).mockReset()
+  vi.mocked(getEvents).mockResolvedValue({
+    category: 'observado',
+    date_from: '2016-01-01',
+    date_to: '2016-01-31',
+    min_dry_days: 7,
+    stations: [],
+    notice: '',
+    description: '',
+  })
+  vi.mocked(getClimateReference).mockReset()
+  vi.mocked(getClimateReference).mockResolvedValue({
+    station_id: 1,
+    station_name: 'x',
+    category: 'referencia',
+    normals: [],
+    notice: '',
+  })
+  vi.mocked(getEstimates).mockResolvedValue({
+    category: 'estimado',
+    notice: 'Valores estimados, no medidos.',
+    items: [],
+    total: 0,
+    limit: 200,
+    offset: 0,
+  })
 })
 
 describe('pantalla Estación', () => {
@@ -85,6 +121,39 @@ describe('pantalla Estación', () => {
     ir('/estacion')
     expect(await screen.findByText('Elegí una estación para ver su lluvia.')).toBeInTheDocument()
     expect(getRainfall).not.toHaveBeenCalled()
+  })
+
+  it('muestra los días estimados aparte y no los suma al acumulado observado', async () => {
+    vi.mocked(getRainfall).mockResolvedValue(
+      serie({ summary: { ...serie().summary, accumulated_mm: 12.5 } }),
+    )
+    vi.mocked(getEstimates).mockResolvedValue({
+      category: 'estimado',
+      notice: 'Valores estimados, no medidos.',
+      items: [
+        {
+          station_id: 1,
+          obs_date: '2016-01-03',
+          mm: 40,
+          category: 'estimado',
+          gap_state: 'sin_fila',
+          method: 'vecinas_idw_v1',
+          detail: {},
+          created_at: '2026-11-19T15:00:00Z',
+        },
+      ],
+      total: 1,
+      limit: 200,
+      offset: 0,
+    })
+    ir()
+    expect(await screen.findByText('12,5 mm')).toBeInTheDocument() // el acumulado sigue siendo el observado
+    expect(await screen.findByText('40 mm')).toBeInTheDocument()
+    expect(screen.queryByText('52,5 mm')).not.toBeInTheDocument()
+    expect(getEstimates).toHaveBeenCalledWith(
+      expect.objectContaining({ stationId: 1 }),
+      expect.any(AbortSignal),
+    )
   })
 
   it('muestra acumulado, días con dato, fuente y categoría', async () => {

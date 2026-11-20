@@ -193,6 +193,24 @@ Un reporte por fila: fecha (`obs_date`), `mm` (≥ 0), lugar, quién reporta, ub
 - Se rechaza `mm` negativo o mayor a 1000 (freno a errores de tipeo, no una regla meteorológica), fechas posteriores al corte (31/10/2026), textos vacíos o con caracteres de control y coordenadas fuera de rango.
 - Cargar (`POST /api/field-reports`) y listar (`GET`) piden la clave de administración, igual que la importación: el listado incluye el nombre de quien reporta, un dato personal.
 
+### `sensor_readings` — lecturas de dispositivos (hoy solo simuladas)
+
+Una lectura por fila: `device_id`, `read_at` (con zona horaria, en UTC), `mm` (≥ 0), ubicación opcional (`lat`/`lon`, ambas o ninguna), `category` (siempre `simulado`), `source` (`sensor_simulado`) y `created_at`. No hay sensores reales.
+
+- **Nunca se suma a las series:** va en su propia tabla, sin estación, y ninguna consulta de lluvia la lee.
+- **Una por dispositivo y hora:** `(device_id, read_at)` es único. Reenviar la misma no duplica; con otro valor es un conflicto y no pisa el dato.
+- **Un hueco no es 0 mm:** `mm` es obligatorio. Una lectura que no llegó no existe como fila.
+- **La categoría no la elige el cliente:** la API la fija. Detalle en `docs/ingesta-sensores.md`.
+
+### `gap_estimates` — días sin dato con un valor estimado
+
+Una fila por estación y día: `station_id`, `obs_date`, `mm` (≥ 0), `category` (siempre `estimado`), `gap_state` (`sin_fila` o `fila_sin_valor`: cómo era el día original), `method`, `detail` (JSON con las vecinas y los parámetros usados) y `created_at`.
+
+- **No reemplaza al hueco:** la serie observada no cambia y ninguna suma la lee. Se muestra aparte, rotulada como estimada.
+- **Solo rellena huecos:** una restricción impide que `gap_state` sea `dato`.
+- **Es un dato derivado:** se regenera por rango; `(station_id, obs_date)` es único.
+- Método, parámetros y límites: `docs/datos/estimacion-huecos.md`.
+
 ### `import_logs` — registro de cada carga (auditoría)
 
 Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`audit` si solo se simuló, `commit` si se guardó), estado, filas leídas, aceptadas y rechazadas, motivos de rechazo agrupados (JSON), fecha de corte aplicada y cuándo se hizo. Es la base del **registro de limpieza** que pide la entrega.

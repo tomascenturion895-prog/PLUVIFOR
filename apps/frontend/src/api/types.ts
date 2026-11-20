@@ -226,6 +226,94 @@ export interface FieldReport {
   created_at: string
 }
 
+/** Lectura de un dispositivo. Hoy no hay sensores reales: la categoría siempre es «simulado». */
+export interface SensorReading {
+  id: number
+  device_id: string
+  read_at: string
+  mm: number
+  lat: number | null
+  lon: number | null
+  category: 'simulado'
+  source: string
+  created_at: string
+}
+
+export interface SensorReadingList {
+  items: SensorReading[]
+  total: number
+  notice: string
+}
+
+/** Cómo se calculó un día estimado y con qué vecinas. El objeto `detail` depende del método. */
+export interface GapEstimate {
+  station_id: number
+  obs_date: string
+  mm: number
+  category: 'estimado'
+  /** Cómo era el día original: sin fila o fila sin valor. Sigue siendo un hueco en lo observado. */
+  gap_state: 'sin_fila' | 'fila_sin_valor'
+  method: string
+  detail: {
+    vecinas?: { station_id: number; name: string; distance_km: number; mm: number }[]
+    parametros?: { max_km?: number }
+  }
+  created_at: string
+}
+
+export interface GapEstimateList {
+  category: 'estimado'
+  notice: string
+  items: GapEstimate[]
+  total: number
+  limit: number
+  offset: number
+}
+
+export interface IntenseDay {
+  obs_date: string
+  mm: number
+}
+
+export interface DryStreak {
+  start_date: string
+  end_date: string
+  days: number
+  /** Toca un período con la advertencia de ceros prolongados: puede ser un sensor sin registrar. */
+  zero_run_warning: boolean
+}
+
+export interface EventsStation {
+  station_id: number
+  station_name: string
+  summary: Summary
+  /** Incluye los días de 100 mm o más. */
+  days_50mm_or_more: IntenseDay[]
+  days_100mm_or_more: IntenseDay[]
+  dry_streaks: DryStreak[]
+  longest_dry_streak: DryStreak | null
+  warnings: Warning[]
+}
+
+export interface EventsOut {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  min_dry_days: number
+  stations: EventsStation[]
+  notice: string
+  description: string
+}
+
+export interface ClimateReferenceOut {
+  station_id: number
+  station_name: string
+  category: 'referencia'
+  /** Vacío = no hay normal cargada para esta estación (no es 0). */
+  normals: { period: string; source_note: string; months: { month: number; normal_mm: number }[] }[]
+  notice: string
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {

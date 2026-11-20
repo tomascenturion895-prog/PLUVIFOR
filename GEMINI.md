@@ -11,3 +11,4 @@ Resumen de lo que no se negocia:
 5. Alcance: el núcleo es la lluvia y su calidad. Ríos, riesgo, evacuaciones, atajaderos y otros temas requieren fundamento escrito en el PR (ver `AGENTS.md`).
 6. Stack: API en Go (`apps/api-go`) y procesamiento en Python (`apps/backend`). Los comandos están en `AGENTS.md`.
 7. Nunca se escriben secretos en el código.
+8. Consistencia visual: cero colores hardcodeados (`#fff`, etc.); usar siempre tokens semánticos CSS (`var(--papel)`, `var(--superficie)`, `var(--tinta)`, etc.). Ver `docs/diseno-sistema-visual.md`.

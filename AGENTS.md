@@ -19,6 +19,7 @@ Leyenda obligatoria, siempre visible en la interfaz y en los documentos:
 5. **No se inventa nada:** ni datos, ni coordenadas, ni endpoints, ni dependencias. Si falta algo, se deja vacío, se marca como pendiente y se pregunta.
 6. **Horarios de corte distintos entre redes.** El «día» de lluvia no es igual en todas: red provincial, UPCA y SNIH 07:00–07:00; SMN e INTA convencional 09:00 (12–12 UTC). Al comparar redes, se advierte.
 7. **Seis advertencias de comparabilidad:** horario de corte distinto, observado vs. estimado, cobertura despareja, dato sin validar, racha de ceros de 60 días o más, e inconsistencia con estaciones vecinas.
+8. **Consistencia visual y tokens de diseño.** Nunca hardcodear colores (`#fff`, `#000`, etc.) en fondos de contenedores, tarjetas, campos ni botones. Usar siempre las variables CSS semánticas del sistema (`var(--papel)`, `var(--superficie)`, `var(--superficie-elevada)`, `var(--tinta)`, `var(--texto-suave)`, `var(--borde)`, `var(--accu-orange)`, etc.). Esto garantiza que cualquier cambio de tema funcione automáticamente en todas las pantallas sin romper la visibilidad del texto ni crear campos en blanco. Ver guía completa en `docs/diseno-sistema-visual.md` y la skill `.agents/skills/pluvifor-diseno-visual/SKILL.md`.
 
 ## Alcance
 
@@ -37,7 +38,7 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 
 | Parte | Tecnología |
 |---|---|
-| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Hoy responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Todavía no tiene driver de base de datos (decisión pendiente) |
+| API (consultas) | Go 1.24 en `apps/api-go`, solo biblioteca estándar por ahora. Decisión del 19/11/2026: va en Go por rapidez. Responde `/health` y **reenvía `/api/*` al backend en Python** (`BACKEND_URL`) con el mismo contrato; el contrato está en `apps/api-go/openapi.yaml`. Atiende por sí mismo `/api/stations`, `/api/stations/{id}` y `/api/rainfall` leyendo la base en solo lectura (paridad con Python probada); necesita compilarse con el driver de SQLite, `ncruces/go-sqlite3` (`-tags sqlite`, ver `apps/api-go/README.md`) |
 | Procesamiento (datos, importación, IA) | Python 3.12, FastAPI, Pydantic, SQLAlchemy 2.0, Alembic, SQLite (PostgreSQL/PostGIS por `DATABASE_URL`), pytest, ruff, en `apps/backend`. Hoy responde **todas** las rutas `/api/*` reales |
 | Frontend | React 19 + TypeScript + Vite, React Router, Recharts, Leaflet, Vitest + Testing Library, Oxlint + Prettier |
 | Capas geográficas | GeoJSON del IGN dentro del repositorio |
@@ -46,7 +47,7 @@ Según lo informado al equipo el 18/11/2026, se puede abarcar más y no importa 
 ## Estructura
 
 ```
-apps/api-go/      API en Go (esqueleto: /health, errores, contrato OpenAPI)
+apps/api-go/      API en Go (consultas de estaciones y lluvia, reenvío a Python, contrato OpenAPI)
 apps/backend/     Procesamiento y API de datos (FastAPI)
 apps/frontend/    Interfaz web (React + Vite)
 docs/             Documentación, datos y QA
@@ -88,7 +89,8 @@ npm run build
 - **Go** (`apps/api-go`): puerta de entrada de las consultas. Mismo formato de errores `{"error": {"code", "message"}}` y mismas reglas que Python; el contrato es `openapi.yaml`.
 - **Python** (`apps/backend`): reglas de calidad, importación, procesamiento y predicción con IA. Mientras Go no implemente una ruta, esa ruta responde desde Python.
 - Las reglas de integridad del dato valen igual en las dos partes. Las dos leen la misma base (`DATABASE_URL`).
-- Nada de dependencias nuevas sin acordarlo, tampoco en Go: el driver de base de datos está pendiente de decisión.
+- Nada de dependencias nuevas sin acordarlo, tampoco en Go. Driver de SQLite propuesto el 19/11 (`github.com/ncruces/go-sqlite3`), aislado en `internal/sqlstore/driver_sqlite.go`: queda aceptado al mergear el PR que lo suma.
+- Reparto de trabajo (decisión del 19/11): Python procesa e importa y es el único que escribe en la base; Go atiende las consultas, en solo lectura. Las rutas de consulta se portan a Go de a una, con prueba de paridad contra Python.
 
 ## Cómo trabajar
 

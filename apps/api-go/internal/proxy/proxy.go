@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/apierror"
+	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/secheaders"
 )
 
 // MaxBodyBytes limita el cuerpo de un pedido (el backend limita la importación a 5 MiB).
@@ -52,8 +53,7 @@ func New(target *url.URL, logger *slog.Logger) http.Handler {
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Los encabezados de seguridad del backend pasan sin duplicarse.
-		w.Header().Del("X-Content-Type-Options")
-		w.Header().Del("Cache-Control")
+		secheaders.Strip(w.Header())
 		r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
 		rp.ServeHTTP(w, r)
 	})

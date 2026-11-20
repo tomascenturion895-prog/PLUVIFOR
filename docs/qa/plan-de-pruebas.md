@@ -52,7 +52,8 @@ Cada criterio se responde con **sí o no**. «Auto» quiere decir que ya lo cubr
 | 3.7 | Pedir estación y zona a la vez, o zona sin estaciones, da error claro. | Auto: `test_accumulated_api.py` |
 | 3.8 | Cada respuesta con datos trae su fuente y su categoría. | Auto: `test_stations_api.py`, `test_rainfall_api.py` |
 | 3.9 | `GET /health` responde ok. | Auto: `test_health.py` |
-| 3.10 | `GET /api/rainfall/compare` (comparar estaciones): **falta**; es la tarea SCRUM-36, en curso. Sus criterios se agregan cuando se entregue. | Falta prueba |
+| 3.10 | `GET /api/rainfall/compare`: devuelve las series alineadas, un hueco queda `null` con su estado (nunca 0) y avisa horario de corte distinto y cobertura despareja. | Auto: `test_rainfall_api.py` |
+| 3.11 | `GET /api/rainfall/compare` rechaza sin estaciones, estación inexistente (404), rango invertido, fecha posterior al corte e identificador no numérico. | Auto: `test_rainfall_api.py`, `test_entradas_invalidas.py` |
 
 ## 4. Mapa provincial
 
@@ -67,14 +68,15 @@ La pantalla todavía no está implementada (SCRUM-50). Criterios previstos:
 
 ## 5. Comparador
 
-La pantalla todavía no está implementada (SCRUM-51). Criterios previstos:
+La pantalla se entregó en SCRUM-51.
 
 | # | Criterio | Cómo |
 |---|---|---|
-| 5.1 | ★ Un día sin dato en una de las estaciones no se cuenta como 0 en la comparación. | Manual |
-| 5.2 | Al comparar redes con horario de corte distinto aparece esa advertencia. | Manual |
+| 5.1 | ★ Un día sin dato en una de las estaciones no se cuenta como 0 en la comparación. | Auto: `Compare.test.tsx` |
+| 5.2 | Al comparar redes con horario de corte distinto aparece esa advertencia. | Auto: `test_rainfall_api.py` (la API); la pantalla la muestra con las mismas insignias de `Insignias.test.tsx` |
 | 5.3 | Observado, referencia y estimado se muestran en series separadas. | Manual |
-| 5.4 | Elegir menos de dos estaciones muestra un mensaje claro, no una pantalla vacía. | Manual |
+| 5.4 | Elegir menos de dos estaciones muestra un mensaje claro, no una pantalla vacía. | Auto: `Compare.test.tsx` |
+| 5.5 | ★ Una estación sin ningún dato muestra «sin dato», no 0 mm, y el acumulado no suma estaciones entre sí. | Auto: `Compare.test.tsx` |
 
 ## 6. Parte pluvial
 
@@ -119,9 +121,30 @@ La pantalla todavía no está implementada (SCRUM-51). Criterios previstos:
 | 9.4 | Se puede recorrer cada pantalla solo con el teclado. | Manual |
 | 9.5 | Se ve bien en un teléfono (SCRUM-71). | Manual, en equipos reales |
 
+## 10. Salud de la red y reportes de campo
+
+| # | Criterio | Cómo |
+|---|---|---|
+| 10.1 | ★ Una estación que informó 0 mm no se confunde con una en silencio: son estados distintos. | Auto: `test_network_health.py`, `NetworkHealth.test.tsx` |
+| 10.2 | El umbral de silencio se puede cambiar por consulta y uno inválido responde 422. | Auto: `test_network_health.py` |
+| 10.3 | Un reporte de campo entra como observado, sin validar, con su fuente; sin ubicación queda «pendiente», no se inventa. | Auto: `test_field_reports.py`, `FieldReport.test.tsx` |
+| 10.4 | ★ Un reporte con 0 mm es un dato válido y no una lectura de estación. | Auto: `test_field_reports.py` |
+| 10.5 | Entradas inválidas (fecha posterior al corte, mm fuera de rango, NaN, texto de inyección) se rechazan o se guardan como texto. | Auto: `test_field_reports.py` |
+| 10.6 | Sin la clave de administración responde 401. | Auto: `test_field_reports.py`, `test_admin_key.py` |
+
+## 11. API en Go (paridad con Python)
+
+| # | Criterio | Cómo |
+|---|---|---|
+| 11.1 | Las rutas de Go devuelven el mismo JSON y el mismo código HTTP que Python para 47 consultas con los mismos datos. | Auto: `apps/api-go/internal/httpapi/parity_test.go` (CI, job «API en Go») |
+| 11.2 | ★ En Go, un hueco es `mm: null` y el acumulado sin datos es `null`; romperlo hace fallar la paridad. | Auto: `parity_test.go`, `rainfall_test.go` |
+| 11.3 | 404 y 422 en el formato único, sin repetir el valor que mandó quien consulta; un fallo de la base es 500 sin detalles internos. | Auto: `routes_test.go` |
+| 11.4 | Las rutas de Go no tienen base real todavía: hoy las responde Python por el reenvío (SCRUM-87). | Documentado en `docs/decisiones/2026-11-19-puerta-go.md` |
+
 ## Cómo se corre
 
 ```
+cd apps/api-go   && gofmt -l . && go vet ./... && go test ./...
 cd apps/backend  && pytest && ruff check . && ruff format --check .
 cd apps/frontend && npm test && npm run lint && npm run format:check && npm run build
 ```
@@ -129,5 +152,5 @@ cd apps/frontend && npm test && npm run lint && npm run format:check && npm run 
 ## Qué falta
 
 - **Aprobación del equipo.** Este plan es un borrador. Cada integrante debería revisar los módulos que le tocan y responder si los criterios son claros y verificables.
-- Criterios de la comparación de estaciones (SCRUM-36), el mapa (SCRUM-50) y el comparador (SCRUM-51), cuando esas tareas se entreguen.
-- Verificar que las pruebas nombradas cubren de verdad cada criterio. Las referencias a archivos de prueba son por tema; no se revisó prueba por prueba. Si alguna no lo cubre, el criterio pasa a «Falta prueba».
+- Criterios del mapa (sección 4): siguen en «Manual».
+- Las referencias a archivos de prueba son por tema; no se revisó prueba por prueba. Lo que sí se comprueba solo, en cada corrida, es que cada archivo nombrado exista (`apps/backend/tests/test_plan_de_pruebas.py`). Si alguna prueba no cubre su criterio, el criterio pasa a «Falta prueba».

@@ -5,9 +5,12 @@ info:
   description: |
     Contrato de la API. **PROTOTIPO · AI LAB Misión: Código Formosa · no es una herramienta oficial.**
 
-    - Hoy la API en Go implementa solo `GET /health`. Las rutas de estaciones y lluvia están
-      descritas como **referencia**: ya existen en la API de Python (`apps/backend`), que es la que
-      responde hoy, y el contrato de Go tiene que dar lo mismo.
+    - La API en Go implementa `GET /health`. Las rutas de estaciones y de la serie diaria
+      (`/api/stations`, `/api/stations/{station_id}`, `/api/rainfall`) **ya están escritas y probadas
+      en Go** (`x-implemented-in: go`), con las mismas respuestas que Python para los mismos datos
+      (pruebas de paridad en `testdata/parity`). Las atiende Go leyendo la base en solo lectura cuando
+      se compila con el driver de SQLite; sin driver, las reenvía a Python con el mismo contrato.
+    - Las demás rutas de `/api` (comparador, acumulados, informes, importación, lecturas de sensores simuladas) siguen en Python.
     - Un hueco no es 0 mm: en la serie, un día sin dato lleva `state` = `sin_fila` o `fila_sin_valor`
       y `mm` = `null`, nunca 0.
     - Observado, referencia y estimado van separados (`category`) y nunca se suman.
@@ -32,7 +35,7 @@ paths:
   /api/stations:
     get:
       summary: Catálogo de estaciones
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: source, in: query, schema: { type: string, maxLength: 64 }, description: Código de la fuente }
         - { name: network, in: query, schema: { type: string, maxLength: 100 } }
@@ -52,7 +55,7 @@ paths:
   /api/stations/{station_id}:
     get:
       summary: Ficha de una estación
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: station_id, in: path, required: true, schema: { $ref: '#/components/schemas/Id' } }
       responses:
@@ -63,10 +66,73 @@ paths:
               schema: { $ref: '#/components/schemas/Station' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/events:
+    get:
+      summary: Días de lluvia intensa (50 y 100 mm) y rachas secas, de forma descriptiva (SCRUM-63)
+      description: |
+        Cuenta lo que pasó; no predice ni es una alerta de riesgo. Se indica `station_id` o `zone`,
+        pero no los dos. `days_50mm_or_more` incluye los días de 100 mm o más, que figuran también
+        en `days_100mm_or_more`. **Un día sin dato no es un día seco:** corta la racha seca y no la
+        extiende. Una racha que toca la advertencia de ceros prolongados viene con
+        `zero_run_warning: true` y no se da por buena. `min_dry_days` (valor provisional, 7) solo
+        filtra la lista; `longest_dry_streak` se informa siempre. Implementada solo en Go: sin el
+        driver de SQLite responde 404 por el reenvío a Python.
+      x-implemented-in: go
+      parameters:
+        - { name: station_id, in: query, schema: { $ref: '#/components/schemas/Id' } }
+        - { name: zone, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+        - { name: category, in: query, schema: { type: string, enum: [observado, referencia, estimado], default: observado } }
+        - { name: min_dry_days, in: query, schema: { type: integer, minimum: 1, maximum: 3660, default: 7 } }
+      responses:
+        '200':
+          description: Una entrada por estación analizada (hasta 100 si se pide por zona).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [category, date_from, date_to, data_cutoff_date, clipped_to_cutoff, min_dry_days, stations, notice, description]
+                properties:
+                  category: { type: string }
+                  date_from: { type: string, format: date }
+                  date_to: { type: string, format: date }
+                  data_cutoff_date: { type: string, format: date }
+                  clipped_to_cutoff: { type: boolean }
+                  min_dry_days: { type: integer }
+                  notice: { type: string }
+                  description: { type: string }
+                  stations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        station_id: { type: integer }
+                        station_name: { type: string }
+                        summary: { type: object }
+                        days_50mm_or_more:
+                          type: array
+                          items: { type: object, properties: { obs_date: { type: string, format: date }, mm: { type: number } } }
+                        days_100mm_or_more:
+                          type: array
+                          items: { type: object, properties: { obs_date: { type: string, format: date }, mm: { type: number } } }
+                        dry_streaks:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              start_date: { type: string, format: date }
+                              end_date: { type: string, format: date }
+                              days: { type: integer }
+                              zero_run_warning: { type: boolean }
+                        longest_dry_streak: { type: object, nullable: true }
+                        warnings: { type: array, items: { type: object } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/rainfall:
     get:
       summary: Serie diaria de una estación con cobertura y advertencias
-      x-implemented-in: python
+      x-implemented-in: go
       parameters:
         - { name: station_id, in: query, required: true, schema: { $ref: '#/components/schemas/Id' } }
         - { name: from, in: query, required: true, schema: { type: string, format: date } }
@@ -92,6 +158,104 @@ paths:
               schema: { type: object }
         '401': { $ref: '#/components/responses/Invalid' }
         '422': { $ref: '#/components/responses/Invalid' }
+  /api/sensor-readings:
+    post:
+      summary: Un dispositivo envía una lectura (hoy entra siempre como simulada)
+      description: |
+        Contrato de ingesta para sensores (SCRUM-94). **No hay sensores reales:** toda lectura se guarda
+        con la categoría `simulado`, que no se puede elegir desde el cuerpo, y nunca se suma a las series
+        de las estaciones. `read_at` lleva zona horaria; no se acepta una lectura posterior al corte.
+        `mm` es obligatorio: una lectura que no llegó no se envía (no se manda ni 0 ni vacío).
+        Reenviar la misma lectura (mismo `device_id` y misma hora) no la duplica; con otro valor, es un conflicto.
+        Python es el único que escribe en la base: Go reenvía este pedido con su encabezado de clave.
+      x-implemented-in: python
+      security:
+        - deviceKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SensorReadingIn' }
+      responses:
+        '201':
+          description: La lectura quedó guardada como simulada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SensorReading' }
+        '200':
+          description: La lectura ya estaba cargada con el mismo valor; no se duplica.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SensorReading' }
+        '401': { $ref: '#/components/responses/Invalid' }
+        '403': { $ref: '#/components/responses/Invalid' }
+        '409': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
+    get:
+      summary: Últimas lecturas de sensores, rotuladas como simuladas
+      x-implemented-in: python
+      parameters:
+        - { name: device_id, in: query, schema: { type: string, maxLength: 64 } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200':
+          description: Lecturas más nuevas primero, con el aviso de que son simuladas.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, notice]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/SensorReading' } }
+                  total: { type: integer }
+                  notice: { type: string }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /api/estimates:
+    get:
+      summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado
+      description: |
+        Cada ítem rellena un día que en la serie observada sigue siendo `sin_fila` o `fila_sin_valor`:
+        la estimación no cambia ese estado ni entra en ningún acumulado. La categoría es siempre
+        `estimado`. `method` y `detail` dicen cómo se calculó y con qué estaciones vecinas.
+        Solo se usan vecinas con coordenadas verificadas, del mismo tipo y con el mismo corte del día.
+        Los parámetros del método son una propuesta, todavía sin validar.
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 200 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200':
+          description: Estimaciones por fecha, con el aviso de que no son datos medidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [category, notice, items, total, limit, offset]
+                properties:
+                  category: { type: string, enum: [estimado] }
+                  notice: { type: string }
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [station_id, obs_date, mm, category, gap_state, method, detail, created_at]
+                      properties:
+                        station_id: { type: integer }
+                        obs_date: { type: string, format: date }
+                        mm: { type: number, minimum: 0 }
+                        category: { type: string, enum: [estimado] }
+                        gap_state: { type: string, enum: [sin_fila, fila_sin_valor] }
+                        method: { type: string, example: vecinas_idw_v1 }
+                        detail: { type: object }
+                        created_at: { type: string, format: date-time }
+                  total: { type: integer }
+                  limit: { type: integer }
+                  offset: { type: integer }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/network/health:
     get:
       summary: Salud de la red, estaciones activas, en silencio y sin datos
@@ -106,6 +270,12 @@ paths:
               schema: { type: object }
         '422': { $ref: '#/components/responses/Invalid' }
 components:
+  securitySchemes:
+    deviceKey:
+      type: apiKey
+      in: header
+      name: X-Device-Key
+      description: Clave de los dispositivos, tomada de la variable de entorno DEVICE_API_KEY. Sin ella la ingesta queda cerrada.
   responses:
     NotFound:
       description: No existe lo que se pidió.
@@ -118,6 +288,29 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    SensorCategory: { type: string, enum: [simulado], description: Hoy no hay hardware real; no se acepta otra categoría. }
+    SensorReadingIn:
+      type: object
+      additionalProperties: false
+      required: [device_id, read_at, mm]
+      properties:
+        device_id: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$' }
+        read_at: { type: string, format: date-time, description: Con zona horaria (por ejemplo 2026-10-20T07:00:00-03:00) y no posterior al corte. }
+        mm: { type: number, minimum: 0, maximum: 1000, description: Milímetros medidos por el dispositivo; un 0 es una medición, un dato que falta no se envía. }
+        lat: { type: number, minimum: -90, maximum: 90, description: Solo junto con lon. Si no se informa, queda sin ubicación. }
+        lon: { type: number, minimum: -180, maximum: 180 }
+    SensorReading:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        device_id: { type: string }
+        read_at: { type: string, format: date-time, description: Siempre en UTC. }
+        mm: { type: number }
+        lat: { type: number, nullable: true }
+        lon: { type: number, nullable: true }
+        category: { $ref: '#/components/schemas/SensorCategory' }
+        source: { type: string, example: sensor_simulado }
+        created_at: { type: string, format: date-time }
     Id: { type: integer, minimum: 1, maximum: 2147483647 }
     Category: { type: string, enum: [observado, referencia, estimado] }
     CoordsStatus: { type: string, enum: [verificada, pendiente] }
