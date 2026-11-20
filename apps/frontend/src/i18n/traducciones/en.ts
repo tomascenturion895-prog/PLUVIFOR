@@ -144,4 +144,50 @@ export const en: Diccionario = {
   'ayuda.otras.corte': 'Data goes up to 31/10/2026; later days are not used.',
   'ayuda.otras.acumulados':
     'Accumulations from different stations are not added together: each station has its own.',
+
+  // Common screen labels
+  'comun.desde': 'From',
+  'comun.hasta': 'To',
+  'comun.estacion': 'Station',
+  'comun.estaciones': 'Stations',
+  'comun.elegirEstacion': 'Choose a station',
+  'comun.fecha': 'Date',
+  'comun.lluvia': 'Rainfall',
+  'comun.estado': 'Status',
+  'comun.zona': 'Zone',
+  'comun.fuente': 'Source',
+  'comun.acumulado': 'Accumulated',
+  'comun.cobertura': 'Coverage',
+  'comun.sinDato': 'No data',
+  'comun.sinEstaciones': 'No stations loaded.',
+  'comun.de': 'of',
+
+  // Station
+  'estacion.acumuladoPeriodo': 'Period accumulation',
+  'estacion.diasConDato': 'Days with data',
+  'estacion.sinDatoSinFila': 'No data (missing row)',
+  'estacion.filaSinValor': 'Row without value',
+  'estacion.advertenciasCalidad': 'Quality warnings',
+  'estacion.verTablaDias': 'View daily table',
+
+  // Network health
+  'salud.intro':
+    'Which stations are still reporting and which stopped. A silent station does not have "0 mm": it has no data.',
+  'salud.resumenAria': 'Network summary',
+  'salud.activas': 'active',
+  'salud.enSilencio': 'silent',
+  'salud.sinDatos': 'no data',
+  'salud.tablaCaption': 'Status of each station',
+  'salud.ultimaLectura': 'Last reading',
+  'salud.sinLecturas': 'No readings',
+
+  // Rainfall bulletin
+  'parte.intro':
+    'Choose stations and period. The bulletin states the source, category, cutoff date, and quality warnings. A day without data never counts as 0 mm.',
+  'parte.generar': 'Generate bulletin',
+  'parte.armando': 'Building bulletin…',
+  'parte.copiar': 'Copy text',
+  'parte.imprimir': 'Print',
+  'parte.copiado': 'Text copied. Ready to paste.',
+  'parte.copiaError': 'Could not copy automatically: select the bulletin text and copy it.',
 }

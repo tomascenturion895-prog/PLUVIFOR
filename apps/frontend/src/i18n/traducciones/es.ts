@@ -75,7 +75,7 @@ export const es = {
     'Calculado, no medido. Nunca se suma ni se promedia con lo observado.',
   'insignia.categoria.simulado': 'Simulado',
   'insignia.categoria.simulado.desc':
-    'Escenario sintético para pruebas. Nunca se mezcla con datos observados.',
+    'Lectura inventada por un simulador, no de un sensor real. Nunca se suma a lo observado.',
 
   // Advertencias de comparabilidad
   'adv.horario_corte_distinto': 'Horario de corte distinto',
@@ -143,6 +143,52 @@ export const es = {
   'ayuda.otras.corte': 'Los datos llegan hasta el 31/10/2026; no se usan días posteriores.',
   'ayuda.otras.acumulados':
     'Los acumulados de estaciones distintas no se suman: cada estación tiene el suyo.',
+
+  // Comunes de pantallas (formularios, tablas, resúmenes)
+  'comun.desde': 'Desde',
+  'comun.hasta': 'Hasta',
+  'comun.estacion': 'Estación',
+  'comun.estaciones': 'Estaciones',
+  'comun.elegirEstacion': 'Elegí una estación',
+  'comun.fecha': 'Fecha',
+  'comun.lluvia': 'Lluvia',
+  'comun.estado': 'Estado',
+  'comun.zona': 'Zona',
+  'comun.fuente': 'Fuente',
+  'comun.acumulado': 'Acumulado',
+  'comun.cobertura': 'Cobertura',
+  'comun.sinDato': 'Sin dato',
+  'comun.sinEstaciones': 'No hay estaciones cargadas.',
+  'comun.de': 'de',
+
+  // Estación
+  'estacion.acumuladoPeriodo': 'Acumulado del período',
+  'estacion.diasConDato': 'Días con dato',
+  'estacion.sinDatoSinFila': 'Sin dato (sin fila)',
+  'estacion.filaSinValor': 'Fila sin valor',
+  'estacion.advertenciasCalidad': 'Advertencias de calidad',
+  'estacion.verTablaDias': 'Ver tabla de días',
+
+  // Salud de la red
+  'salud.intro':
+    'Qué estaciones siguen reportando y cuáles dejaron de hacerlo. Una estación en silencio no tiene «0 mm»: tiene sin dato.',
+  'salud.resumenAria': 'Resumen de la red',
+  'salud.activas': 'activas',
+  'salud.enSilencio': 'en silencio',
+  'salud.sinDatos': 'sin datos',
+  'salud.tablaCaption': 'Estado de cada estación',
+  'salud.ultimaLectura': 'Última lectura',
+  'salud.sinLecturas': 'Sin lecturas',
+
+  // Parte pluvial
+  'parte.intro':
+    'Elegí las estaciones y el período. El parte indica la fuente, la categoría, la fecha de corte y las advertencias de calidad. Un día sin dato no cuenta como 0 mm.',
+  'parte.generar': 'Generar parte',
+  'parte.armando': 'Armando el parte…',
+  'parte.copiar': 'Copiar texto',
+  'parte.imprimir': 'Imprimir',
+  'parte.copiado': 'Texto copiado. Ya lo podés pegar.',
+  'parte.copiaError': 'No se pudo copiar automáticamente: seleccioná el texto del parte y copialo.',
 } as const
 
 export type ClaveTraduccion = keyof typeof es

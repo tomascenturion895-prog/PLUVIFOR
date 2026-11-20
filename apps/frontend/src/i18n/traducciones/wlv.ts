@@ -127,4 +127,50 @@ export const wlv: Diccionario = {
   'ayuda.otras.silencio.fin': ' dejó de reportar: se ve apagada y nunca como 0 mm.',
   'ayuda.otras.corte': 'Los datos llegan hasta el 31/10/2026.',
   'ayuda.otras.acumulados': 'Los acumulados de estaciones distintas no se suman.',
+
+  // Comunes
+  'comun.desde': 'Desde',
+  'comun.hasta': 'Hasta',
+  'comun.estacion': 'Estación',
+  'comun.estaciones': 'Estaciones',
+  'comun.elegirEstacion': 'Eiporavo estación (Elegí una estación)',
+  'comun.fecha': 'Fwala (Fecha)',
+  'comun.lluvia': "Iw'o (Lluvia)",
+  'comun.estado': 'Estado',
+  'comun.zona': 'Honhat (Zona)',
+  'comun.fuente': 'Fuente',
+  'comun.acumulado': "Iw'o total",
+  'comun.cobertura': 'Cobertura',
+  'comun.sinDato': 'Ka dato-a',
+  'comun.sinEstaciones': 'Ka estaciones-a.',
+  'comun.de': 'de',
+
+  // Estación
+  'estacion.acumuladoPeriodo': "Iw'o del período",
+  'estacion.diasConDato': 'Fwala con dato',
+  'estacion.sinDatoSinFila': 'Ka dato-a (sin fila)',
+  'estacion.filaSinValor': 'Ka valor-a',
+  'estacion.advertenciasCalidad': 'Advertencias de calidad',
+  'estacion.verTablaDias': 'Wen tabla de días',
+
+  // Salud de la red
+  'salud.intro':
+    'Estaciones que reportan y las que están en silencio. En silencio no es «0 mm»: es ka dato-a.',
+  'salud.resumenAria': 'Resumen de la red',
+  'salud.activas': 'activas',
+  'salud.enSilencio': 'en silencio',
+  'salud.sinDatos': 'ka dato-a',
+  'salud.tablaCaption': 'Estado de cada estación',
+  'salud.ultimaLectura': 'Última lectura',
+  'salud.sinLecturas': 'Ka lecturas-a',
+
+  // Parte pluvial
+  'parte.intro':
+    'Elegí estaciones y período. El parte indica fuente, categoría, fecha de corte y advertencias. Ka dato-a no es 0 mm.',
+  'parte.generar': 'Generar parte',
+  'parte.armando': 'T’aylhi parte…',
+  'parte.copiar': 'Copiar texto',
+  'parte.imprimir': 'Imprimir',
+  'parte.copiado': 'Texto copiado.',
+  'parte.copiaError': 'No se pudo copiar automáticamente: seleccioná el texto y copialo.',
 }

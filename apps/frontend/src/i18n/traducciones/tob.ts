@@ -130,4 +130,50 @@ export const tob: Diccionario = {
   'ayuda.otras.silencio.fin': ' dejó de reportar: se ve apagada y nunca como 0 mm.',
   'ayuda.otras.corte': 'Los datos llegan hasta el 31/10/2026.',
   'ayuda.otras.acumulados': 'Los acumulados de estaciones distintas no se suman.',
+
+  // Comunes
+  'comun.desde': 'Desde',
+  'comun.hasta': 'Hasta',
+  'comun.estacion': 'Estación',
+  'comun.estaciones': 'Estaciones',
+  'comun.elegirEstacion': 'Elegí una estación',
+  'comun.fecha': "Na'aq (Fecha)",
+  'comun.lluvia': 'Awot (Lluvia)',
+  'comun.estado': 'Estado',
+  'comun.zona': 'Alhua (Zona)',
+  'comun.fuente': 'Fuente',
+  'comun.acumulado': 'Awot acumulado',
+  'comun.cobertura': 'Cobertura',
+  'comun.sinDato': 'Sqa dato',
+  'comun.sinEstaciones': 'Sqa estaciones.',
+  'comun.de': 'de',
+
+  // Estación
+  'estacion.acumuladoPeriodo': 'Awot del período',
+  'estacion.diasConDato': "Na'aq con dato",
+  'estacion.sinDatoSinFila': 'Sqa dato (sin fila)',
+  'estacion.filaSinValor': 'Fila sin valor',
+  'estacion.advertenciasCalidad': 'Advertencias de calidad',
+  'estacion.verTablaDias': 'Ver tabla de días',
+
+  // Salud de la red
+  'salud.intro':
+    'Qué estaciones siguen reportando y cuáles están en silencio. En silencio no es «0 mm»: es sqa dato.',
+  'salud.resumenAria': 'Resumen de la red',
+  'salud.activas': 'activas',
+  'salud.enSilencio': 'en silencio',
+  'salud.sinDatos': 'sqa dato',
+  'salud.tablaCaption': 'Estado de cada estación',
+  'salud.ultimaLectura': 'Última lectura',
+  'salud.sinLecturas': 'Sqa lecturas',
+
+  // Parte pluvial
+  'parte.intro':
+    'Elegí estaciones y período. El parte indica fuente, categoría, fecha de corte y advertencias. Sqa dato no es 0 mm.',
+  'parte.generar': 'Generar parte',
+  'parte.armando': 'Armando parte…',
+  'parte.copiar': 'Copiar texto',
+  'parte.imprimir': 'Imprimir',
+  'parte.copiado': 'Texto copiado.',
+  'parte.copiaError': 'No se pudo copiar automáticamente: seleccioná el texto y copialo.',
 }

@@ -10,6 +10,7 @@ import EstimacionesHuecos from '../components/EstimacionesHuecos'
 import SerieDiaria from '../components/SerieDiaria'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 
 function restarDias(fecha: string, dias: number): string {
   const d = new Date(`${fecha}T00:00:00Z`)
@@ -20,29 +21,30 @@ function restarDias(fecha: string, dias: number): string {
 const DESDE_INICIAL = restarDias(FECHA_CORTE, 89)
 
 export function Resumen({ serie }: { serie: Series }) {
+  const { t } = useIdioma()
   const { summary } = serie
   return (
     <dl className="resumen">
       <div>
-        <dt>Acumulado del período</dt>
+        <dt>{t('estacion.acumuladoPeriodo')}</dt>
         <dd>{textoMm(summary.accumulated_mm)}</dd>
       </div>
       <div>
-        <dt>Días con dato</dt>
+        <dt>{t('estacion.diasConDato')}</dt>
         <dd>
-          {summary.days_with_data} de {summary.days_in_period}
+          {summary.days_with_data} {t('comun.de')} {summary.days_in_period}
         </dd>
       </div>
       <div>
-        <dt>Sin dato (sin fila)</dt>
+        <dt>{t('estacion.sinDatoSinFila')}</dt>
         <dd>{summary.days_sin_fila}</dd>
       </div>
       <div>
-        <dt>Fila sin valor</dt>
+        <dt>{t('estacion.filaSinValor')}</dt>
         <dd>{summary.days_fila_sin_valor}</dd>
       </div>
       <div>
-        <dt>Cobertura</dt>
+        <dt>{t('comun.cobertura')}</dt>
         <dd>{Math.round(summary.coverage * 100)} %</dd>
       </div>
     </dl>
@@ -50,13 +52,14 @@ export function Resumen({ serie }: { serie: Series }) {
 }
 
 function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: string }) {
+  const { t } = useIdioma()
   return (
     <>
       <h3>{serie.station_name}</h3>
       <p className="metadatos">
         <InsigniaCategoria categoria={serie.category} />{' '}
         <span>
-          Fuente: {serie.source.name} ({serie.source.network})
+          {t('comun.fuente')}: {serie.source.name} ({serie.source.network})
         </span>
       </p>
       {serie.clipped_to_cutoff && (
@@ -67,7 +70,7 @@ function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: s
       <Resumen serie={serie} />
       {serie.warnings.length > 0 && (
         <section aria-labelledby="advertencias">
-          <h4 id="advertencias">Advertencias de calidad</h4>
+          <h4 id="advertencias">{t('estacion.advertenciasCalidad')}</h4>
           <ul className="advertencias">
             {serie.warnings.map((w) => (
               <li key={`${w.code}-${w.start_date ?? ''}`}>
@@ -80,13 +83,13 @@ function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: s
       )}
       <SerieDiaria days={serie.days} />
       <details>
-        <summary>Ver tabla de días</summary>
+        <summary>{t('estacion.verTablaDias')}</summary>
         <table className="tabla-dias">
           <thead>
             <tr>
-              <th scope="col">Fecha</th>
-              <th scope="col">Lluvia</th>
-              <th scope="col">Estado</th>
+              <th scope="col">{t('comun.fecha')}</th>
+              <th scope="col">{t('comun.lluvia')}</th>
+              <th scope="col">{t('comun.estado')}</th>
             </tr>
           </thead>
           <tbody>
@@ -109,6 +112,7 @@ function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: s
 }
 
 export default function Estacion() {
+  const { t } = useIdioma()
   const { id } = useParams()
   const navigate = useNavigate()
   const stationId = id !== undefined && /^\d+$/.test(id) ? Number(id) : null
@@ -127,16 +131,16 @@ export default function Estacion() {
 
   return (
     <section>
-      <h2>Estación</h2>
+      <h2>{t('nav.estacion')}</h2>
       <form className="filtros" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Estación
+          {t('comun.estacion')}
           <select
             value={stationId ?? ''}
             onChange={(e) => navigate(e.target.value ? `/estacion/${e.target.value}` : '/estacion')}
             disabled={estaciones.estado.tipo !== 'listo'}
           >
-            <option value="">Elegí una estación</option>
+            <option value="">{t('comun.elegirEstacion')}</option>
             {estaciones.estado.tipo === 'listo' &&
               estaciones.estado.datos.items.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -146,7 +150,7 @@ export default function Estacion() {
           </select>
         </label>
         <label>
-          Desde
+          {t('comun.desde')}
           <input
             type="date"
             value={desde}
@@ -155,7 +159,7 @@ export default function Estacion() {
           />
         </label>
         <label>
-          Hasta
+          {t('comun.hasta')}
           <input
             type="date"
             value={hasta}

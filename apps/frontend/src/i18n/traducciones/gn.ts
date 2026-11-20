@@ -134,4 +134,50 @@ export const gn: Diccionario = {
   'ayuda.otras.corte': 'Marandu og̃uahẽ 31/10/2026 peve; ndojepurúi ára upéi guare.',
   'ayuda.otras.acumulados':
     'Estación iñambuéva ama oñembyatýva ndoñembojoajúi: peteĩteĩ oguereko imbaʼe.',
+
+  // Ñe'ẽ ojepurúva
+  'comun.desde': 'Guive',
+  'comun.hasta': 'Peve',
+  'comun.estacion': 'Estación',
+  'comun.estaciones': 'Estación-kuéra',
+  'comun.elegirEstacion': 'Eiporavo peteĩ estación',
+  'comun.fecha': 'Ára',
+  'comun.lluvia': 'Ama',
+  'comun.estado': 'Teko',
+  'comun.zona': 'Tenda',
+  'comun.fuente': 'Moõguipa ou',
+  'comun.acumulado': 'Oñembyatýva',
+  'comun.cobertura': 'Ára marandúva',
+  'comun.sinDato': 'Maranduʼỹ',
+  'comun.sinEstaciones': 'Ndaipóri estación oñemoingéva.',
+  'comun.de': 'gui',
+
+  // Estación
+  'estacion.acumuladoPeriodo': 'Ama oñembyatýva',
+  'estacion.diasConDato': 'Ára marandu reheve',
+  'estacion.sinDatoSinFila': 'Maranduʼỹ (tysýiʼỹ)',
+  'estacion.filaSinValor': 'Tysýi papapyʼỹ',
+  'estacion.advertenciasCalidad': 'Ñemomarandu',
+  'estacion.verTablaDias': 'Ehecha ára rysýi',
+
+  // Red rekove
+  'salud.intro':
+    'Mbaʼe estación-pa omondove marandu ha mbaʼépa opyta kirirĩme. Estación kirirĩme ndoguerekói «0 mm»: ndoguerekói marandu.',
+  'salud.resumenAria': 'Red ñemombyky',
+  'salud.activas': 'ombaʼapóva',
+  'salud.enSilencio': 'kirirĩme',
+  'salud.sinDatos': 'maranduʼỹ',
+  'salud.tablaCaption': 'Estación reko',
+  'salud.ultimaLectura': 'Jehecha paha',
+  'salud.sinLecturas': 'Ndaipóri jehecha',
+
+  // Ama kuatia
+  'parte.intro':
+    'Eiporavo estación ha ára. Kuatia heʼi moõguipa ou, mbaʼeichaguápa ha ñemomarandu. Ára maranduʼỹva ndojepapái 0 mm ramo.',
+  'parte.generar': 'Ejapo ama kuatia',
+  'parte.armando': 'Oñembosakoʼi kuatia…',
+  'parte.copiar': 'Embohasa jehaipy',
+  'parte.imprimir': 'Eñohẽ kuatiápe',
+  'parte.copiado': 'Oñembohasa. Ikatúma emboja.',
+  'parte.copiaError': 'Ndaikatúi oñembohasa ijehegui: eiporavo jehaipy ha embohasa.',
 }
