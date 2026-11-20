@@ -245,6 +245,7 @@ export const en: Diccionario = {
 
   // Compare
   'comparador.resultadoAria': 'Comparison result',
+  'comparador.advertenciasAria': 'Comparability warnings',
   'comparador.sinAdvertencias': 'No comparability warnings were detected between these series.',
   'comparador.noEvaluadas': 'Warnings that could not be evaluated',
   'comparador.graficoAria': 'Line chart of the series',

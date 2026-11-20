@@ -235,6 +235,7 @@ export const gn: Diccionario = {
 
   // Mbojoja (Comparador)
   'comparador.resultadoAria': 'Mbojoja apopyre',
+  'comparador.advertenciasAria': 'Ñemomarandu mbojoja rehegua',
   'comparador.sinAdvertencias': 'Ndojejuhúi ñemomarandu koʼã tysýi mbytépe.',
   'comparador.noEvaluadas': 'Ñemomarandu ndaikatúiva ojehecha',
   'comparador.graficoAria': 'Ama rysýi taʼanga',

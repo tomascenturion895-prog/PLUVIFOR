@@ -230,6 +230,7 @@ export const tob: Diccionario = {
 
   // Comparador
   'comparador.resultadoAria': 'Resultado de comparación',
+  'comparador.advertenciasAria': 'Advertencias de comparabilidad',
   'comparador.sinAdvertencias': 'Sqa advertencias entre estas series.',
   'comparador.noEvaluadas': 'Advertencias no evaluadas',
   'comparador.graficoAria': 'Gráfico de líneas',

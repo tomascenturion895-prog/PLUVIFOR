@@ -51,7 +51,7 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
         </span>
       </p>
       {datos.comparability_warnings.length > 0 ? (
-        <ul className="advertencias" aria-label={t('ayuda.advertencias.titulo')}>
+        <ul className="advertencias" aria-label={t('comparador.advertenciasAria')}>
           {datos.comparability_warnings.map((w) => (
             <li key={`${w.code}-${w.start_date ?? ''}`}>
               <InsigniaAdvertencia codigo={w.code} mensaje={w.message} />

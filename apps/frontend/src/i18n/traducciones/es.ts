@@ -245,6 +245,7 @@ export const es = {
 
   // Comparador
   'comparador.resultadoAria': 'Resultado de la comparación',
+  'comparador.advertenciasAria': 'Advertencias de comparabilidad',
   'comparador.sinAdvertencias':
     'No se detectaron advertencias de comparabilidad entre estas series.',
   'comparador.noEvaluadas': 'Advertencias que no se pudieron evaluar',

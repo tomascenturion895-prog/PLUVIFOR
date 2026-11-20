@@ -227,6 +227,7 @@ export const wlv: Diccionario = {
 
   // Comparador
   'comparador.resultadoAria': "Resultado t'ayek",
+  'comparador.advertenciasAria': 'Advertencias de comparabilidad',
   'comparador.sinAdvertencias': 'Ka advertencias-a entre estas series.',
   'comparador.noEvaluadas': 'Advertencias no evaluadas',
   'comparador.graficoAria': 'Gráfico de líneas',
