@@ -87,30 +87,32 @@
   padding: 0 1rem;
   color: var(--tinta);
   font: inherit;
-  background: #fff;
-  border: 1px solid #8fa3a8;
-  border-radius: 0.4rem;
+  background: var(--superficie-elevada);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
   cursor: pointer;
 }
 
 .atajos button:hover,
 .maqueta-layout button:hover,
 .barra-tiempo button:hover {
-  border-color: var(--azul);
-  background: var(--azul-claro);
+  border-color: var(--accu-orange);
+  background: var(--accu-orange-light);
+  color: #fff;
 }
 
 .maqueta-layout select,
 .maqueta-layout input[type='date'] {
   min-height: 44px;
-  padding: 0 0.5rem;
+  padding: 0 0.75rem;
   font: inherit;
-  background: #fff;
-  border: 1px solid #8fa3a8;
-  border-radius: 0.4rem;
+  background: #0f172a;
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
 }
 
 input[type='range'],
 input[type='checkbox'] {
-  accent-color: var(--azul);
+  accent-color: var(--accu-orange);
 }

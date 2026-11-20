@@ -5,30 +5,30 @@
  * observado/referencia/estimado, sin dato rayado).
  */
 :root {
-  /* ---- Color (md.sys.color) ---- */
-  --md-primary: #00677c;
+  /* ---- Color (md.sys.color) alineado con AccuWeather Radar Dark ---- */
+  --md-primary: #f05514;
   --md-on-primary: #ffffff;
-  --md-primary-container: #b1ecff;
-  --md-on-primary-container: #004e5e;
-  --md-secondary: #4b626a;
-  --md-secondary-container: #cee7f0;
-  --md-on-secondary-container: #344a51;
-  --md-error: #ba1a1a;
-  --md-error-container: #ffdad6;
-  --md-on-error-container: #93000a;
-  --md-surface: #f5fafd;
-  --md-surface-container-lowest: #ffffff;
-  --md-surface-container-low: #eff4f7;
-  --md-surface-container: #eaeff1;
-  --md-surface-container-high: #e4e9eb;
-  --md-surface-container-highest: #dee3e6;
-  --md-on-surface: #171c1e;
-  --md-on-surface-variant: #40484b;
-  --md-outline: #70787c;
-  --md-outline-variant: #bfc8cc;
-  --md-inverse-surface: #2c3133;
-  --md-inverse-on-surface: #ecf1f4;
-  --md-inverse-primary: #86d1e9;
+  --md-primary-container: rgba(240, 85, 20, 0.2);
+  --md-on-primary-container: #ff8c53;
+  --md-secondary: #0ea5e9;
+  --md-secondary-container: #1e293b;
+  --md-on-secondary-container: #7dd3fc;
+  --md-error: #f87171;
+  --md-error-container: #450a0a;
+  --md-on-error-container: #fca5a5;
+  --md-surface: #0b1322;
+  --md-surface-container-lowest: #131d2e;
+  --md-surface-container-low: #182235;
+  --md-surface-container: #1e293b;
+  --md-surface-container-high: #243248;
+  --md-surface-container-highest: #334155;
+  --md-on-surface: #f8fafc;
+  --md-on-surface-variant: #94a3b8;
+  --md-outline: #475569;
+  --md-outline-variant: #334155;
+  --md-inverse-surface: #f8fafc;
+  --md-inverse-on-surface: #0b1322;
+  --md-inverse-primary: #f05514;
 
   /* ---- Forma (md.sys.shape.corner) ---- */
   --md-corner-xs: 4px;
@@ -113,19 +113,19 @@ a {
   position: sticky;
   top: 0;
   z-index: 900;
-  color: var(--md-on-surface);
-  background: var(--md-surface-container);
+  color: #ffffff;
+  background: #0f172a;
   box-shadow: var(--md-elev-2);
 }
 
 .encabezado-marca h1 {
   font-size: 1.375rem;
   letter-spacing: 0.02em;
-  color: var(--md-on-surface);
+  color: #ffffff;
 }
 
 .encabezado-marca p {
-  color: var(--md-on-surface-variant);
+  color: #94a3b8;
 }
 
 .marca-logo {
@@ -138,10 +138,18 @@ a {
   font-size: 0.875rem; /* title-small */
   font-weight: 500;
   letter-spacing: 0.007em;
-  color: var(--md-on-surface-variant);
+  color: #cbd5e1;
   border-bottom: 0;
   border-radius: 0;
   transition: background-color var(--md-dur) var(--md-easing);
+}
+
+.encabezado nav a:hover {
+  color: #ffffff;
+}
+
+.encabezado nav a.active {
+  color: #ffffff;
 }
 
 .encabezado nav a::after {
@@ -405,6 +413,7 @@ input[type='radio'] {
 /* ---- Tarjetas ----
    Filled card: superficie contenedora, esquina mediana, sin borde. */
 fieldset,
+.panel,
 .capas,
 .estados-capas,
 .resumen div,
@@ -415,8 +424,9 @@ fieldset,
 .grafico-detalle,
 .destacados,
 .mapa-resumen-departamento,
+.mapa-pendientes,
 .v3d-metodo {
-  background: var(--md-surface-container-low);
+  background: var(--md-surface-container-lowest);
   border: 0;
   border-radius: var(--md-corner-md);
   box-shadow: none;

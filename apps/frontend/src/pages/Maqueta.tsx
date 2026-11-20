@@ -11,7 +11,7 @@ import {
   resumenPorDepartamento,
   ultimosDias,
 } from '../components/maqueta/maqueta-datos'
-import Atajos from '../components/shortcuts/Atajos'
+import Atajos from '../components/shortcuts/Atajos.tsx'
 import { resolverEstaciones, type Atajo } from '../components/shortcuts/atajos'
 import BarraTiempo from '../components/timeline/BarraTiempo'
 import { mesesDelPeriodo, type Mes } from '../components/timeline/timeline-datos'
