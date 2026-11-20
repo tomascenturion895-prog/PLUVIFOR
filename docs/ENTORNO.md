@@ -99,30 +99,47 @@ Cuidados que ya tiene el comando:
 
 ### Usar PostgreSQL en lugar de SQLite (opcional)
 
-La demo corre con SQLite. Cambiar de motor es cambiar `DATABASE_URL`, y se comprobó el 19/11/2026 con PostgreSQL 16:
+La demo corre con SQLite (un archivo, sin instalar nada). Para trabajar con PostgreSQL 16 el repositorio trae un `docker-compose.yml`. El controlador `psycopg` ya está en `requirements.txt`.
 
 ```bash
-# 1. Una base vacía (ejemplo local)
-createdb pluvifor
-# 2. El controlador (no está en requirements.txt: ver «Diferencias»)
-pip install "psycopg[binary]"
-# 3. En .env
-DATABASE_URL=postgresql+psycopg://usuario:clave@localhost:5432/pluvifor
-# 4. Migraciones y datos, igual que con SQLite
+# 1. En tu .env, elegí una clave y poné la URL de PostgreSQL (la clave tiene que coincidir)
+#    POSTGRES_PASSWORD=<una clave larga y al azar>
+#    DATABASE_URL=postgresql+psycopg://pluvifor:<esa misma clave>@localhost:5432/pluvifor
+
+# 2. Levantar la base (necesita Docker Desktop abierto)
+docker compose up -d db
+docker compose ps                    # esperá a que diga «healthy»
+
+# 3. Migraciones y datos, igual que con SQLite (desde apps/backend, con el entorno virtual activo)
+pip install -r requirements.txt
 alembic upgrade head
 python -m app.cli import-stations ../../docs/datos/estaciones_siga_formosa.csv
 python -m app.cli import-rainfall --commit ../../docs/datos/lluvia_diaria_siga_formosa.csv
 python -m app.cli recompute-flags
 ```
 
-**Qué se verificó:** las migraciones corren hasta la última; la importación real (3 estaciones y 7.648 días, 0 rechazos) da lo mismo que en SQLite; la estación 424 sale con acumulado 0,0 mm y la advertencia de racha de ceros, y la 425 con 1.265,0 mm; el parte pluvial responde 200; y 88 pruebas de la API (lluvia, estaciones, parte, calidad, modelos, salud y errores) pasan contra PostgreSQL.
+Para apagarla: `docker compose down` (los datos quedan) o `docker compose down -v` (los borra). La base solo escucha en `127.0.0.1`, no en la red.
 
-**Diferencias y límites:**
+**Correr las pruebas contra PostgreSQL:**
 
-- El controlador `psycopg` **no está en `requirements.txt`**: sumarlo es una dependencia nueva y no se agregó sin acordarlo. Hoy hay que instalarlo a mano.
-- No se encontraron diferencias de comportamiento en lo probado. No hay tipos propios de un motor (enumeraciones como texto con restricciones).
-- **No verificado:** la suite completa no corre contra PostgreSQL de forma automática (las pruebas de importación y de migraciones crean su propia base SQLite), no hay PostGIS y las capas geográficas siguen siendo archivos GeoJSON.
-- Se probó con Python 3.13 y PostgreSQL 16 en una máquina de trabajo, sin concurrencia ni volumen.
+```bash
+docker compose exec db createdb -U pluvifor pluvifor_test      # una sola vez
+# Linux/macOS (Git Bash):
+TEST_DATABASE_URL=postgresql+psycopg://pluvifor:<tu clave>@localhost:5432/pluvifor_test pytest
+# Windows (PowerShell):
+$env:TEST_DATABASE_URL="postgresql+psycopg://pluvifor:<tu clave>@localhost:5432/pluvifor_test"; pytest
+```
+
+Usá siempre una base **aparte** (`pluvifor_test`): las pruebas la vacían. El CI corre las migraciones y la suite contra PostgreSQL 16 en cada Pull Request.
+
+**Qué se verificó (20/11/2026, PostgreSQL 16, Python 3.14):**
+
+- Las 7 migraciones corren hasta la última (`alembic current` → `0007`).
+- La importación real (3 estaciones y 7.648 días, 0 rechazos) da lo mismo que en SQLite.
+- La suite completa del backend pasa con las pruebas que usan el fixture común apuntando a PostgreSQL. El resto de las pruebas (importación, migraciones, avisos y sensores) arma su propia base SQLite y sigue corriendo ahí.
+- Un recorrido completo con los datos reales: lluvia, recurrencia, suscripción a avisos con los tres canales y sensores.
+
+**Límites:** no hay PostGIS (las capas geográficas siguen siendo archivos GeoJSON), la API en Go todavía no lee de PostgreSQL (solo de SQLite; para PostgreSQL reenvía a Python), y no se probó concurrencia ni volumen.
 
 ## 6. API en Go
 

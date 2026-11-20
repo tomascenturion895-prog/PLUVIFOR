@@ -1,3 +1,4 @@
+import os
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -16,15 +17,19 @@ def settings(tmp_path: Path) -> Settings:
         _env_file=None,
         app_env="test",
         cors_origins=["http://localhost:5173"],
-        database_url=f"sqlite:///{tmp_path / 'test.db'}",
+        # TEST_DATABASE_URL permite correr estas pruebas contra PostgreSQL (ver docs/ENTORNO.md).
+        database_url=os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{tmp_path / 'test.db'}",
     )
 
 
 @pytest.fixture
 def app(settings: Settings):
     application = create_app(settings)
+    # En PostgreSQL la base persiste entre pruebas: se parte siempre de tablas vacías.
+    Base.metadata.drop_all(application.state.engine)
     Base.metadata.create_all(application.state.engine)
     yield application
+    Base.metadata.drop_all(application.state.engine)
     application.state.engine.dispose()
 
 
