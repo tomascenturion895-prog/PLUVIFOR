@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import get_field_report_service, require_admin
+from app.api.deps import Actor, get_field_report_service, require_admin
 from app.schemas.field_reports import FieldReportIn, FieldReportList, FieldReportOut
 from app.services.field_reports import FieldReportService
 
@@ -19,9 +19,11 @@ Service = Annotated[FieldReportService, Depends(get_field_report_service)]
     status_code=201,
     summary="Cargar un reporte de lluvia de campo (policial)",
 )
-def create_field_report(data: FieldReportIn, service: Service) -> FieldReportOut:
+def create_field_report(
+    data: FieldReportIn, service: Service, actor: Annotated[Actor, Depends(require_admin)]
+) -> FieldReportOut:
     """Entra como observado y sin validar, con su fuente. Sin ubicación queda pendiente."""
-    return FieldReportOut.model_validate(service.create(data))
+    return FieldReportOut.model_validate(service.create(data, actor.user_id))
 
 
 @router.get("", response_model=FieldReportList, summary="Últimos reportes de campo")

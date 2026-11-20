@@ -226,6 +226,119 @@ export interface FieldReport {
   created_at: string
 }
 
+/** Lectura de un dispositivo. Hoy no hay sensores reales: la categoría siempre es «simulado». */
+export interface SensorReading {
+  id: number
+  device_id: string
+  read_at: string
+  mm: number
+  lat: number | null
+  lon: number | null
+  category: 'simulado'
+  source: string
+  created_at: string
+}
+
+/** Un dispositivo con su última lectura. Hoy todo es simulado. */
+export interface SensorDevice {
+  device_id: string
+  readings: number
+  first_read_at: string
+  last_read_at: string
+  /** Milímetros de la última lectura; puede ser un 0 real («midió y no llovió»). */
+  last_mm: number
+  category: 'simulado'
+  /** Contra la fecha de corte de los datos. Un silencio no es 0 mm: `last_mm` sigue siendo el último valor real. */
+  state: 'activa' | 'en_silencio'
+  last_read_date: string
+  days_since_last: number
+}
+
+export interface SensorDeviceList {
+  items: SensorDevice[]
+  total: number
+  notice: string
+  data_cutoff_date: string
+  silent_after_days: number
+  active: number
+  silent: number
+}
+
+export interface SensorReadingList {
+  items: SensorReading[]
+  total: number
+  notice: string
+}
+
+/** Cómo se calculó un día estimado y con qué vecinas. El objeto `detail` depende del método. */
+export interface GapEstimate {
+  station_id: number
+  obs_date: string
+  mm: number
+  category: 'estimado'
+  /** Cómo era el día original: sin fila o fila sin valor. Sigue siendo un hueco en lo observado. */
+  gap_state: 'sin_fila' | 'fila_sin_valor'
+  method: string
+  detail: {
+    vecinas?: { station_id: number; name: string; distance_km: number; mm: number }[]
+    parametros?: { max_km?: number }
+  }
+  created_at: string
+}
+
+export interface GapEstimateList {
+  category: 'estimado'
+  notice: string
+  items: GapEstimate[]
+  total: number
+  limit: number
+  offset: number
+}
+
+export interface IntenseDay {
+  obs_date: string
+  mm: number
+}
+
+export interface DryStreak {
+  start_date: string
+  end_date: string
+  days: number
+  /** Toca un período con la advertencia de ceros prolongados: puede ser un sensor sin registrar. */
+  zero_run_warning: boolean
+}
+
+export interface EventsStation {
+  station_id: number
+  station_name: string
+  summary: Summary
+  /** Incluye los días de 100 mm o más. */
+  days_50mm_or_more: IntenseDay[]
+  days_100mm_or_more: IntenseDay[]
+  dry_streaks: DryStreak[]
+  longest_dry_streak: DryStreak | null
+  warnings: Warning[]
+}
+
+export interface EventsOut {
+  category: DataCategory
+  date_from: string
+  date_to: string
+  min_dry_days: number
+  stations: EventsStation[]
+  notice: string
+  description: string
+}
+
+export interface ClimateReferenceOut {
+  station_id: number
+  station_name: string
+  category: 'referencia'
+  /** Vacío = no hay normal cargada para esta estación (no es 0). */
+  normals: { period: string; source_note: string; months: { month: number; normal_mm: number }[] }[]
+  notice: string
+}
+
 export type NetworkState = 'activa' | 'en_silencio' | 'sin_datos'
 
 export interface StationHealth {
@@ -251,4 +364,151 @@ export interface NetworkHealth {
   silent: number
   no_data: number
   stations: StationHealth[]
+}
+
+/** Estado de una suscripción a avisos. El canal es simulado: no sale ningún mensaje real. */
+export interface AlertSubscriptionStatus {
+  status: 'pendiente' | 'confirmada' | 'baja'
+  notice: string
+}
+
+/** Mensaje que se enviaría (canal simulado). */
+export interface AlertMessage {
+  id: number
+  subscription_id: number
+  kind: 'codigo' | 'bienvenida' | 'aviso'
+  /** Por dónde saldría. Todos son simulados: no se envía nada real. */
+  channel: 'whatsapp' | 'email' | 'sistema'
+  /** A quién iría, enmascarado: «…3456» o «t****@dominio». */
+  recipient: string | null
+  subject: string | null
+  body: string
+  category: string
+  created_at: string
+}
+
+export interface AlertOutboxList {
+  items: AlertMessage[]
+  total: number
+  notice: string
+}
+
+/** Recurrencia histórica de días de lluvia intensa. Descriptiva: no es una predicción. */
+export interface RecurrenceOut {
+  station_id: number
+  station_name: string
+  category: DataCategory
+  date_from: string
+  date_to: string
+  clipped_to_cutoff: boolean
+  valid_days: number
+  observed_years: number
+  excluded_zero_run_days: number
+  gap_days: number
+  /** false si hay menos de `min_observed_years` de dato válido: no se informa ninguna frecuencia. */
+  sufficient_history: boolean
+  min_observed_years: number
+  ge50: number
+  ge100: number
+  ge50_per_year: number | null
+  ge100_per_year: number | null
+  ge50_every_years: number | null
+  ge100_every_years: number | null
+  by_year: { year: number; valid_days: number; ge50: number; ge100: number }[]
+  notice: string
+}
+
+/** Lo que la persona vería en su celular y su correo (modo demostración). */
+export interface AlertInbox {
+  status: 'pendiente' | 'confirmada' | 'baja'
+  items: AlertMessage[]
+  notice: string
+}
+
+export interface AlertPreview {
+  station_id: number
+  date: string
+  would_send: boolean
+  /** `enviar`, `sin_dato` (un hueco no avisa) o `bajo_umbral`. */
+  reason: 'enviar' | 'sin_dato' | 'bajo_umbral'
+  level: number | null
+  mm: number | null
+  message: string | null
+  category: string
+}
+
+export interface AlertSend {
+  preview: AlertPreview
+  queued: number
+  notice: string
+}
+
+export type Rol = 'ciudadano' | 'operador' | 'administrador'
+
+/** Una cuenta. El rol lo asigna un administrador: quien se registra siempre es ciudadano. */
+export interface Cuenta {
+  id: number
+  email: string
+  display_name: string | null
+  role: Rol
+  is_active: boolean
+  created_at: string
+  last_login_at: string | null
+}
+
+export interface SesionIniciada {
+  token: string
+  expires_at: string
+  user: Cuenta
+}
+
+export interface CuentaList {
+  items: Cuenta[]
+  total: number
+}
+
+export interface EstacionRef {
+  id: number
+  code: string
+  name: string
+}
+
+/** Una suscripción de la cuenta. Del teléfono solo los últimos 4 dígitos. */
+export interface MiSuscripcion {
+  id: number
+  status: 'pendiente' | 'confirmada' | 'baja'
+  phone_last4: string
+  email_masked: string | null
+  /** Vacío = recibe los avisos de todas las estaciones. */
+  stations: EstacionRef[]
+  created_at: string
+  confirmed_at: string | null
+}
+
+export interface MisSuscripciones {
+  items: MiSuscripcion[]
+  total: number
+}
+
+export interface MisNotificaciones {
+  items: AlertMessage[]
+  notice: string
+}
+
+/** Un aviso mandado por el personal. */
+export interface EnvioAviso {
+  id: number
+  station_id: number
+  station_name: string
+  obs_date: string
+  mm: number
+  level: number
+  queued: number
+  created_by_user_id: number | null
+  created_at: string
+}
+
+export interface HistorialAvisos {
+  items: EnvioAviso[]
+  total: number
 }

@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { InsigniaAdvertencia, InsigniaCategoria, InsigniaEstado } from './Insignias'
+import {
+  InsigniaAdvertencia,
+  InsigniaCategoria,
+  InsigniaEstado,
+  InsigniaSimulado,
+} from './Insignias'
 import { ADVERTENCIAS, textoMm, type CodigoAdvertencia } from './insignias-datos'
 
 describe('insignias de estado', () => {
@@ -59,6 +64,16 @@ describe('insignias de categoría', () => {
   })
 })
 
+describe('insignia de lectura simulada', () => {
+  it('dice Simulado, con símbolo propio y distinta de las tres categorías de datos', () => {
+    const { container } = render(<InsigniaSimulado />)
+    expect(screen.getByText('Simulado')).toBeInTheDocument()
+    expect(screen.getByText(/no de un sensor real/)).toBeInTheDocument()
+    expect(container.querySelector('.insignia-simulado')).not.toBeNull()
+    expect(container.querySelector('.insignia-simbolo')?.textContent).toBe('⚙')
+  })
+})
+
 describe('insignias de advertencia', () => {
   it('hay una por cada una de las 6 advertencias de comparabilidad', () => {
     expect(Object.keys(ADVERTENCIAS)).toHaveLength(6)
@@ -71,6 +86,15 @@ describe('insignias de advertencia', () => {
       expect(screen.getByText(texto)).toBeInTheDocument()
     },
   )
+
+  it('la cobertura baja muestra un texto corto y deja el mensaje de la API como descripción', () => {
+    const mensaje =
+      'Solo 40% de los días tiene dato: el acumulado puede quedar por debajo de lo que llovió.'
+    const { container } = render(<InsigniaAdvertencia codigo="cobertura_baja" mensaje={mensaje} />)
+    expect(screen.getByText('Cobertura baja')).toBeInTheDocument()
+    expect(screen.queryByText(mensaje)).not.toBeInTheDocument()
+    expect(container.querySelector('.insignia')).toHaveAttribute('title', mensaje)
+  })
 
   it('si la API manda un mensaje, ese es el que se describe', () => {
     const { container } = render(

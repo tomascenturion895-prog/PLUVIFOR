@@ -3,12 +3,17 @@ package httpapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/apierror"
 	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/config"
+	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/ratelimit"
+	"github.com/tomascenturion895-prog/PLUVIFOR/apps/api-go/internal/secheaders"
 )
 
 // Version de la API.
@@ -30,7 +35,8 @@ func New(cfg config.Config, logger *slog.Logger, opts ...Option) http.Handler {
 	for _, opt := range opts {
 		opt(mux)
 	}
-	return recoverer(logger, securityHeaders(notFoundAs404JSON(mux)))
+	limiter := ratelimit.New(nil)
+	return recoverer(logger, securityHeaders(rateLimited(limiter, cfg, notFoundAs404JSON(mux))))
 }
 
 type healthResponse struct {
@@ -84,8 +90,33 @@ func (e *errorRewriter) Write(b []byte) (int, error) {
 
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("Cache-Control", "no-store")
+		secheaders.Apply(w.Header())
+		next.ServeHTTP(w, r)
+	})
+}
+
+// rateLimited limita los pedidos por dirección (la que ve el servidor: no se confía en encabezados
+// que quien consulta puede falsear). /health queda afuera y la importación tiene su propio máximo.
+func rateLimited(l *ratelimit.Limiter, cfg config.Config, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/health" {
+			next.ServeHTTP(w, r)
+			return
+		}
+		limit, bucket := cfg.RateLimitPerMinute, ""
+		if strings.HasPrefix(r.URL.Path, "/api/import") {
+			limit, bucket = cfg.RateLimitImportPerMinute, "import|"
+		}
+		host, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			host = r.RemoteAddr
+		}
+		if ok, wait := l.Allow(bucket+host, limit); !ok {
+			w.Header().Set("Retry-After", strconv.Itoa(wait))
+			apierror.Write(w, http.StatusTooManyRequests, "too_many_requests",
+				fmt.Sprintf("Hiciste demasiados pedidos seguidos. Esperá %d segundos e intentá de nuevo.", wait))
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }

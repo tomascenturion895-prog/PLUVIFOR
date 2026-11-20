@@ -1,5 +1,7 @@
 import type { DataCategory, RainState } from '../api/types'
-import { ADVERTENCIAS, type CodigoAdvertencia } from './insignias-datos'
+import { useIdioma } from '../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../i18n/traducciones/es'
+import { ADVERTENCIAS, ADVERTENCIAS_CALIDAD, type CodigoAdvertencia } from './insignias-datos'
 import './Insignias.css'
 
 interface Definicion {
@@ -10,47 +12,78 @@ interface Definicion {
   descripcion: string
 }
 
-/** Un hueco no es 0 mm: ninguna de estas definiciones usa el texto «0» ni el color de un dato. */
-const ESTADOS: Record<RainState, Definicion> = {
+const CLAVE_ESTADO: Record<
+  RainState,
+  { clase: string; simbolo: string; texto: ClaveTraduccion; desc: ClaveTraduccion }
+> = {
   dato: {
     clase: 'dato',
     simbolo: '●',
-    texto: 'Dato',
-    descripcion: 'Hay una medición para este día.',
+    texto: 'insignia.estado.dato',
+    desc: 'insignia.estado.dato.desc',
   },
   sin_fila: {
     clase: 'sin-dato',
     simbolo: '∅',
-    texto: 'Sin dato',
-    descripcion: 'La fuente no tiene este día. No significa que no haya llovido.',
+    texto: 'insignia.estado.sin_fila',
+    desc: 'insignia.estado.sin_fila.desc',
   },
   fila_sin_valor: {
     clase: 'sin-valor',
     simbolo: '◌',
-    texto: 'Fila sin valor',
-    descripcion: 'La fuente tiene el día pero sin un valor. No significa que no haya llovido.',
+    texto: 'insignia.estado.fila_sin_valor',
+    desc: 'insignia.estado.fila_sin_valor.desc',
   },
 }
 
-const CATEGORIAS: Record<DataCategory, Definicion> = {
+const CLAVE_CATEGORIA: Record<
+  DataCategory,
+  { clase: string; simbolo: string; texto: ClaveTraduccion; desc: ClaveTraduccion }
+> = {
   observado: {
     clase: 'observado',
     simbolo: '▣',
-    texto: 'Observado',
-    descripcion: 'Medido por una estación o un reporte.',
+    texto: 'insignia.categoria.observado',
+    desc: 'insignia.categoria.observado.desc',
   },
   referencia: {
     clase: 'referencia',
     simbolo: '◆',
-    texto: 'Referencia',
-    descripcion:
-      'Valor de referencia (por ejemplo, una normal climática). No se suma a lo observado.',
+    texto: 'insignia.categoria.referencia',
+    desc: 'insignia.categoria.referencia.desc',
   },
   estimado: {
     clase: 'estimado',
     simbolo: '≈',
-    texto: 'Estimado',
-    descripcion: 'Calculado, no medido. Nunca se suma ni se promedia con lo observado.',
+    texto: 'insignia.categoria.estimado',
+    desc: 'insignia.categoria.estimado.desc',
+  },
+}
+
+const CLAVE_ADV: Record<CodigoAdvertencia, { texto: ClaveTraduccion; desc: ClaveTraduccion }> = {
+  horario_corte_distinto: {
+    texto: 'adv.horario_corte_distinto',
+    desc: 'adv.horario_corte_distinto.desc',
+  },
+  observado_vs_estimado: {
+    texto: 'adv.observado_vs_estimado',
+    desc: 'adv.observado_vs_estimado.desc',
+  },
+  cobertura_despareja: {
+    texto: 'adv.cobertura_despareja',
+    desc: 'adv.cobertura_despareja.desc',
+  },
+  dato_sin_validar: {
+    texto: 'adv.dato_sin_validar',
+    desc: 'adv.dato_sin_validar.desc',
+  },
+  ceros_prolongados: {
+    texto: 'adv.ceros_prolongados',
+    desc: 'adv.ceros_prolongados.desc',
+  },
+  inconsistente_con_vecinas: {
+    texto: 'adv.inconsistente_con_vecinas',
+    desc: 'adv.inconsistente_con_vecinas.desc',
   },
 }
 
@@ -71,11 +104,41 @@ function Insignia({ definicion, tipo }: { definicion: Definicion; tipo: string }
 }
 
 export function InsigniaEstado({ estado }: { estado: RainState }) {
-  return <Insignia definicion={ESTADOS[estado]} tipo="estado" />
+  const { t } = useIdioma()
+  const c = CLAVE_ESTADO[estado]
+  return (
+    <Insignia
+      definicion={{ clase: c.clase, simbolo: c.simbolo, texto: t(c.texto), descripcion: t(c.desc) }}
+      tipo="estado"
+    />
+  )
 }
 
 export function InsigniaCategoria({ categoria }: { categoria: DataCategory }) {
-  return <Insignia definicion={CATEGORIAS[categoria]} tipo="categoria" />
+  const { t } = useIdioma()
+  const c = CLAVE_CATEGORIA[categoria]
+  return (
+    <Insignia
+      definicion={{ clase: c.clase, simbolo: c.simbolo, texto: t(c.texto), descripcion: t(c.desc) }}
+      tipo="categoria"
+    />
+  )
+}
+
+/** Rótulo de las lecturas del simulador de dispositivos (SCRUM-94). */
+export function InsigniaSimulado() {
+  const { t } = useIdioma()
+  return (
+    <Insignia
+      definicion={{
+        clase: 'simulado',
+        simbolo: '⚙',
+        texto: t('insignia.categoria.simulado'),
+        descripcion: t('insignia.categoria.simulado.desc'),
+      }}
+      tipo="categoria"
+    />
+  )
 }
 
 /**
@@ -83,13 +146,15 @@ export function InsigniaCategoria({ categoria }: { categoria: DataCategory }) {
  * la API (o el código) en lugar de ocultarla: una advertencia nunca se pierde en silencio.
  */
 export function InsigniaAdvertencia({ codigo, mensaje }: { codigo: string; mensaje?: string }) {
-  const conocida = ADVERTENCIAS[codigo as CodigoAdvertencia] as
-    { texto: string; descripcion: string } | undefined
+  const { t } = useIdioma()
+  const adv = codigo in ADVERTENCIAS ? CLAVE_ADV[codigo as CodigoAdvertencia] : undefined
+  const calidad = ADVERTENCIAS_CALIDAD[codigo]
   const definicion: Definicion = {
     clase: 'advertencia',
     simbolo: '⚠',
-    texto: conocida?.texto ?? mensaje ?? codigo,
-    descripcion: mensaje ?? conocida?.descripcion ?? 'Advertencia de calidad del dato.',
+    texto: adv ? t(adv.texto) : (calidad?.texto ?? mensaje ?? codigo),
+    descripcion:
+      mensaje ?? (adv ? t(adv.desc) : (calidad?.descripcion ?? 'Advertencia de calidad del dato.')),
   }
   return <Insignia definicion={definicion} tipo="advertencia" />
 }

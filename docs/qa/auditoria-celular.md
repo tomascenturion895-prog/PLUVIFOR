@@ -37,3 +37,23 @@ Después de los arreglos, **ninguna pantalla desborda a 360 px** y todos los bot
 - Que una persona ajena lea cada texto y diga si lo entiende.
 - Coordinar con el panel de accesibilidad (SCRUM-100).
 - Una revisión con un lector de pantalla real.
+
+## Re-auditoría del 19/11/2026 (pantallas nuevas)
+
+La auditoría de arriba es anterior a la portada, el mapa con capas, la maqueta 3D, los atajos, Destacados, la Salud de la red, el Reporte de campo y la Ayuda. Se repitió sobre `qa` (commit con #104 y #105 mergeados), de forma **simulada** (Chrome sin cabeza, no un celular real).
+
+| Qué se revisó | Resultado |
+|---|---|
+| 10 rutas (`/`, maqueta, mapa, estación, comparador, parte, reporte de campo, importar, salud, ayuda) | axe-core: 0 infracciones |
+| Anchos de 360, 768 y 1280 px, y 360 px con alto contraste | sin desborde horizontal en ninguna combinación |
+| Objetivos táctiles | ninguno de menos de 24 px (WCAG 2.5.8) después de ajustar los deslizadores |
+
+Cambios hechos a partir de esto (solo presentación): campos de formularios que se estiraban en Reporte de campo, botones y selector de archivo con el estilo del sistema, tarjetas en la Ayuda y deslizadores de 24 px.
+
+**Arreglado el 19/11/2026** (los tres puntos de la lista de arriba):
+
+- **Títulos de pestaña:** cada pantalla tiene el suyo («Mapa · PLUVIFOR»).
+- **Cobertura baja:** la insignia dice «Cobertura baja» y el mensaje de la API queda como descripción.
+- **Menú a 360 px:** un botón «Menú» que muestra la sección actual y despliega todas las secciones en dos columnas, sin desplazamiento oculto.
+
+**Sin verificar:** celulares reales (SCRUM-71), lector de pantalla real, y la lectura de los textos por una persona ajena al equipo.

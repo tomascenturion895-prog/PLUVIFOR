@@ -4,16 +4,20 @@ export const LEYENDA_PROTOTIPO =
 
 /** Secciones de la navegación, en el orden en que se muestran. */
 export const SECCIONES = [
-  { ruta: '/', nombre: 'Inicio' },
-  { ruta: '/maqueta', nombre: 'Maqueta' },
-  { ruta: '/mapa', nombre: 'Mapa' },
-  { ruta: '/estacion', nombre: 'Estación' },
-  { ruta: '/comparador', nombre: 'Comparador' },
-  { ruta: '/parte', nombre: 'Parte pluvial' },
-  { ruta: '/reporte', nombre: 'Reporte de campo' },
-  { ruta: '/importar', nombre: 'Importar y auditar' },
-  { ruta: '/salud', nombre: 'Salud de la red' },
-  { ruta: '/ayuda', nombre: 'Ayuda' },
+  { ruta: '/', nombre: 'Inicio', icono: 'inicio' },
+  { ruta: '/vista-3d', nombre: 'Vista 3D', icono: 'vista3d' },
+  { ruta: '/maqueta', nombre: 'Maqueta', icono: 'maqueta' },
+  { ruta: '/mapa', nombre: 'Mapa', icono: 'mapa' },
+  { ruta: '/estacion', nombre: 'Estación', icono: 'estacion' },
+  { ruta: '/comparador', nombre: 'Comparador', icono: 'comparador' },
+  { ruta: '/parte', nombre: 'Parte pluvial', icono: 'parte' },
+  { ruta: '/reporte', nombre: 'Reporte de campo', icono: 'reporte' },
+  { ruta: '/importar', nombre: 'Importar y auditar', icono: 'importar' },
+  { ruta: '/salud', nombre: 'Salud de la red', icono: 'salud' },
+  { ruta: '/sensores', nombre: 'Sensores', icono: 'sensores' },
+  { ruta: '/avisos', nombre: 'Avisos', icono: 'avisos' },
+  { ruta: '/cuenta', nombre: 'Cuenta', icono: 'cuenta' },
+  { ruta: '/ayuda', nombre: 'Ayuda', icono: 'ayuda' },
 ] as const
 
 /** Fecha de corte de los datos: no se consultan ni muestran días posteriores. */

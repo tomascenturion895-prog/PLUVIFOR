@@ -1,14 +1,15 @@
 import { getNetworkHealth } from '../api/client'
-import type { NetworkState, StationHealth } from '../api/types'
+import type { StationHealth } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
+import LecturasSimuladas from '../components/LecturasSimuladas'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 import { fechaLegible, formatoMm, TEXTO_ESTADO } from './network-health-datos'
 
-const SIMBOLO: Record<NetworkState, string> = { activa: '●', en_silencio: '◐', sin_datos: '○' }
-
 function UltimaLectura({ estacion }: { estacion: StationHealth }) {
+  const { t } = useIdioma()
   if (estacion.last_reading_date === null || estacion.last_reading_mm === null) {
-    return <>Sin lecturas</>
+    return <>{t('salud.sinLecturas')}</>
   }
   const dias = estacion.days_since_last
   return (
@@ -20,33 +21,31 @@ function UltimaLectura({ estacion }: { estacion: StationHealth }) {
 }
 
 export default function NetworkHealth() {
+  const { t } = useIdioma()
   const { estado, reintentar } = useAsync((signal) => getNetworkHealth({}, signal), [])
 
   return (
     <section>
-      <h2>Salud de la red</h2>
-      <p>
-        Qué estaciones siguen reportando y cuáles dejaron de hacerlo. Una estación en silencio no
-        tiene «0 mm»: tiene sin dato.
-      </p>
+      <h2>{t('nav.salud')}</h2>
+      <p>{t('salud.intro')}</p>
       {estado.tipo === 'cargando' && <Cargando />}
       {estado.tipo === 'error' && (
         <ErrorEstado mensaje={estado.mensaje} onReintentar={reintentar} />
       )}
       {estado.tipo === 'listo' &&
         (estado.datos.stations.length === 0 ? (
-          <Vacio>No hay estaciones cargadas.</Vacio>
+          <Vacio>{t('comun.sinEstaciones')}</Vacio>
         ) : (
           <>
-            <ul className="resumen" aria-label="Resumen de la red">
+            <ul className="resumen" aria-label={t('salud.resumenAria')}>
               <li>
-                <strong>{estado.datos.active}</strong> activas
+                <strong>{estado.datos.active}</strong> {t('salud.activas')}
               </li>
               <li>
-                <strong>{estado.datos.silent}</strong> en silencio
+                <strong>{estado.datos.silent}</strong> {t('salud.enSilencio')}
               </li>
               <li>
-                <strong>{estado.datos.no_data}</strong> sin datos
+                <strong>{estado.datos.no_data}</strong> {t('salud.sinDatos')}
               </li>
             </ul>
             <p className="nota">
@@ -56,13 +55,13 @@ export default function NetworkHealth() {
               con referencias ni estimados.
             </p>
             <table className="tabla-dias">
-              <caption className="nota">Estado de cada estación</caption>
+              <caption className="nota">{t('salud.tablaCaption')}</caption>
               <thead>
                 <tr>
-                  <th scope="col">Estación</th>
-                  <th scope="col">Zona</th>
-                  <th scope="col">Estado</th>
-                  <th scope="col">Última lectura</th>
+                  <th scope="col">{t('comun.estacion')}</th>
+                  <th scope="col">{t('comun.zona')}</th>
+                  <th scope="col">{t('comun.estado')}</th>
+                  <th scope="col">{t('salud.ultimaLectura')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,9 +70,9 @@ export default function NetworkHealth() {
                     <th scope="row">
                       {s.name} ({s.code})
                     </th>
-                    <td>{s.zone ?? 'Sin dato'}</td>
+                    <td>{s.zone ?? t('comun.sinDato')}</td>
                     <td>
-                      <span aria-hidden="true">{SIMBOLO[s.state]} </span>
+                      <span className={`marca-estado marca-estado-${s.state}`} aria-hidden="true" />
                       {TEXTO_ESTADO[s.state]}
                     </td>
                     <td>
@@ -85,6 +84,7 @@ export default function NetworkHealth() {
             </table>
           </>
         ))}
+      <LecturasSimuladas />
     </section>
   )
 }

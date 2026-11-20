@@ -1,0 +1,924 @@
+/*
+ * Temas de color: claro y daltónico (el oscuro es el tema base, definido en theme.css y material.css).
+ * Va último. Solo cambia presentación: NO toca la escala de lluvia, el gris de «sin dato» ni las
+ * reglas del dato. Cada tema vive en <html data-tema="…">. Sin atributo o con «oscuro», no se
+ * aplica nada de lo que sigue (salvo el selector de tema, que es común).
+ *
+ * Contrastes (WCAG AA, 4.5:1 en texto, 3:1 en bordes de controles):
+ *   claro:  texto #1f2933 sobre #f4f5f7 → 13,0:1 · suave #52606d → 5,9:1 · naranja #b93d0a → 5,2:1
+ *   daltónico: base oscura, acento azul cielo #56b4e9 (Okabe-Ito) sobre #0b1322 → 8,3:1
+ */
+
+/* ---- Selector de idioma (común a los tres temas) ---- */
+.selector-idioma {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 36px;
+  max-width: 11.5rem;
+  padding: 0 0.55rem;
+  color: var(--tinta);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+}
+
+.selector-idioma-icono {
+  flex: none;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.selector-idioma-select {
+  min-height: 34px !important;
+  max-width: 100%;
+  padding: 0 0.2rem !important;
+  font: inherit;
+  font-size: 0.8rem !important;
+  font-weight: 500;
+  color: var(--tinta) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.selector-idioma-select:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+.selector-idioma-select option {
+  color: var(--tinta);
+  background: var(--superficie);
+}
+
+/* ---- Selector de tema (común a los tres temas) ---- */
+.encabezado-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.selector-tema {
+  display: inline-flex;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.selector-tema-opcion {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.selector-tema-opcion + .selector-tema-opcion {
+  border-left: 1px solid rgb(255 255 255 / 0.25);
+}
+
+/* El radio real queda accesible por teclado pero oculto a la vista. */
+.selector-tema-opcion input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.selector-tema-opcion:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.1);
+}
+
+/* La opción elegida se distingue por fondo, negrita y una marca ✓, no solo por color. */
+.selector-tema-opcion:has(input:checked) {
+  font-weight: 700;
+  color: #fff;
+  background: rgb(255 255 255 / 0.18);
+}
+
+.selector-tema-opcion:has(input:checked) .selector-tema-texto::after {
+  content: ' ✓';
+}
+
+.selector-tema-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--md-primary);
+  outline-offset: -3px;
+}
+
+@media (max-width: 719px) {
+  .selector-tema-opcion {
+    padding: 0 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* =====================================================================
+   TEMA CLARO — grises cálidos, sin blanco puro
+   ===================================================================== */
+html[data-tema='claro'] {
+  color-scheme: light;
+
+  --accu-orange: #b93d0a;
+  --accu-orange-hover: #9c3207;
+  --accu-orange-light: rgb(185 61 10 / 0.1);
+  --accu-orange-border: rgb(185 61 10 / 0.4);
+  --accu-radar-blue: #0b6a9e;
+  --accu-radar-light: rgb(11 106 158 / 0.1);
+
+  --md-primary: #b93d0a;
+  --md-on-primary: #fbfbfa;
+  --md-primary-container: rgb(185 61 10 / 0.12);
+  --md-on-primary-container: #7a2705;
+  --md-secondary: #0b6a9e;
+  --md-secondary-container: #dfe7f1;
+  --md-on-secondary-container: #12385c;
+  --md-error: #b3261e;
+  --md-error-container: #fbe9e7;
+  --md-on-error-container: #7a1a14;
+  --md-surface: #f4f5f7;
+  --md-surface-container-lowest: #fbfbfa;
+  --md-surface-container-low: #eff1f4;
+  --md-surface-container: #e7eaee;
+  --md-surface-container-high: #e1e5ea;
+  --md-surface-container-highest: #d7dce2;
+  --md-on-surface: #1f2933;
+  --md-on-surface-variant: #52606d;
+  --md-outline: #6b7785;
+  --md-outline-variant: #cdd3da;
+  --md-inverse-surface: #2b3440;
+  --md-inverse-on-surface: #f4f5f7;
+  --md-inverse-primary: #f4a37a;
+
+  --md-elev-1: 0 1px 2px rgb(31 41 51 / 0.12), 0 1px 3px 1px rgb(31 41 51 / 0.08);
+  --md-elev-2: 0 1px 2px rgb(31 41 51 / 0.14), 0 2px 6px 2px rgb(31 41 51 / 0.09);
+  --md-elev-3: 0 4px 8px 3px rgb(31 41 51 / 0.1), 0 1px 3px rgb(31 41 51 / 0.16);
+
+  --tinta: #1f2933;
+  --azul: #b93d0a;
+  --azul-radar: #0b6a9e;
+  --azul-claro: #dfe7f1;
+  --texto-suave: #52606d;
+  --borde: #cdd3da;
+  --borde-suave: #e3e7ec;
+  --error: #b3261e;
+  --papel: #f4f5f7;
+  --superficie: #fbfbfa;
+  --superficie-elevada: #eff1f4;
+  --sombra: 0 2px 8px -2px rgb(31 41 51 / 0.14), 0 1px 3px rgb(31 41 51 / 0.08);
+  --sombra-elevada: 0 10px 24px -6px rgb(31 41 51 / 0.2), 0 4px 8px -2px rgb(31 41 51 / 0.1);
+
+  --md-sys-color-surface-container-highest: #d7dce2;
+  --md-linear-progress-track-color: #dfe7f1;
+
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+html[data-tema='claro'] body {
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+html[data-tema='claro'] h1,
+html[data-tema='claro'] h2,
+html[data-tema='claro'] h3,
+html[data-tema='claro'] h4,
+html[data-tema='claro'] .hero h2,
+html[data-tema='claro'] .panel h3,
+html[data-tema='claro'] .resumen dd,
+html[data-tema='claro'] .accesos a {
+  color: #1f2933;
+}
+
+html[data-tema='claro'] .accesos a:hover {
+  color: var(--accu-orange);
+}
+
+/* Cabecera y menú */
+html[data-tema='claro'] .encabezado {
+  color: #1f2933;
+  background: #fbfbfa;
+  border-bottom: 1px solid var(--borde);
+  box-shadow: var(--md-elev-1);
+}
+
+html[data-tema='claro'] .encabezado-marca h1 {
+  color: #1f2933;
+}
+
+html[data-tema='claro'] .encabezado-marca p {
+  color: #52606d;
+}
+
+html[data-tema='claro'] .marca-logo {
+  color: #b93d0a;
+  filter: none;
+}
+
+html[data-tema='claro'] .encabezado nav a {
+  color: #3e4c59;
+}
+
+html[data-tema='claro'] .encabezado nav a:hover {
+  color: #1f2933;
+  background: rgb(31 41 51 / 0.07);
+}
+
+html[data-tema='claro'] .encabezado nav a.active {
+  color: #b93d0a;
+  background: transparent;
+}
+
+html[data-tema='claro'] .encabezado :focus-visible {
+  outline-color: #b93d0a;
+}
+
+html[data-tema='claro'] .a11y-boton {
+  color: #1f2933;
+  background: transparent;
+  border-color: var(--md-outline);
+}
+
+html[data-tema='claro'] .a11y-boton:hover {
+  background: rgb(31 41 51 / 0.07);
+}
+
+html[data-tema='claro'] .a11y-panel {
+  color: var(--tinta);
+  background: #fbfbfa;
+  border: 1px solid var(--borde);
+}
+
+html[data-tema='claro'] .selector-tema {
+  border-color: var(--md-outline);
+}
+
+html[data-tema='claro'] .selector-tema-opcion {
+  color: #3e4c59;
+}
+
+html[data-tema='claro'] .selector-tema-opcion + .selector-tema-opcion {
+  border-left-color: var(--borde);
+}
+
+html[data-tema='claro'] .selector-tema-opcion:hover {
+  color: #1f2933;
+  background: rgb(31 41 51 / 0.07);
+}
+
+html[data-tema='claro'] .selector-tema-opcion:has(input:checked) {
+  color: #fbfbfa;
+  background: #2b3440;
+}
+
+html[data-tema='claro'] .menu-boton {
+  color: #1f2933;
+  background: var(--md-surface-container-highest);
+  border: 0;
+}
+
+html[data-tema='claro'] .menu-actual {
+  color: #52606d;
+}
+
+/* Pie: la leyenda de prototipo sigue siempre a la vista, sobre superficie inversa */
+html[data-tema='claro'] .pie,
+html[data-tema='claro'] .pie small {
+  color: #f4f5f7;
+  background: #2b3440;
+}
+
+html[data-tema='claro'] .pie {
+  border-top: 1px solid #1f2933;
+}
+
+html[data-tema='claro'] .pie strong {
+  color: #ffd9c2;
+}
+
+/* Tarjetas y paneles */
+html[data-tema='claro'] .accesos li:hover {
+  background: #fbfbfa;
+}
+
+html[data-tema='claro'] .resumen div,
+html[data-tema='claro'] .hero,
+html[data-tema='claro'] .panel,
+html[data-tema='claro'] .filtros,
+html[data-tema='claro'] .mapa-controles,
+html[data-tema='claro'] .tabla-scroll,
+html[data-tema='claro'] .grafico-detalle {
+  border: 1px solid var(--borde);
+}
+
+html[data-tema='claro'] .hero {
+  border-left: 6px solid var(--accu-orange);
+}
+
+html[data-tema='claro'] .resumen div {
+  border-top: 3.5px solid var(--accu-orange);
+}
+
+html[data-tema='claro'] .panel fieldset {
+  background: var(--md-surface-container-low);
+}
+
+html[data-tema='claro'] .panel fieldset legend,
+html[data-tema='claro'] .panel fieldset label.opcion {
+  color: var(--tinta);
+}
+
+/* Formularios */
+html[data-tema='claro'] .filtros select,
+html[data-tema='claro'] .filtros input,
+html[data-tema='claro'] .mapa-controles input,
+html[data-tema='claro'] .mapa-controles select,
+html[data-tema='claro'] input:not([type='checkbox'], [type='radio'], [type='range']),
+html[data-tema='claro'] select,
+html[data-tema='claro'] textarea,
+html[data-tema='claro'] .panel select,
+html[data-tema='claro'] .panel input[type='date'],
+html[data-tema='claro'] .maqueta-layout select,
+html[data-tema='claro'] .maqueta-layout input[type='date'] {
+  color: #1f2933 !important;
+  background: #fbfbfa !important;
+  border-color: var(--md-outline) !important;
+}
+
+html[data-tema='claro'] .filtros select option,
+html[data-tema='claro'] .mapa-controles select option,
+html[data-tema='claro'] .panel select option,
+html[data-tema='claro'] .maqueta-layout select option {
+  color: #1f2933;
+  background: #fbfbfa;
+}
+
+html[data-tema='claro'] input::placeholder,
+html[data-tema='claro'] textarea::placeholder {
+  color: #52606d;
+}
+
+html[data-tema='claro'] .acciones button:disabled {
+  color: #52606d;
+  background: #d7dce2;
+}
+
+html[data-tema='claro'] .atajos button:hover,
+html[data-tema='claro'] .maqueta-layout button:hover,
+html[data-tema='claro'] .barra-tiempo button:hover {
+  color: var(--tinta);
+}
+
+html[data-tema='claro'] .atajos button,
+html[data-tema='claro'] .maqueta-layout button,
+html[data-tema='claro'] .barra-tiempo button {
+  color: var(--tinta);
+  background: transparent;
+}
+
+/* Tablas */
+html[data-tema='claro'] .tabla-dias th,
+html[data-tema='claro'] .tabla-dias td,
+html[data-tema='claro'] .tabla-scroll th,
+html[data-tema='claro'] .tabla-scroll td {
+  color: var(--tinta);
+}
+
+html[data-tema='claro'] .tabla-dias thead th,
+html[data-tema='claro'] .tabla-scroll thead th {
+  color: var(--texto-suave);
+  background: var(--md-surface-container);
+}
+
+html[data-tema='claro'] .tabla-dias tbody tr:hover,
+html[data-tema='claro'] .tabla-scroll tbody tr:hover {
+  background: rgb(31 41 51 / 0.05);
+}
+
+/* Estados */
+html[data-tema='claro'] .estado-error {
+  border: 1px solid var(--md-error);
+}
+
+/* Mapa Leaflet */
+html[data-tema='claro'] .leaflet-container {
+  background: #e3e8ee !important;
+}
+
+html[data-tema='claro'] .leaflet-popup-content-wrapper {
+  color: #1f2933 !important;
+  background: #fbfbfa !important;
+  border: 1px solid var(--borde) !important;
+}
+
+html[data-tema='claro'] .leaflet-popup-tip {
+  background: #fbfbfa !important;
+}
+
+html[data-tema='claro'] .leaflet-bar a {
+  color: #1f2933 !important;
+  background-color: #fbfbfa !important;
+  border-bottom-color: var(--borde) !important;
+}
+
+html[data-tema='claro'] .leaflet-bar a:hover {
+  color: #1f2933 !important;
+  background-color: #e7eaee !important;
+}
+
+/* Gráficos Recharts */
+html[data-tema='claro'] .recharts-default-tooltip {
+  color: #1f2933 !important;
+  background-color: #fbfbfa !important;
+  border: 1px solid var(--borde) !important;
+}
+
+html[data-tema='claro'] .recharts-tooltip-item,
+html[data-tema='claro'] .recharts-tooltip-label {
+  color: #1f2933 !important;
+}
+
+html[data-tema='claro'] .recharts-cartesian-grid line {
+  stroke: #cdd3da !important;
+}
+
+html[data-tema='claro'] .recharts-text {
+  fill: #52606d !important;
+}
+
+html[data-tema='claro'] .recharts-legend-item-text {
+  color: #1f2933 !important;
+}
+
+/* Maqueta SVG: los nombres se leen sobre el fondo claro (halo claro, texto oscuro) */
+html[data-tema='claro'] .maqueta-nombre {
+  fill: #1f2933;
+  stroke: #f4f5f7;
+}
+
+html[data-tema='claro'] .maqueta-bloque-activo .maqueta-nombre {
+  fill: #1f2933;
+  stroke: #ffb48a;
+}
+
+html[data-tema='claro'] .v3d-pestanas [role='tab'][aria-selected='true'] {
+  color: var(--md-on-secondary-container);
+}
+
+/* =====================================================================
+   TEMA DALTÓNICO — base oscura, paleta Okabe-Ito (azul / naranja)
+   Sirve para deuteranopía, protanopía y tritanopía: no usa rojo ni verde para dar significado.
+   Además del color, cada estado suma un ícono, un subrayado o un tipo de borde.
+   ===================================================================== */
+html[data-tema='daltonico'] {
+  --accu-orange: #56b4e9;
+  --accu-orange-hover: #8ecdf2;
+  --accu-orange-light: rgb(86 180 233 / 0.16);
+  --accu-orange-border: rgb(86 180 233 / 0.5);
+  --accu-radar-blue: #56b4e9;
+
+  --md-primary: #56b4e9;
+  --md-on-primary: #04121c;
+  --md-primary-container: rgb(86 180 233 / 0.2);
+  --md-on-primary-container: #b9e2f8;
+  --md-secondary: #e69f00;
+  --md-secondary-container: #2a2a3a;
+  --md-on-secondary-container: #ffd27a;
+  --md-error: #ffb000;
+  --md-error-container: #3d2a00;
+  --md-on-error-container: #ffd98a;
+  --md-inverse-primary: #56b4e9;
+
+  --azul: #56b4e9;
+  --azul-radar: #56b4e9;
+  --error: #ffb000;
+  --borde: #5b6b82;
+  --md-outline: #8394ad;
+  --md-outline-variant: #5b6b82;
+  --texto-suave: #c3ccd9;
+  --md-on-surface-variant: #c3ccd9;
+
+  /* Superficies: gris neutro casi negro (el oscuro original es azul pizarra) */
+  --tinta: #ffffff;
+  --papel: #0e0f13;
+  --superficie: #181b21;
+  --superficie-elevada: #242831;
+  --borde-suave: #2c313b;
+  --md-surface: #0e0f13;
+  --md-surface-container-lowest: #181b21;
+  --md-surface-container-low: #1e222a;
+  --md-surface-container: #242831;
+  --md-surface-container-high: #2c313b;
+  --md-surface-container-highest: #383e4a;
+  --md-on-surface: #ffffff;
+  --md-secondary-container: #3d2c06;
+  --md-linear-progress-track-color: #3d2c06;
+  --sombra: 0 4px 16px -2px rgb(0 0 0 / 60%), 0 0 0 1px rgb(255 255 255 / 6%);
+
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+html[data-tema='daltonico'] body {
+  background: var(--papel);
+}
+
+html[data-tema='daltonico'] h1,
+html[data-tema='daltonico'] h2,
+html[data-tema='daltonico'] h3,
+html[data-tema='daltonico'] h4,
+html[data-tema='daltonico'] .hero h2,
+html[data-tema='daltonico'] .resumen dd,
+html[data-tema='daltonico'] .panel h3 {
+  color: #ffffff;
+}
+
+/* Cabecera, pie y menú con la misma base neutra y un filo azul */
+html[data-tema='daltonico'] .encabezado {
+  background: #14161b;
+  border-bottom: 3px solid #56b4e9;
+}
+
+html[data-tema='daltonico'] .marca-logo {
+  color: #56b4e9;
+  filter: none;
+}
+
+html[data-tema='daltonico'] .encabezado nav a {
+  color: #e2e8f0;
+}
+
+html[data-tema='daltonico'] .pie,
+html[data-tema='daltonico'] .pie small {
+  color: #ffffff;
+  background: #14161b;
+}
+
+html[data-tema='daltonico'] .pie {
+  border-top: 3px solid #e69f00;
+}
+
+html[data-tema='daltonico'] .pie strong {
+  color: #ffd27a;
+}
+
+/* Campos, tablas y paneles sobre las superficies neutras */
+html[data-tema='daltonico'] .filtros select,
+html[data-tema='daltonico'] .filtros input,
+html[data-tema='daltonico'] .mapa-controles input,
+html[data-tema='daltonico'] .mapa-controles select,
+html[data-tema='daltonico'] input:not([type='checkbox'], [type='radio'], [type='range']),
+html[data-tema='daltonico'] select,
+html[data-tema='daltonico'] textarea,
+html[data-tema='daltonico'] .panel select,
+html[data-tema='daltonico'] .panel input[type='date'],
+html[data-tema='daltonico'] .maqueta-layout select,
+html[data-tema='daltonico'] .maqueta-layout input[type='date'] {
+  color: #ffffff !important;
+  background: #0e0f13 !important;
+  border: 2px solid #8a93a3 !important;
+}
+
+html[data-tema='daltonico'] .filtros select option,
+html[data-tema='daltonico'] .mapa-controles select option,
+html[data-tema='daltonico'] .panel select option,
+html[data-tema='daltonico'] .maqueta-layout select option {
+  color: #ffffff;
+  background: #0e0f13;
+}
+
+html[data-tema='daltonico'] .a11y-panel {
+  background: #242831;
+  border: 2px solid #56b4e9;
+}
+
+html[data-tema='daltonico'] .tabla-dias th,
+html[data-tema='daltonico'] .tabla-dias td,
+html[data-tema='daltonico'] .tabla-scroll th,
+html[data-tema='daltonico'] .tabla-scroll td {
+  color: #ffffff;
+}
+
+html[data-tema='daltonico'] .tabla-dias thead th,
+html[data-tema='daltonico'] .tabla-scroll thead th {
+  color: #ffd27a;
+  background: #242831;
+  border-bottom: 2px solid #8a93a3;
+}
+
+html[data-tema='daltonico'] .resumen div {
+  border-top: 4px solid #e69f00;
+}
+
+html[data-tema='daltonico'] .hero {
+  border-left: 8px solid #e69f00;
+}
+
+/* Botones principales: azul cielo con texto oscuro (el blanco no contrasta sobre azul claro) */
+html[data-tema='daltonico'] .acciones button,
+html[data-tema='daltonico'] .estado-error button,
+html[data-tema='daltonico'] button[type='submit'],
+html[data-tema='daltonico'] .boton-primario {
+  color: #04121c;
+  background: #56b4e9;
+  box-shadow: none;
+}
+
+html[data-tema='daltonico'] .acciones button + button {
+  color: #ffd27a;
+  background: #3d2c06;
+}
+
+html[data-tema='daltonico'] .atajos button:hover,
+html[data-tema='daltonico'] .maqueta-layout button:hover,
+html[data-tema='daltonico'] .barra-tiempo button:hover {
+  color: #ffffff;
+}
+
+/* Mapa Leaflet y gráficos sobre la base neutra */
+html[data-tema='daltonico'] .leaflet-container {
+  background: #0e0f13 !important;
+}
+
+html[data-tema='daltonico'] .leaflet-popup-content-wrapper,
+html[data-tema='daltonico'] .leaflet-popup-tip,
+html[data-tema='daltonico'] .leaflet-bar a,
+html[data-tema='daltonico'] .recharts-default-tooltip {
+  color: #ffffff !important;
+  background-color: #242831 !important;
+  border-color: #8a93a3 !important;
+}
+
+html[data-tema='daltonico'] .recharts-cartesian-grid line {
+  stroke: #4a505c !important;
+}
+
+html[data-tema='daltonico'] .recharts-text {
+  fill: #d4dbe6 !important;
+}
+
+/* Escenario 3D y maqueta: de teal a gris-índigo, con selección en naranja */
+html[data-tema='daltonico'] .v3d {
+  --v3d-panel: rgb(14 15 19 / 0.9);
+  --v3d-panel-borde: rgb(255 255 255 / 0.3);
+  --v3d-panel-texto: #ffffff;
+  --v3d-panel-suave: #d4dbe6;
+  --v3d-acento: #ffd27a;
+}
+
+html[data-tema='daltonico'] .v3d-escenario,
+html[data-tema='daltonico'] .v3d-lienzo-caja {
+  background:
+    radial-gradient(120% 90% at 50% 0%, #3a3f55 0%, transparent 60%),
+    linear-gradient(180deg, #1f2230 0%, #0e0f13 100%);
+}
+
+html[data-tema='daltonico'] .v3d-segmentado button.es-activo,
+html[data-tema='daltonico'] .v3d-segmentado button.con-onda.es-activo:hover {
+  color: #04121c;
+  background: #56b4e9;
+}
+
+html[data-tema='daltonico'] .v3d-etiqueta-depto.es-elegida {
+  background: #14161b !important;
+  border: 3px solid #e69f00 !important;
+}
+
+html[data-tema='daltonico'] .v3d-tabla tr.es-elegida {
+  background: #3d2c06;
+}
+
+html[data-tema='daltonico'] .maqueta-nombre {
+  fill: #ffffff;
+  stroke: #0e0f13;
+}
+
+html[data-tema='daltonico'] .maqueta-bloque-activo .maqueta-nombre {
+  stroke: #e69f00;
+}
+
+html[data-tema='daltonico'] .maqueta-rio,
+html[data-tema='daltonico'] .maqueta-rio-int {
+  stroke: #56b4e9;
+}
+
+html[data-tema='daltonico'] .mapa-leyenda-rio,
+html[data-tema='daltonico'] .v3d-muestra-rio {
+  background: #56b4e9;
+}
+
+/* El foco se ve en amarillo, el color con más luminancia de la paleta. */
+html[data-tema='daltonico'] :focus-visible,
+html[data-tema='daltonico'] .encabezado :focus-visible {
+  outline: 3px solid #f0e442;
+  outline-offset: 2px;
+}
+
+/* Navegación activa: subrayado grueso + negrita (no solo color) */
+html[data-tema='daltonico'] .encabezado nav a.active {
+  color: #56b4e9;
+  font-weight: 700;
+}
+
+html[data-tema='daltonico'] .encabezado nav a.active::after {
+  height: 4px;
+}
+
+/* Enlaces siempre subrayados */
+html[data-tema='daltonico'] .contenido a:not(.accesos a) {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* Errores: ícono y rótulo escritos, borde lateral grueso */
+html[data-tema='daltonico'] .estado-error {
+  border: 2px solid var(--md-error);
+  border-left-width: 8px;
+}
+
+html[data-tema='daltonico'] .estado-error p::before {
+  content: '⚠ Error: ';
+  font-weight: 700;
+}
+
+/* Cargando y vacío llevan marca propia */
+html[data-tema='daltonico'] .estado-vacio::before {
+  content: '∅ ';
+  font-weight: 700;
+}
+
+/* Opción elegida en grupos de botones: marca ✓ ya dibujada; reforzamos con borde grueso */
+html[data-tema='daltonico'] .atajos button[aria-pressed='true'],
+html[data-tema='daltonico'] .v3d-periodos button[aria-pressed='true'] {
+  border: 3px solid #56b4e9;
+}
+
+/* Insignias: solo cambian los colores problemáticos (verde y rojo). Sus símbolos y tipos de borde
+   no cambian. Advertencia: borde doble grueso y naranja. Observado: azul. */
+html[data-tema='daltonico'] .insignia-observado {
+  color: #003b66;
+  background: #d6ecfb;
+  border-style: solid;
+}
+
+html[data-tema='daltonico'] .insignia-advertencia {
+  color: #5c2c00;
+  background: #ffe6c2;
+  border-style: double;
+  border-width: 4px;
+}
+
+/* Series del comparador: color distinto + trazo distinto por estación */
+html[data-tema='daltonico'] .serie-linea-0 .recharts-line-curve {
+  stroke: #56b4e9;
+  stroke-dasharray: none;
+}
+
+html[data-tema='daltonico'] .serie-linea-1 .recharts-line-curve {
+  stroke: #e69f00;
+  stroke-dasharray: 8 4;
+}
+
+html[data-tema='daltonico'] .serie-linea-2 .recharts-line-curve {
+  stroke: #cc79a7;
+  stroke-dasharray: 2 3;
+}
+
+html[data-tema='daltonico'] .serie-linea-3 .recharts-line-curve {
+  stroke: #f0e442;
+  stroke-dasharray: 12 3 2 3;
+}
+
+/* Las filas elegidas de las tablas llevan un borde lateral */
+html[data-tema='daltonico'] .v3d-tabla tr.es-elegida {
+  box-shadow: inset 6px 0 0 #56b4e9;
+}
+
+/* =====================================================================
+   REFINAMIENTO GLOBAL DE LAYOUT Y CABECERA (común a los tres temas)
+   Usa solo tokens semánticos: no altera las paletas Claro/Oscuro/Daltónico.
+   ===================================================================== */
+.encabezado-fila {
+  max-width: 78rem;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  padding: 0.7rem 1.25rem;
+}
+
+.a11y-boton {
+  min-height: 36px;
+  padding: 0 0.9rem 0 0.7rem;
+  font-size: 0.8rem;
+}
+
+/* Nivel 2: barra de navegación separada, centrada y sin recorte lateral */
+.encabezado nav {
+  border-top: 1px solid var(--borde-suave);
+  padding: 0;
+}
+
+@media (min-width: 720px) {
+  .encabezado nav ul {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    gap: 0.15rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: thin;
+  }
+
+  .encabezado nav li {
+    flex: 0 0 auto;
+  }
+
+  .encabezado nav a {
+    min-height: 54px;
+    padding: 0.45rem 0.75rem 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .encabezado nav a md-icon {
+    --md-icon-size: 20px;
+  }
+}
+
+/* Contenedor principal equilibrado y pie en flujo normal (nunca tapa texto) */
+.contenido {
+  max-width: 72rem;
+  padding: 1.75rem 1.25rem 3rem;
+}
+
+.pie {
+  position: static;
+  margin-top: auto;
+  padding: 0.75rem 1.25rem;
+}
+
+/* Ritmo vertical y tarjetas pulidas en páginas de contenido */
+.contenido section > h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.contenido section > h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.ayuda-lista {
+  gap: 0.75rem;
+}
+
+.ayuda-lista li {
+  padding: 0.9rem 1.15rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.ayuda-advertencias {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ayuda-advertencias div {
+  padding: 0.85rem 1.1rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.ayuda-advertencias dt {
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.ayuda-advertencias dd {
+  margin: 0.25rem 0 0;
+  color: var(--texto-suave);
+}

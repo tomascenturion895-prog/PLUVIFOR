@@ -27,6 +27,8 @@ class RainfallRecord(Base):
         Index("ix_rainfall_records_obs_date", "obs_date"),
         # Consultas de toda la provincia por categoría y período.
         Index("ix_rainfall_records_category_obs_date", "category", "obs_date"),
+        # De qué importación vino cada día (auditoría y reversa de una carga).
+        Index("ix_rainfall_records_import_id", "import_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)

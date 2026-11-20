@@ -1,0 +1,933 @@
+/*
+ * Material Design 3 (m3.material.io), aplicado a mano sin dependencias nuevas.
+ * Esquema de color «tonal spot» generado con material-color-utilities desde la semilla #0d5c6e.
+ * Va último: solo cambia presentación. NO toca los colores de datos (escala de lluvia, insignias
+ * observado/referencia/estimado, sin dato rayado).
+ */
+:root {
+  /* ---- Color (md.sys.color) alineado con AccuWeather Radar Dark ---- */
+  --md-primary: #f05514;
+  --md-on-primary: #ffffff;
+  --md-primary-container: rgba(240, 85, 20, 0.2);
+  --md-on-primary-container: #ff8c53;
+  --md-secondary: #0ea5e9;
+  --md-secondary-container: #1e293b;
+  --md-on-secondary-container: #7dd3fc;
+  --md-error: #f87171;
+  --md-error-container: #450a0a;
+  --md-on-error-container: #fca5a5;
+  --md-surface: #0b1322;
+  --md-surface-container-lowest: #131d2e;
+  --md-surface-container-low: #182235;
+  --md-surface-container: #1e293b;
+  --md-surface-container-high: #243248;
+  --md-surface-container-highest: #334155;
+  --md-on-surface: #f8fafc;
+  --md-on-surface-variant: #94a3b8;
+  --md-outline: #475569;
+  --md-outline-variant: #334155;
+  --md-inverse-surface: #f8fafc;
+  --md-inverse-on-surface: #0b1322;
+  --md-inverse-primary: #f05514;
+
+  /* ---- Forma (md.sys.shape.corner) ---- */
+  --md-corner-xs: 4px;
+  --md-corner-sm: 8px;
+  --md-corner-md: 12px;
+  --md-corner-lg: 16px;
+  --md-corner-xl: 28px;
+  --md-corner-full: 999px;
+
+  /* ---- Elevación ---- */
+  --md-elev-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --md-elev-2: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --md-elev-3: 0 4px 8px 3px rgb(0 0 0 / 0.15), 0 1px 3px rgb(0 0 0 / 0.3);
+
+  /* ---- Capas de estado (md.sys.state) ---- */
+  --md-hover: 8%;
+  --md-focus: 12%;
+  --md-pressed: 12%;
+
+  /* ---- Movimiento: emphasized decelerate ---- */
+  --md-easing: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-dur: 200ms;
+
+  /* Las variables propias del sistema pasan a ser roles de Material 3. */
+  --tinta: var(--md-on-surface);
+  --azul: var(--md-primary);
+  --azul-claro: var(--md-secondary-container);
+  --texto-suave: var(--md-on-surface-variant);
+  --borde: var(--md-outline-variant);
+  --papel: var(--md-surface);
+  --radio: var(--md-corner-md);
+
+  color: var(--md-on-surface);
+  background: var(--md-surface);
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0.031em;
+  background: var(--md-surface);
+}
+
+/* ---- Tipografía (md.sys.typescale) ----
+   Marca: serif para display y headline. Plana: la sans del sistema para title, body y label. */
+h2 {
+  font-size: 1.75rem; /* headline-medium 28/36 */
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+h3 {
+  font-family: inherit;
+  font-size: 1.375rem; /* title-large 22/28 */
+  line-height: 1.75rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+h4 {
+  font-size: 1rem; /* title-medium */
+  font-weight: 500;
+  letter-spacing: 0.009em;
+}
+
+.nota,
+small {
+  font-size: 0.875rem; /* body-medium */
+  line-height: 1.25rem;
+  letter-spacing: 0.018em;
+  color: var(--md-on-surface-variant);
+}
+
+a {
+  color: var(--md-primary);
+  text-underline-offset: 0.2em;
+}
+
+/* ---- Barra superior (top app bar) y pestañas primarias ---- */
+.encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  color: #ffffff;
+  background: #0f172a;
+  box-shadow: var(--md-elev-2);
+}
+
+.encabezado-marca h1 {
+  font-size: 1.375rem;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.encabezado-marca p {
+  color: #94a3b8;
+}
+
+.marca-logo {
+  color: var(--md-primary);
+}
+
+.encabezado nav a {
+  position: relative;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem; /* title-small */
+  font-weight: 500;
+  letter-spacing: 0.007em;
+  color: #cbd5e1;
+  border-bottom: 0;
+  border-radius: 0;
+  transition: background-color var(--md-dur) var(--md-easing);
+}
+
+.encabezado nav a:hover {
+  color: #ffffff;
+}
+
+.encabezado nav a.active {
+  color: #ffffff;
+}
+
+.encabezado nav a::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  bottom: 0;
+  left: 1rem;
+  height: 3px;
+  background: transparent;
+  border-radius: 3px 3px 0 0;
+}
+
+.encabezado nav a:hover {
+  color: var(--md-on-surface);
+  background: color-mix(in srgb, var(--md-on-surface) var(--md-hover), transparent);
+}
+
+.encabezado nav a.active {
+  color: var(--md-primary);
+  font-weight: 500;
+  border-bottom-color: transparent;
+  background: transparent;
+}
+
+.encabezado nav a.active::after {
+  background: var(--md-primary);
+}
+
+.a11y-boton {
+  min-height: 40px;
+  padding: 0 1.5rem;
+  font-weight: 500;
+  color: var(--md-primary);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-full);
+}
+
+.a11y-boton:hover {
+  background: color-mix(in srgb, var(--md-primary) var(--md-hover), transparent);
+}
+
+.a11y-panel {
+  background: var(--md-surface-container-high);
+  border: 0;
+  border-radius: var(--md-corner-lg);
+  box-shadow: var(--md-elev-3);
+}
+
+@media (max-width: 719px) {
+  .menu-boton {
+    color: var(--md-on-surface);
+    background: var(--md-surface-container-highest);
+    border: 0;
+    border-radius: var(--md-corner-full);
+  }
+
+  .menu-actual {
+    color: var(--md-on-surface-variant);
+  }
+
+  .encabezado nav ul.abierto a {
+    border-left: 0;
+    border-radius: var(--md-corner-full);
+  }
+
+  .encabezado nav ul.abierto a::after {
+    display: none;
+  }
+
+  .encabezado nav ul.abierto a.active {
+    color: var(--md-on-secondary-container);
+    background: var(--md-secondary-container);
+  }
+}
+
+/* Pie: superficie inversa, la leyenda de prototipo siempre a la vista. */
+.pie,
+.pie small {
+  color: var(--md-inverse-on-surface);
+  background: var(--md-inverse-surface);
+}
+
+/* ---- Botones ----
+   Por defecto: botón delineado (outlined). Acción principal: relleno (filled). Secundaria: tonal. */
+button {
+  min-height: 40px;
+  padding: 0 1.5rem;
+  font: inherit;
+  font-size: 0.875rem; /* label-large */
+  font-weight: 500;
+  letter-spacing: 0.007em;
+  color: var(--md-primary);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-full);
+  cursor: pointer;
+  transition:
+    background-color var(--md-dur) var(--md-easing),
+    box-shadow var(--md-dur) var(--md-easing);
+}
+
+button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-primary) var(--md-hover), transparent);
+}
+
+button:active:not(:disabled) {
+  background: color-mix(in srgb, var(--md-primary) var(--md-pressed), transparent);
+}
+
+button:disabled {
+  color: color-mix(in srgb, var(--md-on-surface) 38%, transparent);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--md-on-surface) 12%, transparent);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+form button,
+fieldset button {
+  padding: 0 1.5rem;
+  color: var(--md-primary);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-full);
+}
+
+form button:hover:not(:disabled),
+fieldset button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-primary) var(--md-hover), transparent);
+  border-color: var(--md-outline);
+}
+
+/* Filled */
+.acciones button,
+.estado-error button,
+button[type='submit'],
+.boton-primario {
+  padding: 0 1.5rem;
+  color: var(--md-on-primary);
+  background: var(--md-primary);
+  border: 1px solid transparent;
+  border-radius: var(--md-corner-full);
+}
+
+.acciones button:hover:not(:disabled),
+.estado-error button:hover:not(:disabled),
+button[type='submit']:hover:not(:disabled),
+.boton-primario:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-on-primary) var(--md-hover), var(--md-primary));
+  box-shadow: var(--md-elev-1);
+}
+
+.acciones button:disabled,
+button[type='submit']:disabled {
+  color: color-mix(in srgb, var(--md-on-surface) 38%, transparent);
+  background: color-mix(in srgb, var(--md-on-surface) 12%, transparent);
+  border-color: transparent;
+}
+
+/* Tonal: segundo botón de un grupo de acciones */
+.acciones button + button {
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+}
+
+.acciones button + button:hover:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--md-on-secondary-container) var(--md-hover),
+    var(--md-secondary-container)
+  );
+}
+
+input[type='file']::file-selector-button {
+  min-height: 40px;
+  padding: 0 1.25rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+  border: 0;
+  border-radius: var(--md-corner-full);
+}
+
+/* ---- Campos de texto (outlined text field) ---- */
+input:not([type='checkbox'], [type='radio'], [type='range'], [type='file']),
+select,
+textarea,
+.filtros select,
+.filtros input,
+.mapa-controles input,
+.mapa-controles select {
+  min-height: 48px;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 1rem; /* body-large */
+  color: var(--md-on-surface);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-xs);
+  transition: border-color var(--md-dur) var(--md-easing);
+}
+
+textarea {
+  padding: 0.75rem 1rem;
+}
+
+input[type='file'] {
+  min-height: 48px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-xs);
+}
+
+input:not([type='checkbox'], [type='radio'], [type='range']):hover,
+select:hover,
+textarea:hover {
+  border-color: var(--md-on-surface);
+}
+
+input:not([type='checkbox'], [type='radio'], [type='range']):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--md-primary);
+  outline: 1px solid var(--md-primary);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+input:not([type='checkbox'], [type='radio'], [type='range'])[aria-invalid='true'] {
+  border-color: var(--md-error);
+}
+
+::placeholder {
+  color: var(--md-on-surface-variant);
+  opacity: 0.8;
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.007em;
+  color: var(--md-on-surface-variant);
+}
+
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+  accent-color: var(--md-primary);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Tarjetas ----
+   Filled card: superficie contenedora, esquina mediana, sin borde. */
+fieldset,
+.panel,
+.capas,
+.estados-capas,
+.resumen div,
+.accesos li,
+.mapa-contenedor,
+.parte-texto,
+.estaciones-lista,
+.grafico-detalle,
+.destacados,
+.mapa-resumen-departamento,
+.mapa-pendientes,
+.v3d-metodo {
+  background: var(--md-surface-container-lowest);
+  border: 0;
+  border-radius: var(--md-corner-md);
+  box-shadow: none;
+}
+
+fieldset > legend,
+.capas legend {
+  padding: 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+  background: transparent;
+}
+
+/* Resumen de cifras: tarjeta elevada con la cifra en headline-small. */
+.resumen div {
+  background: var(--md-surface-container-lowest);
+  border-top: 0;
+  box-shadow: var(--md-elev-1);
+}
+
+.resumen dt {
+  font-size: 0.75rem; /* label-medium */
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--md-on-surface-variant);
+}
+
+.resumen dd {
+  font-size: 1.5rem; /* headline-small */
+  line-height: 2rem;
+  color: var(--md-on-surface);
+}
+
+/* Accesos del inicio: tarjeta elevada, toda clickeable. */
+.accesos li {
+  position: relative;
+  background: var(--md-surface-container-lowest);
+  box-shadow: var(--md-elev-1);
+  transition: box-shadow var(--md-dur) var(--md-easing);
+}
+
+.accesos li:hover {
+  background: var(--md-surface-container-lowest);
+  box-shadow: var(--md-elev-2);
+}
+
+.accesos a {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--md-on-surface);
+  text-decoration: none;
+}
+
+.accesos a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* Hero: tarjeta destacada sobre primary-container. */
+.hero {
+  background: var(--md-surface-container-lowest);
+  border: 0;
+  border-left: 0;
+  border-radius: var(--md-corner-xl);
+  box-shadow: var(--md-elev-1);
+}
+
+.hero h2 {
+  font-size: 2.25rem; /* display-small 36/44 */
+  line-height: 2.75rem;
+}
+
+/* Diálogos plegables (details) como tarjetas tonales */
+.capas-plegable > summary {
+  min-height: 48px;
+  font-weight: 500;
+  background: var(--md-surface-container-low);
+  border: 0;
+  border-radius: var(--md-corner-md);
+}
+
+/* ---- Tablas ---- */
+table {
+  border-collapse: collapse;
+}
+
+.tabla-scroll,
+.v3d-tabla-caja .tabla-scroll {
+  background: var(--md-surface-container-lowest);
+  border-radius: var(--md-corner-md);
+  box-shadow: var(--md-elev-1);
+}
+
+.tabla-scroll th,
+.tabla-scroll td,
+.tabla-dias th,
+.tabla-dias td,
+.v3d-tabla th,
+.v3d-tabla td {
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.tabla-scroll thead th,
+.tabla-dias thead th,
+.v3d-tabla thead th {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+  background: var(--md-surface-container);
+}
+
+.tabla-scroll tbody tr:hover,
+.v3d-tabla tbody tr:hover {
+  background: color-mix(in srgb, var(--md-on-surface) var(--md-hover), transparent);
+}
+
+.v3d-tabla {
+  background: transparent;
+}
+
+.v3d-tabla tr.es-elegida {
+  background: var(--md-secondary-container);
+}
+
+/* ---- Estados ---- */
+.estado-error {
+  color: var(--md-on-error-container);
+  background: var(--md-error-container);
+  border: 0;
+  border-radius: var(--md-corner-md);
+}
+
+.estado-vacio,
+.estado-cargando {
+  color: var(--md-on-surface-variant);
+}
+
+/* ---- Chips de filtro (períodos, atajos) ---- */
+.v3d-periodos button,
+.atajos button {
+  min-height: 32px;
+  padding: 0.25rem 1rem;
+  color: var(--md-on-surface-variant);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-corner-sm);
+}
+
+.v3d-periodos button small {
+  color: var(--md-on-surface-variant);
+}
+
+.v3d-periodos button[aria-pressed='true'],
+.atajos button[aria-pressed='true'] {
+  padding-left: 0.6rem;
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+  border-color: transparent;
+}
+
+.v3d-periodos button[aria-pressed='true'] small {
+  color: var(--md-on-secondary-container);
+}
+
+.v3d-periodos button[aria-pressed='true']::before,
+.atajos button[aria-pressed='true']::before {
+  content: '';
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.3rem;
+  margin-right: 0.4rem;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: translateY(-0.15rem) rotate(-45deg);
+}
+
+.v3d-periodos button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.v3d-periodos button[aria-pressed='true'] {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0;
+}
+
+.v3d-periodos button[aria-pressed='true']::before {
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+/* ---- Pestañas de la vista 3D: pestañas secundarias ---- */
+.v3d-pestanas {
+  background: var(--md-surface-container-low);
+  border: 0;
+  border-radius: var(--md-corner-full);
+}
+
+.v3d-pestanas [role='tab'] {
+  border-radius: var(--md-corner-full);
+}
+
+.v3d-pestanas [role='tab'][aria-selected='true'] {
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+}
+
+.v3d-pestanas [role='tab'][aria-selected='true'] small {
+  color: var(--md-on-secondary-container);
+}
+
+/* Botón segmentado sobre el escenario 3D (fondo oscuro: roles inversos) */
+.v3d-segmentado {
+  padding: 0;
+  gap: 0;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  border-radius: var(--md-corner-full);
+  overflow: hidden;
+}
+
+.v3d-segmentado button {
+  min-height: 40px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0;
+}
+
+.v3d-segmentado button + button {
+  border-left: 1px solid rgb(255 255 255 / 0.5);
+}
+
+.v3d-segmentado button.es-activo {
+  color: #001f26;
+  background: var(--md-inverse-primary);
+}
+
+.v3d-segmentado button.es-activo::before {
+  content: '';
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.3rem;
+  margin-right: 0.45rem;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: translateY(-0.15rem) rotate(-45deg);
+}
+
+.v3d-panel {
+  border-radius: var(--md-corner-lg);
+}
+
+.v3d-escenario {
+  border-radius: var(--md-corner-xl);
+}
+
+.v3d-enlace {
+  min-height: 0;
+  padding: 0;
+  color: var(--md-primary);
+  border: 0;
+  border-radius: 0;
+}
+
+.v3d-enlace:hover:not(:disabled) {
+  background: transparent;
+}
+
+/* ---- Foco visible (md: indicador de 3 px) ---- */
+:focus-visible {
+  outline: 3px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Pantallas angostas ---- */
+@media (max-width: 1023px) {
+  .v3d-lienzo-caja {
+    border-radius: var(--md-corner-lg);
+  }
+}
+
+/* ---- Alto contraste: se respeta lo que define el panel de accesibilidad ---- */
+html[data-contraste='alto'] {
+  --md-outline: #000;
+  --md-outline-variant: #000;
+  --md-on-surface-variant: #000;
+}
+
+html[data-contraste='alto'] .encabezado {
+  background: #fff;
+  border-bottom: 2px solid #000;
+}
+
+html[data-contraste='alto'] .encabezado nav a.active::after {
+  background: #000;
+}
+
+html[data-movimiento='reducido'] * {
+  transition-duration: 0ms !important;
+}
+
+/* Mensajes de carga dentro de los paneles oscuros de la vista 3D */
+.v3d-panel .estado-cargando,
+.v3d-panel .estado-vacio {
+  color: var(--v3d-panel-suave);
+}
+
+/* =====================================================================
+   Componentes oficiales de @material/web y tipografía Roboto
+   ===================================================================== */
+:root {
+  --serif: 'Roboto', system-ui, sans-serif;
+  --md-ref-typeface-plain: 'Roboto', system-ui, sans-serif;
+  --md-ref-typeface-brand: 'Roboto', system-ui, sans-serif;
+  --md-sys-color-primary: var(--md-primary);
+  --md-sys-color-secondary: var(--md-secondary);
+  --md-sys-color-on-surface: var(--md-on-surface);
+  --md-sys-color-surface-container-highest: var(--md-surface-container-highest);
+  --md-focus-ring-color: var(--md-primary);
+  --md-focus-ring-width: 3px;
+  --md-linear-progress-active-indicator-color: var(--md-primary);
+  --md-linear-progress-track-color: var(--md-secondary-container);
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.encabezado-marca h1 {
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+h2 {
+  font-weight: 400; /* headline: Roboto regular */
+}
+
+.hero h2 {
+  font-weight: 400;
+}
+
+.encabezado-marca h1 {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Onda y anillo de foco: el control nativo es el anfitrión. */
+.con-onda {
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.con-onda:focus-visible {
+  outline: none;
+}
+
+md-ripple {
+  --md-ripple-hover-color: currentColor;
+  --md-ripple-pressed-color: currentColor;
+  border-radius: inherit;
+}
+
+/* Con la onda, el fondo de hover hecho a mano sobra. */
+.encabezado nav a.con-onda:hover {
+  background: transparent;
+}
+
+button.con-onda:not(.acciones button, .boton-primario, [type='submit']):hover:not(:disabled) {
+  background: transparent;
+}
+
+.v3d-periodos button.con-onda[aria-pressed='true']:hover,
+.v3d-segmentado button.con-onda.es-activo:hover {
+  background: var(--md-secondary-container);
+}
+
+.v3d-segmentado button.con-onda.es-activo:hover {
+  background: var(--md-inverse-primary);
+}
+
+md-focus-ring {
+  --md-focus-ring-shape: inherit;
+}
+
+/* Íconos */
+md-icon {
+  --md-icon-size: 20px;
+  flex: none;
+  color: inherit;
+  fill: currentColor;
+}
+
+md-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.a11y-boton {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 1.5rem 0 1rem;
+}
+
+.menu-boton md-icon {
+  --md-icon-size: 24px;
+}
+
+/* Pestañas primarias con ícono arriba (M3: 64 px de alto) */
+@media (min-width: 720px) {
+  .encabezado nav ul {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .encabezado nav a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    align-items: center;
+    min-height: 64px;
+    padding: 0.55rem 0.9rem 0.6rem;
+    font-size: 0.8125rem;
+  }
+
+  .encabezado nav a md-icon {
+    --md-icon-size: 24px;
+  }
+
+  .encabezado nav a.active md-icon {
+    color: var(--md-primary);
+  }
+}
+
+@media (max-width: 719px) {
+  .encabezado nav ul.abierto a {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+}
+
+/* Tarjetas de acceso con ícono en contenedor tonal */
+.accesos li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.85rem;
+  align-items: start;
+  padding: 1rem;
+}
+
+.accesos li > .nota {
+  grid-column: 2;
+}
+
+.acceso-icono {
+  --md-icon-size: 24px;
+  grid-row: span 2;
+  box-sizing: content-box;
+  padding: 0.6rem;
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+  border-radius: var(--md-corner-md);
+}
+
+/* Progreso lineal en los estados de carga */
+.estado-cargando {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+.estado-cargando p {
+  margin: 0;
+}
+
+md-linear-progress {
+  display: block;
+  width: 100%;
+}
+
+/* Pestañas: la onda y el foco siguen una forma redondeada, con el indicador abajo. */
+.encabezado nav a {
+  border-radius: var(--md-corner-sm) var(--md-corner-sm) 0 0;
+}
+
+.encabezado nav a md-focus-ring {
+  --md-focus-ring-shape: var(--md-corner-sm);
+}

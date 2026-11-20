@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FeatureCollection } from 'geojson'
 import { ApiError, getAccumulated, getNetworkHealth, getStations } from '../api/client'
 import type { AccumulatedOut, AccumulatedStation, NetworkState, Station } from '../api/types'
@@ -11,15 +11,36 @@ import {
   resumenPorDepartamento,
   ultimosDias,
 } from '../components/maqueta/maqueta-datos'
+import Atajos from '../components/shortcuts/Atajos.tsx'
+import { resolverEstaciones, type Atajo } from '../components/shortcuts/atajos'
+import BarraTiempo from '../components/timeline/BarraTiempo'
+import { mesesDelPeriodo, type Mes } from '../components/timeline/timeline-datos'
 import ProbaCambio, { type Variante } from '../components/panels/ProbaCambio'
 import Resultados from '../components/panels/Resultados'
 import { periodoValido, type SeleccionValor } from '../components/panels/panels-datos'
 import Seleccion from '../components/panels/Seleccion'
 import { FECHA_CORTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 import { colorMm, textoMmMapa } from './map-helpers'
 
 const DEPARTAMENTOS = '/geo/formosa_departamentos.geojson'
+const RIOS = '/geo/formosa_cursos_agua_perennes.geojson'
+const RIOS_INTERMITENTES = '/geo/formosa_cursos_agua_intermitentes.geojson'
+
+/** Los cursos de agua son de adorno cartográfico: si no cargan, la maqueta sigue sin ellos. */
+async function cargarOpcional(url: string, signal: AbortSignal): Promise<FeatureCollection | null> {
+  try {
+    const respuesta = await fetch(url, { signal })
+    if (!respuesta.ok) return null
+    const valor = (await respuesta.json()) as { type?: unknown; features?: unknown }
+    return valor.type === 'FeatureCollection' && Array.isArray(valor.features)
+      ? (valor as FeatureCollection)
+      : null
+  } catch {
+    return null
+  }
+}
 
 function hace(dias: number): string {
   return ultimosDias(FECHA_CORTE, dias).desde
@@ -42,8 +63,9 @@ function mapaPorId(a: AccumulatedOut | null): Map<number, AccumulatedStation> {
 }
 
 function Leyenda() {
+  const { t } = useIdioma()
   const items = [
-    { color: colorMm(0), etiqueta: '0 mm (dato real)' },
+    { color: colorMm(0), etiqueta: t('maqueta.datoReal0') },
     { color: colorMm(5), etiqueta: '< 10 mm' },
     { color: colorMm(20), etiqueta: '10–30 mm' },
     { color: colorMm(45), etiqueta: '30–60 mm' },
@@ -51,7 +73,7 @@ function Leyenda() {
     { color: colorMm(120), etiqueta: '≥ 100 mm' },
   ]
   return (
-    <ul className="mapa-leyenda" aria-label="Leyenda de la maqueta">
+    <ul className="mapa-leyenda" aria-label={t('maqueta.leyendaAria')}>
       {items.map((i) => (
         <li key={i.etiqueta} className="mapa-leyenda-item">
           <span className="mapa-leyenda-color" style={{ background: i.color }} aria-hidden="true" />
@@ -60,11 +82,16 @@ function Leyenda() {
       ))}
       <li className="mapa-leyenda-item">
         <span className="mapa-leyenda-color mapa-leyenda-color-sin-dato" aria-hidden="true" />
-        Sin dato (rayado): no es 0 mm
+        {t('maqueta.sinDatoLeyenda')}
       </li>
       <li className="mapa-leyenda-item">
-        <span aria-hidden="true">◐</span> Estación en silencio (apagada)
+        <span className="marca-estado marca-estado-en_silencio" aria-hidden="true" />{' '}
+        {t('maqueta.silencioLeyenda')}
       </li>
+      <li className="mapa-leyenda-item">
+        <span className="mapa-leyenda-rio" aria-hidden="true" /> {t('maqueta.riosLeyenda')}
+      </li>
+      <li className="nota">{t('maqueta.alturaNota')}</li>
     </ul>
   )
 }
@@ -72,6 +99,10 @@ function Leyenda() {
 export default function Maqueta() {
   const geo = useAsync(cargarDepartamentos, [])
   const catalogo = useAsync((signal) => getStations({ limit: 200 }, signal), [])
+  const rios = useAsync((signal) => cargarOpcional(RIOS, signal), [])
+  const intermitentes = useAsync((signal) => cargarOpcional(RIOS_INTERMITENTES, signal), [])
+  const [verIntermitentes, setVerIntermitentes] = useState(false)
+  const [exageracion, setExageracion] = useState(1)
   const [sel, setSel] = useState<SeleccionValor>({
     desde: hace(30),
     hasta: FECHA_CORTE,
@@ -84,14 +115,20 @@ export default function Maqueta() {
   const [varDatos, setVarDatos] = useState<AccumulatedOut | null>(null)
   const [varCargando, setVarCargando] = useState(false)
   const [varError, setVarError] = useState<string | null>(null)
+  const [atajo, setAtajo] = useState<Atajo['id'] | null>(null)
+  const [meses, setMeses] = useState<Mes[] | null>(null)
+  const [indiceMes, setIndiceMes] = useState(0)
+  const [avisoAtajo, setAvisoAtajo] = useState<string | null>(null)
   const valido = periodoValido(sel)
+  // En reproducción se pide un mes a la vez; si no, el período elegido entero.
+  const periodo = meses ? meses[Math.min(indiceMes, meses.length - 1)] : sel
 
   const acumulado = useAsync(
     (signal) =>
       valido
-        ? getAccumulated({ from: sel.desde, to: sel.hasta, category: sel.category }, signal)
+        ? getAccumulated({ from: periodo.desde, to: periodo.hasta, category: sel.category }, signal)
         : Promise.resolve(null),
-    [sel.desde, sel.hasta, sel.category, valido],
+    [periodo.desde, periodo.hasta, sel.category, valido],
   )
 
   useEffect(() => {
@@ -129,7 +166,29 @@ export default function Maqueta() {
     setSel((s) => ({ ...s, zona: s.zona === real ? '' : real, estaciones: [] }))
   }
 
+  function elegirAtajo(a: Atajo) {
+    const { ids, faltan } = resolverEstaciones(a.codigos, estaciones)
+    if (faltan.length > 0) {
+      setAvisoAtajo(
+        `No se puede abrir este atajo: faltan en el catálogo las estaciones ${faltan.join(', ')}.`,
+      )
+      return
+    }
+    setAvisoAtajo(null)
+    setAtajo(a.id)
+    setSel({ desde: a.desde, hasta: a.hasta, category: 'observado', zona: '', estaciones: ids })
+    setMeses(a.reproducir ? mesesDelPeriodo(a.desde, a.hasta, FECHA_CORTE) : null)
+    setIndiceMes(0)
+    setVariante(null)
+    setVarDatos(null)
+  }
+
+  const cambiarMes = useCallback((i: number) => setIndiceMes(i), [])
+
   function cambiarSeleccion(v: SeleccionValor) {
+    setAtajo(null)
+    setMeses(null)
+    setAvisoAtajo(null)
     setSel(v)
     setVariante(null)
     setVarDatos(null)
@@ -198,6 +257,16 @@ export default function Maqueta() {
       {acumulado.estado.tipo === 'error' && (
         <ErrorEstado mensaje={acumulado.estado.mensaje} onReintentar={acumulado.reintentar} />
       )}
+      <Atajos activo={atajo} alElegir={elegirAtajo} />
+      {avisoAtajo && <ErrorEstado mensaje={avisoAtajo} />}
+      {meses && meses.length > 0 && (
+        <BarraTiempo
+          meses={meses}
+          indice={indiceMes}
+          cargando={acumulado.estado.tipo === 'cargando'}
+          alCambiar={cambiarMes}
+        />
+      )}
       <div className="maqueta-layout">
         <div className="maqueta-escena">
           {geo.estado.tipo === 'listo' && (
@@ -208,9 +277,37 @@ export default function Maqueta() {
               salud={salud}
               resumen={resumen}
               seleccionado={seleccionado}
+              rios={rios.estado.tipo === 'listo' ? rios.estado.datos : null}
+              intermitentes={
+                intermitentes.estado.tipo === 'listo' ? intermitentes.estado.datos : null
+              }
+              mostrarIntermitentes={verIntermitentes}
+              exageracion={exageracion}
               onSeleccionar={elegirDepartamento}
             />
           )}
+          <div className="maqueta-vista">
+            <label>
+              Altura de los bloques
+              <input
+                type="range"
+                min={0.5}
+                max={2}
+                step={0.25}
+                value={exageracion}
+                onChange={(e) => setExageracion(Number(e.target.value))}
+                aria-valuetext={`${exageracion} veces`}
+              />
+            </label>
+            <label className="opcion">
+              <input
+                type="checkbox"
+                checked={verIntermitentes}
+                onChange={(e) => setVerIntermitentes(e.target.checked)}
+              />
+              Mostrar cursos de agua intermitentes
+            </label>
+          </div>
           <Leyenda />
           {seleccionado && (
             <section

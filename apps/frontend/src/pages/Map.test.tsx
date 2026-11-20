@@ -27,7 +27,7 @@ vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="map-container">{children}</div>
   ),
-  TileLayer: () => null,
+  TileLayer: () => <div data-testid="tile-layer" />,
   GeoJSON: ({
     data,
     onEachFeature,
@@ -85,8 +85,9 @@ vi.mock('../api/client', async (original) => ({
   ...(await original<typeof import('../api/client')>()),
   getStations: vi.fn(),
   getAccumulated: vi.fn(),
+  getEvents: vi.fn(),
 }))
-import { getAccumulated, getStations } from '../api/client'
+import { getAccumulated, getEvents, getStations } from '../api/client'
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -198,6 +199,15 @@ beforeEach(() => {
     listaEstaciones([ESTACION_CON_COORDS, ESTACION_SIN_COORDS]),
   )
   vi.mocked(getAccumulated).mockResolvedValue(acumulados())
+  vi.mocked(getEvents).mockResolvedValue({
+    category: 'observado',
+    date_from: '2026-10-25',
+    date_to: '2026-10-31',
+    min_dry_days: 7,
+    stations: [],
+    notice: '',
+    description: '',
+  })
 })
 
 afterEach(() => {
@@ -220,6 +230,12 @@ describe('Mapa provincial', () => {
   it('renderiza el encabezado y la leyenda PROTOTIPO en el footer del app', async () => {
     renderMapa()
     expect(screen.getByRole('heading', { name: /mapa provincial/i })).toBeInTheDocument()
+  })
+
+  it('arranca con mapa base local: no pide teselas de Internet (demo sin conexión)', () => {
+    renderMapa()
+    expect(screen.getByTestId('mapa-contenedor')).toHaveAttribute('data-mapa-base', 'local')
+    expect(screen.queryByTestId('tile-layer')).not.toBeInTheDocument()
   })
 
   it('muestra el contenedor del mapa', () => {
@@ -395,11 +411,10 @@ describe('Mapa provincial', () => {
     })
   })
 
-  it('el selector de categoría cambia la categoría mostrada', async () => {
+  it('el panel de capas prende cada categoría con su propia consulta', async () => {
     const user = userEvent.setup()
     renderMapa()
-    const selector = screen.getByLabelText(/categoría de dato/i)
-    await user.selectOptions(selector, 'estimado')
+    await user.click(screen.getByRole('checkbox', { name: /estimado/i }))
     await waitFor(() => {
       expect(vi.mocked(getAccumulated)).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'estimado' }),
@@ -408,18 +423,30 @@ describe('Mapa provincial', () => {
     })
   })
 
-  it('no mezcla observado con estimado en la misma consulta', async () => {
+  it('no mezcla categorías: cada consulta pide una sola', async () => {
     const user = userEvent.setup()
     renderMapa()
-    const selector = screen.getByLabelText(/categoría de dato/i)
-    await user.selectOptions(selector, 'referencia')
+    await user.click(screen.getByRole('checkbox', { name: /referencia/i }))
     await waitFor(() => {
-      const llamadas = vi.mocked(getAccumulated).mock.calls
-      llamadas.forEach(([params]) => {
-        // Cada llamada usa una sola categoría, nunca mezclada
-        expect(typeof params.category).toBe('string')
-      })
+      const categorias = vi.mocked(getAccumulated).mock.calls.map(([p]) => p.category)
+      expect(categorias).toContain('referencia')
+      categorias.forEach((c) => expect(typeof c).toBe('string'))
     })
+  })
+
+  it('apagar la capa observada la quita del mapa y de los totales', async () => {
+    const user = userEvent.setup()
+    renderMapa()
+    expect(await screen.findByText(/con dato,/)).toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: /lluvia observada/i }))
+    await waitFor(() => expect(screen.queryByText(/con dato,/)).not.toBeInTheDocument())
+  })
+
+  it('los reportes policiales figuran como pendientes y no se pueden prender', () => {
+    renderMapa()
+    const caja = screen.getByRole('checkbox', { name: /reportes policiales/i })
+    expect(caja).toBeDisabled()
+    expect(screen.getByText(/Pendiente: todavía no hay una fuente/)).toBeInTheDocument()
   })
 })
 
@@ -433,18 +460,18 @@ describe('colorMm', () => {
   })
 
   it('devuelve azul muy claro para 0 mm real', () => {
-    expect(colorMm(0)).toBe('#e3f2fd')
+    expect(colorMm(0)).toBe('#ffffd9')
   })
 
   it('devuelve color azul intenso para ≥ 100 mm', () => {
-    expect(colorMm(150)).toBe('#0d47a1')
+    expect(colorMm(150)).toBe('#0c2c84')
   })
 
   it('devuelve color proporcional para rangos intermedios', () => {
-    expect(colorMm(5)).toBe('#90caf9')
-    expect(colorMm(20)).toBe('#42a5f5')
-    expect(colorMm(45)).toBe('#1e88e5')
-    expect(colorMm(80)).toBe('#1565c0')
+    expect(colorMm(5)).toBe('#c7e9b4')
+    expect(colorMm(20)).toBe('#7fcdbb')
+    expect(colorMm(45)).toBe('#41b6c4')
+    expect(colorMm(80)).toBe('#1d91c0')
   })
 })
 

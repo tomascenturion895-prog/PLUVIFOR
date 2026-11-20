@@ -5,6 +5,7 @@ import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { InsigniaAdvertencia } from '../components/Insignias'
 import { FECHA_CORTE, MAX_ESTACIONES_PARTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
+import { useIdioma } from '../i18n/usar-idioma'
 
 function restarDias(fecha: string, dias: number): string {
   const d = new Date(`${fecha}T00:00:00Z`)
@@ -17,6 +18,7 @@ const DESDE_INICIAL = restarDias(FECHA_CORTE, 6)
 type Copia = 'ninguna' | 'copiado' | 'error'
 
 export default function Parte() {
+  const { t } = useIdioma()
   const estaciones = useAsync((signal) => getStations({ limit: 200 }, signal), [])
   const [elegidas, setElegidas] = useState<number[]>([])
   const [desde, setDesde] = useState(DESDE_INICIAL)
@@ -68,15 +70,14 @@ export default function Parte() {
   return (
     <section>
       <div className="no-imprimir">
-        <h2>Parte pluvial</h2>
-        <p>
-          Elegí las estaciones y el período. El parte indica la fuente, la categoría, la fecha de
-          corte y las advertencias de calidad. Un día sin dato no cuenta como 0 mm.
-        </p>
+        <h2>{t('nav.parte')}</h2>
+        <p>{t('parte.intro')}</p>
 
         <form className="filtros" onSubmit={(e) => void generar(e)}>
           <fieldset className="estaciones-lista">
-            <legend>Estaciones (hasta {MAX_ESTACIONES_PARTE})</legend>
+            <legend>
+              {t('comun.estaciones')} (hasta {MAX_ESTACIONES_PARTE})
+            </legend>
             {estaciones.estado.tipo === 'cargando' && <Cargando />}
             {estaciones.estado.tipo === 'error' && (
               <ErrorEstado
@@ -86,7 +87,7 @@ export default function Parte() {
             )}
             {estaciones.estado.tipo === 'listo' &&
               (estaciones.estado.datos.items.length === 0 ? (
-                <Vacio>No hay estaciones cargadas.</Vacio>
+                <Vacio>{t('comun.sinEstaciones')}</Vacio>
               ) : (
                 estaciones.estado.datos.items.map((s) => (
                   <label key={s.id} className="opcion">
@@ -101,7 +102,7 @@ export default function Parte() {
               ))}
           </fieldset>
           <label>
-            Desde
+            {t('comun.desde')}
             <input
               type="date"
               value={desde}
@@ -110,7 +111,7 @@ export default function Parte() {
             />
           </label>
           <label>
-            Hasta
+            {t('comun.hasta')}
             <input
               type="date"
               value={hasta}
@@ -120,7 +121,7 @@ export default function Parte() {
           </label>
           <div className="acciones">
             <button type="submit" disabled={!puedeGenerar}>
-              Generar parte
+              {t('parte.generar')}
             </button>
           </div>
         </form>
@@ -130,24 +131,23 @@ export default function Parte() {
             mensaje={`Elegí un período válido: «Desde» no puede ser posterior a «Hasta» y ninguna fecha puede pasar del ${FECHA_CORTE}.`}
           />
         )}
-        {cargando && <Cargando texto="Armando el parte…" />}
+        {cargando && <Cargando texto={t('parte.armando')} />}
         {error && <ErrorEstado mensaje={error} />}
       </div>
 
       {parte && (
-        <article className="parte" aria-label="Parte pluvial">
+        <article className="parte" aria-label={t('nav.parte')}>
           <div className="no-imprimir acciones">
             <button type="button" onClick={() => void copiar()}>
-              Copiar texto
+              {t('parte.copiar')}
             </button>
             <button type="button" onClick={() => window.print()}>
-              Imprimir
+              {t('parte.imprimir')}
             </button>
           </div>
           <p role="status" className="nota no-imprimir">
-            {copia === 'copiado' && 'Texto copiado. Ya lo podés pegar.'}
-            {copia === 'error' &&
-              'No se pudo copiar automáticamente: seleccioná el texto del parte y copialo.'}
+            {copia === 'copiado' && t('parte.copiado')}
+            {copia === 'error' && t('parte.copiaError')}
           </p>
           <pre className="parte-texto">{parte.text}</pre>
 

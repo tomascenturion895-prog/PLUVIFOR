@@ -1,69 +1,90 @@
 import { InsigniaCategoria, InsigniaEstado } from '../components/Insignias'
 import { ADVERTENCIAS, type CodigoAdvertencia } from '../components/insignias-datos'
+import { useIdioma } from '../i18n/usar-idioma'
+import type { ClaveTraduccion } from '../i18n/traducciones/es'
+
+const CLAVE_ADV: Record<CodigoAdvertencia, { texto: ClaveTraduccion; desc: ClaveTraduccion }> = {
+  horario_corte_distinto: {
+    texto: 'adv.horario_corte_distinto',
+    desc: 'adv.horario_corte_distinto.desc',
+  },
+  observado_vs_estimado: {
+    texto: 'adv.observado_vs_estimado',
+    desc: 'adv.observado_vs_estimado.desc',
+  },
+  cobertura_despareja: {
+    texto: 'adv.cobertura_despareja',
+    desc: 'adv.cobertura_despareja.desc',
+  },
+  dato_sin_validar: {
+    texto: 'adv.dato_sin_validar',
+    desc: 'adv.dato_sin_validar.desc',
+  },
+  ceros_prolongados: {
+    texto: 'adv.ceros_prolongados',
+    desc: 'adv.ceros_prolongados.desc',
+  },
+  inconsistente_con_vecinas: {
+    texto: 'adv.inconsistente_con_vecinas',
+    desc: 'adv.inconsistente_con_vecinas.desc',
+  },
+}
 
 export default function Help() {
+  const { t } = useIdioma()
   const codigos = Object.keys(ADVERTENCIAS) as CodigoAdvertencia[]
   return (
     <section>
-      <h2>Ayuda</h2>
-      <p>Qué significa cada estado de un día, cada categoría de dato y cada advertencia.</p>
+      <h2>{t('ayuda.titulo')}</h2>
+      <p>{t('ayuda.intro')}</p>
 
-      <h3>Estados de un día</h3>
+      <h3>{t('ayuda.estados.titulo')}</h3>
       <ul className="ayuda-lista">
         <li>
-          <InsigniaEstado estado="dato" /> Hay una medición para ese día. Un «0 mm» con este estado
-          es lluvia cero medida.
+          <InsigniaEstado estado="dato" /> {t('ayuda.estados.dato')}
         </li>
         <li>
-          <InsigniaEstado estado="sin_fila" /> La fuente no tiene ese día. No significa que no haya
-          llovido.
+          <InsigniaEstado estado="sin_fila" /> {t('ayuda.estados.sin_fila')}
         </li>
         <li>
-          <InsigniaEstado estado="fila_sin_valor" /> La fuente tiene el día pero sin un valor.
-          Tampoco significa que no haya llovido.
+          <InsigniaEstado estado="fila_sin_valor" /> {t('ayuda.estados.fila_sin_valor')}
         </li>
       </ul>
-      <p className="nota">
-        Los días sin dato se cuentan aparte y nunca entran como 0 mm en un acumulado.
-      </p>
+      <p className="nota">{t('ayuda.estados.nota')}</p>
 
-      <h3>Categorías del dato</h3>
+      <h3>{t('ayuda.categorias.titulo')}</h3>
       <ul className="ayuda-lista">
         <li>
-          <InsigniaCategoria categoria="observado" /> Medido por una estación o un reporte.
+          <InsigniaCategoria categoria="observado" /> {t('ayuda.categorias.observado')}
         </li>
         <li>
-          <InsigniaCategoria categoria="estimado" /> Calculado, no medido. Nunca se suma ni se
-          promedia con lo observado.
+          <InsigniaCategoria categoria="estimado" /> {t('ayuda.categorias.estimado')}
         </li>
         <li>
-          <InsigniaCategoria categoria="referencia" /> Valor de referencia, como una normal
-          climática. Tampoco se mezcla con lo observado.
+          <InsigniaCategoria categoria="referencia" /> {t('ayuda.categorias.referencia')}
         </li>
       </ul>
 
-      <h3>Las 6 advertencias de comparabilidad</h3>
-      <p>
-        Avisan cuando dos datos no se pueden comparar de igual a igual. Son descriptivas: no son
-        alertas de riesgo.
-      </p>
+      <h3>{t('ayuda.advertencias.titulo')}</h3>
+      <p>{t('ayuda.advertencias.intro')}</p>
       <dl className="ayuda-advertencias">
         {codigos.map((codigo) => (
           <div key={codigo}>
-            <dt>{ADVERTENCIAS[codigo].texto}</dt>
-            <dd>{ADVERTENCIAS[codigo].descripcion}</dd>
+            <dt>{t(CLAVE_ADV[codigo].texto)}</dt>
+            <dd>{t(CLAVE_ADV[codigo].desc)}</dd>
           </div>
         ))}
       </dl>
 
-      <h3>Otras cosas para tener en cuenta</h3>
+      <h3>{t('ayuda.otras.titulo')}</h3>
       <ul>
         <li>
-          Una estación <strong>en silencio</strong> es la que dejó de reportar: se ve apagada y
-          nunca con el color de 0 mm.
+          {t('ayuda.otras.silencio.inicio')}
+          <strong>{t('ayuda.otras.silencio.destacado')}</strong>
+          {t('ayuda.otras.silencio.fin')}
         </li>
-        <li>Los datos llegan hasta el 31/10/2026; no se usan días posteriores.</li>
-        <li>Los acumulados de estaciones distintas no se suman: cada estación tiene el suyo.</li>
+        <li>{t('ayuda.otras.corte')}</li>
+        <li>{t('ayuda.otras.acumulados')}</li>
       </ul>
     </section>
   )

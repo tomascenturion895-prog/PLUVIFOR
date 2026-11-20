@@ -58,3 +58,13 @@ class LocationSource(StrEnum):
 
     DISPOSITIVO = "dispositivo"
     MANUAL = "manual"
+
+
+class SensorCategory(StrEnum):
+    """Categoría de una lectura de sensor. Hoy no hay hardware real: todo entra como `simulado`.
+
+    Una lectura simulada nunca se suma ni se promedia con lo observado, lo de referencia ni
+    lo estimado. Aceptar sensores reales sería una decisión y una categoría nueva.
+    """
+
+    SIMULADO = "simulado"

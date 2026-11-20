@@ -1,0 +1,118 @@
+/* ---- Maqueta 3D ---- */
+.maqueta-pared {
+  filter: brightness(0.62) saturate(1.1);
+  stroke: #0b1d24;
+  stroke-width: 0.3;
+}
+
+.maqueta-lado {
+  display: none;
+}
+
+.maqueta-tapa {
+  stroke: #0f2a31;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+
+.maqueta-rio-borde {
+  fill: none;
+  stroke: #0b2a3f;
+  stroke-opacity: 0.55;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.maqueta-rio {
+  fill: none;
+  stroke: #6fd6ff;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.maqueta-rio-int {
+  fill: none;
+  stroke: #6fd6ff;
+  stroke-width: 0.6;
+  stroke-dasharray: 3 3;
+  opacity: 0.8;
+}
+
+.mapa-leyenda-rio {
+  display: inline-block;
+  width: 1.4rem;
+  height: 0.25rem;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  background: #6fd6ff;
+  border: 1px solid #0b2a3f;
+  border-radius: 2px;
+}
+
+.maqueta-vista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.maqueta-vista label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.maqueta-vista .opcion {
+  font-weight: 400;
+}
+
+.maqueta-vista input[type='range'] {
+  min-height: 0;
+  width: 9rem;
+}
+
+.maqueta-vista input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Botones y campos de la maqueta con el mismo estilo del resto */
+.atajos button,
+.maqueta-layout button,
+.barra-tiempo button {
+  padding: 0 1rem;
+  color: var(--tinta);
+  font: inherit;
+  background: var(--superficie-elevada);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+
+.atajos button:hover,
+.maqueta-layout button:hover,
+.barra-tiempo button:hover {
+  border-color: var(--accu-orange);
+  background: var(--accu-orange-light);
+  color: #fff;
+}
+
+.maqueta-layout select,
+.maqueta-layout input[type='date'] {
+  min-height: 44px;
+  padding: 0 0.75rem;
+  font: inherit;
+  background: #0f172a;
+  color: var(--tinta);
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+}
+
+input[type='range'],
+input[type='checkbox'] {
+  accent-color: var(--accu-orange);
+}

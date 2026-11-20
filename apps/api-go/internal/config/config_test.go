@@ -1,6 +1,7 @@
 package config
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -58,6 +59,121 @@ func TestBackendURLPorDefectoYValidacion(t *testing.T) {
 			t.Errorf("%q debía rechazarse", malo)
 		} else if strings.Contains(err.Error(), "SECRETO") {
 			t.Errorf("el error repite la clave: %v", err)
+		}
+	}
+}
+
+func TestRutaDeSQLite(t *testing.T) {
+	casos := map[string]string{
+		"sqlite:///./pluvifor.db":      "./pluvifor.db",
+		"sqlite:////tmp/demo.db":       "/tmp/demo.db",
+		"sqlite+pysqlite:////tmp/a.db": "/tmp/a.db",
+		"sqlite:////tmp/a.db?mode=ro":  "/tmp/a.db",
+	}
+	for url, want := range casos {
+		cfg, err := Load(func(k string) (string, bool) {
+			if k == "DATABASE_URL" {
+				return url, true
+			}
+			return "", false
+		})
+		if err != nil || cfg.Database.SQLitePath != want {
+			t.Errorf("%s → %q (%v), quería %q", url, cfg.Database.SQLitePath, err, want)
+		}
+	}
+}
+
+func TestPostgreSQLNoGuardaRutaNiClave(t *testing.T) {
+	cfg, err := Load(func(k string) (string, bool) {
+		if k == "DATABASE_URL" {
+			return "postgresql://usuario:secreto@host/db", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.Database.SQLitePath != "" || cfg.Database.Engine != "postgresql" {
+		t.Fatalf("cfg = %+v err = %v", cfg.Database, err)
+	}
+}
+
+func TestLimitesDePedidosPorDefectoYValidacion(t *testing.T) {
+	cfg, err := Load(func(string) (string, bool) { return "", false })
+	if err != nil || cfg.RateLimitPerMinute != 120 || cfg.RateLimitImportPerMinute != 10 {
+		t.Fatalf("cfg = %+v err = %v", cfg, err)
+	}
+	for _, malo := range []string{"-1", "abc", "1000001", "1.5"} {
+		_, err := Load(func(k string) (string, bool) {
+			if k == "API_GO_RATE_LIMIT_PER_MINUTE" {
+				return malo, true
+			}
+			return "", false
+		})
+		if err == nil {
+			t.Errorf("%q debía rechazarse", malo)
+		}
+	}
+	cfg, err = Load(func(k string) (string, bool) {
+		if k == "API_GO_RATE_LIMIT_PER_MINUTE" {
+			return "0", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.RateLimitPerMinute != 0 {
+		t.Fatalf("0 debe desactivar el límite: %+v %v", cfg, err)
+	}
+}
+
+func TestEscuchaSoloEnLocalhostPorDefecto(t *testing.T) {
+	cfg, err := Load(func(string) (string, bool) { return "", false })
+	if err != nil || cfg.Host != "127.0.0.1" {
+		t.Fatalf("host = %q err = %v", cfg.Host, err)
+	}
+	cfg, err = Load(func(k string) (string, bool) {
+		if k == "API_GO_HOST" {
+			return "0.0.0.0", true
+		}
+		return "", false
+	})
+	if err != nil || cfg.Host != "0.0.0.0" {
+		t.Fatalf("API_GO_HOST debía poder abrirse a la red a pedido: %q %v", cfg.Host, err)
+	}
+	for _, malo := range []string{"host:8080", "a b", "http://x", "x/y"} {
+		if _, err := Load(func(k string) (string, bool) {
+			if k == "API_GO_HOST" {
+				return malo, true
+			}
+			return "", false
+		}); err == nil {
+			t.Errorf("%q debía rechazarse", malo)
+		}
+	}
+}
+
+func TestResolveSQLitePathBuscaLaBaseDePython(t *testing.T) {
+	existe := func(set ...string) func(string) bool {
+		return func(p string) bool {
+			for _, s := range set {
+				if filepath.ToSlash(filepath.Clean(p)) == s {
+					return true
+				}
+			}
+			return false
+		}
+	}
+	casos := []struct {
+		nombre, ruta string
+		hay          []string
+		want         string
+	}{
+		{"absoluta Unix", "/tmp/a.db", nil, "/tmp/a.db"},
+		{"absoluta Windows", "C:/datos/a.db", nil, "C:/datos/a.db"},
+		{"relativa donde corre Go", "./pluvifor.db", []string{"pluvifor.db"}, "pluvifor.db"},
+		{"relativa en el backend (desde apps/api-go)", "./pluvifor.db", []string{"../backend/pluvifor.db"}, "../backend/pluvifor.db"},
+		{"relativa en el backend (desde la raíz)", "./pluvifor.db", []string{"apps/backend/pluvifor.db"}, "apps/backend/pluvifor.db"},
+		{"no existe: queda la original", "./pluvifor.db", nil, "./pluvifor.db"},
+	}
+	for _, c := range casos {
+		if got := filepath.ToSlash(filepath.Clean(ResolveSQLitePath(c.ruta, existe(c.hay...)))); got != filepath.ToSlash(filepath.Clean(c.want)) {
+			t.Errorf("%s: %q, quería %q", c.nombre, got, c.want)
 		}
 	}
 }
