@@ -239,6 +239,23 @@ export interface SensorReading {
   created_at: string
 }
 
+/** Un dispositivo con su última lectura. Hoy todo es simulado. */
+export interface SensorDevice {
+  device_id: string
+  readings: number
+  first_read_at: string
+  last_read_at: string
+  /** Milímetros de la última lectura; puede ser un 0 real («midió y no llovió»). */
+  last_mm: number
+  category: 'simulado'
+}
+
+export interface SensorDeviceList {
+  items: SensorDevice[]
+  total: number
+  notice: string
+}
+
 export interface SensorReadingList {
   items: SensorReading[]
   total: number

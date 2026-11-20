@@ -3,7 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Response
 
 from app.api.deps import get_sensor_reading_service, require_device
-from app.schemas.sensor_readings import SensorReadingIn, SensorReadingList, SensorReadingOut
+from app.schemas.sensor_readings import (
+    SensorDeviceList,
+    SensorDeviceOut,
+    SensorReadingIn,
+    SensorReadingList,
+    SensorReadingOut,
+)
 from app.services.sensor_readings import SensorReadingService
 
 router = APIRouter(prefix="/api/sensor-readings", tags=["sensores (simulados)"])
@@ -35,3 +41,22 @@ def list_readings(
 ) -> SensorReadingList:
     items, total = service.latest(limit, offset, device_id)
     return SensorReadingList(items=[SensorReadingOut.model_validate(i) for i in items], total=total)
+
+
+@router.get(
+    "/devices",
+    response_model=SensorDeviceList,
+    summary="Dispositivos que enviaron lecturas, con su última lectura",
+)
+def list_devices(service: Service) -> SensorDeviceList:
+    items = [
+        SensorDeviceOut(
+            device_id=d.device_id,
+            readings=d.readings,
+            first_read_at=d.first_read_at,
+            last_read_at=d.last_read_at,
+            last_mm=d.last_mm,
+        )
+        for d in service.devices()
+    ]
+    return SensorDeviceList(items=items, total=len(items))

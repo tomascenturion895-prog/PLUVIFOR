@@ -66,3 +66,26 @@ class SensorReadingList(BaseModel):
     items: list[SensorReadingOut]
     total: int
     notice: str = AVISO_SIMULADAS
+
+
+class SensorDeviceOut(BaseModel):
+    """Un dispositivo y su última lectura. Hoy todo es simulado y se rotula así."""
+
+    device_id: str
+    readings: int
+    first_read_at: datetime
+    last_read_at: datetime
+    # Milímetros de la última lectura (puede ser un 0 real: «midió y no llovió»).
+    last_mm: float
+    category: SensorCategory = SensorCategory.SIMULADO
+
+    @field_validator("first_read_at", "last_read_at")
+    @classmethod
+    def _en_utc(cls, value: datetime) -> datetime:
+        return value.replace(tzinfo=UTC) if value.tzinfo is None else value
+
+
+class SensorDeviceList(BaseModel):
+    items: list[SensorDeviceOut]
+    total: int
+    notice: str = AVISO_SIMULADAS

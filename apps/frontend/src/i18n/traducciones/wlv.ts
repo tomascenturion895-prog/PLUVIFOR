@@ -17,6 +17,7 @@ export const wlv: Diccionario = {
   'nav.reporte': 'Honhat thamet',
   'nav.importar': 'M’ayhayej',
   'nav.salud': 'Red is',
+  'nav.sensores': 'Sensores',
   'nav.ayuda': 'Ch’ote (Ayuda)',
   'nav.noEncontrada': 'Ka n’oyen-a',
 

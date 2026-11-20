@@ -182,3 +182,31 @@ def test_listar_valida_la_paginacion_y_sin_lecturas_devuelve_lista_vacia(client)
     assert vacio["items"] == [] and vacio["total"] == 0 and vacio["notice"]
     assert client.get("/api/sensor-readings", params={"limit": 201}).status_code == 422
     assert client.get("/api/sensor-readings", params={"offset": -1}).status_code == 422
+
+
+def test_dispositivos_resume_cada_uno_con_su_ultima_lectura(client):
+    for device, hora, mm in [
+        ("SIM-001", "2026-10-20T07:00:00-03:00", 12.5),
+        ("SIM-001", "2026-10-22T07:00:00-03:00", 0),
+        ("SIM-002", "2026-10-21T07:00:00-03:00", 3),
+    ]:
+        client.post(
+            "/api/sensor-readings",
+            json={"device_id": device, "read_at": hora, "mm": mm},
+            headers=H,
+        )
+    r = client.get("/api/sensor-readings/devices")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total"] == 2 and "simuladas" in body["notice"]
+    uno, dos = body["items"]
+    assert uno["device_id"] == "SIM-001" and uno["readings"] == 2
+    # La última lectura es un 0 real (midió y no llovió): se devuelve como 0, no como vacío.
+    assert uno["last_mm"] == 0 and uno["last_read_at"].startswith("2026-10-22T10:00:00")
+    assert uno["first_read_at"].startswith("2026-10-20T10:00:00")
+    assert (dos["device_id"], dos["last_mm"], dos["category"]) == ("SIM-002", 3, "simulado")
+
+
+def test_dispositivos_sin_lecturas_devuelve_lista_vacia_y_no_inventa_ninguno(client):
+    body = client.get("/api/sensor-readings/devices").json()
+    assert body["items"] == [] and body["total"] == 0
