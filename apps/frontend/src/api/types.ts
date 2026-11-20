@@ -248,12 +248,20 @@ export interface SensorDevice {
   /** Milímetros de la última lectura; puede ser un 0 real («midió y no llovió»). */
   last_mm: number
   category: 'simulado'
+  /** Contra la fecha de corte de los datos. Un silencio no es 0 mm: `last_mm` sigue siendo el último valor real. */
+  state: 'activa' | 'en_silencio'
+  last_read_date: string
+  days_since_last: number
 }
 
 export interface SensorDeviceList {
   items: SensorDevice[]
   total: number
   notice: string
+  data_cutoff_date: string
+  silent_after_days: number
+  active: number
+  silent: number
 }
 
 export interface SensorReadingList {
