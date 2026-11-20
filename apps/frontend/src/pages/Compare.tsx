@@ -74,6 +74,7 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
               {datos.stations.map((e, i) => (
                 <Line
                   key={e.station_id}
+                  className={`serie-linea serie-linea-${i % COLORES.length}`}
                   type="linear"
                   dataKey={claveDe(e.station_id)}
                   name={e.station_name}

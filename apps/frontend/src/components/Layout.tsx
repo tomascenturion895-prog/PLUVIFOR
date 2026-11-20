@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import PanelAccesibilidad from './a11y/PanelAccesibilidad'
+import SelectorTema from './tema/SelectorTema'
 import { LEYENDA_PROTOTIPO, SECCIONES } from '../constants'
 import { tituloDe } from '../titulos'
 import Icono from '../material/Icono'
@@ -57,7 +58,10 @@ export default function Layout() {
               <p>Reporte pluvial de Formosa</p>
             </div>
           </div>
-          <PanelAccesibilidad />
+          <div className="encabezado-acciones">
+            <SelectorTema />
+            <PanelAccesibilidad />
+          </div>
         </div>
         <nav aria-label="Secciones">
           <button
