@@ -359,6 +359,60 @@ paths:
       responses:
         '200': { description: Más nuevos primero, con el aviso de que el canal es simulado. }
         '401': { $ref: '#/components/responses/Invalid' }
+  /api/recurrence:
+    get:
+      summary: Cada cuánto llovió 50 y 100 mm o más en una estación (histórico, no es predicción)
+      description: |
+        Frecuencia **pasada** de días de lluvia intensa, calculada solo con la serie `observado`. No proyecta
+        hacia adelante ni es una alerta. Un hueco (`sin_fila` o `fila_sin_valor`) no cuenta como lluvia ni
+        como día seco. Los días con dato dentro de una racha de ceros prolongados se excluyen (pueden ser
+        falsos ceros). Con menos de 5 años de dato válido no se informa ninguna frecuencia
+        (`sufficient_history: false`). Los períodos de más de 3.660 días se piden por tramos (tope: 4 tramos).
+      x-implemented-in: python
+      parameters:
+        - { name: station_id, in: query, required: true, schema: { type: integer, minimum: 1 } }
+        - { name: from, in: query, required: true, schema: { type: string, format: date } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Conteo y frecuencia pasada, con el detalle por año.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [station_id, station_name, category, date_from, date_to, valid_days, observed_years, excluded_zero_run_days, gap_days, sufficient_history, min_observed_years, ge50, ge100, by_year, notice]
+                properties:
+                  station_id: { type: integer }
+                  station_name: { type: string }
+                  category: { type: string, enum: [observado] }
+                  date_from: { type: string, format: date }
+                  date_to: { type: string, format: date }
+                  clipped_to_cutoff: { type: boolean }
+                  valid_days: { type: integer }
+                  observed_years: { type: number }
+                  excluded_zero_run_days: { type: integer }
+                  gap_days: { type: integer }
+                  sufficient_history: { type: boolean }
+                  min_observed_years: { type: number }
+                  ge50: { type: integer }
+                  ge100: { type: integer }
+                  ge50_per_year: { type: number, nullable: true }
+                  ge100_per_year: { type: number, nullable: true }
+                  ge50_every_years: { type: number, nullable: true }
+                  ge100_every_years: { type: number, nullable: true }
+                  by_year:
+                    type: array
+                    items:
+                      type: object
+                      required: [year, valid_days, ge50, ge100]
+                      properties:
+                        year: { type: integer }
+                        valid_days: { type: integer }
+                        ge50: { type: integer }
+                        ge100: { type: integer }
+                  notice: { type: string }
+        '404': { $ref: '#/components/responses/Invalid' }
+        '422': { $ref: '#/components/responses/Invalid' }
   /api/estimates:
     get:
       summary: Valores ESTIMADOS para días sin dato (SCRUM-93), siempre aparte de lo observado

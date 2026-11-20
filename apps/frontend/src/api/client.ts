@@ -10,6 +10,7 @@ import type {
   GapEstimateList,
   AlertOutboxList,
   AlertSubscriptionStatus,
+  RecurrenceOut,
   SensorDeviceList,
   SensorReadingList,
   ImportReport,
@@ -314,4 +315,15 @@ export function getBandejaAvisos(apiKey: string, signal?: AbortSignal): Promise<
     headers: conClave(apiKey),
     signal,
   })
+}
+
+/** Cada cuánto llovió 50 y 100 mm o más en una estación. Histórico y descriptivo, no es predicción. */
+export function getRecurrence(
+  params: { stationId: number; from: string; to: string },
+  signal?: AbortSignal,
+): Promise<RecurrenceOut> {
+  return request<RecurrenceOut>(
+    `/api/recurrence${query({ station_id: params.stationId, from: params.from, to: params.to })}`,
+    { signal },
+  )
 }

@@ -387,3 +387,28 @@ export interface AlertOutboxList {
   total: number
   notice: string
 }
+
+/** Recurrencia histórica de días de lluvia intensa. Descriptiva: no es una predicción. */
+export interface RecurrenceOut {
+  station_id: number
+  station_name: string
+  category: DataCategory
+  date_from: string
+  date_to: string
+  clipped_to_cutoff: boolean
+  valid_days: number
+  observed_years: number
+  excluded_zero_run_days: number
+  gap_days: number
+  /** false si hay menos de `min_observed_years` de dato válido: no se informa ninguna frecuencia. */
+  sufficient_history: boolean
+  min_observed_years: number
+  ge50: number
+  ge100: number
+  ge50_per_year: number | null
+  ge100_per_year: number | null
+  ge50_every_years: number | null
+  ge100_every_years: number | null
+  by_year: { year: number; valid_days: number; ge50: number; ge100: number }[]
+  notice: string
+}
