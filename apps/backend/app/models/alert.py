@@ -16,7 +16,10 @@ class AlertSubscription(Base):
     """
 
     __tablename__ = "alert_subscriptions"
-    __table_args__ = (CheckConstraint("attempts >= 0", name="attempts_non_negative"),)
+    __table_args__ = (
+        CheckConstraint("attempts >= 0", name="attempts_non_negative"),
+        Index("ix_alert_subscriptions_station_id", "station_id"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String(64), unique=True)
@@ -42,10 +45,14 @@ class AlertOutbox(Base):
     __table_args__ = (
         CheckConstraint("category = 'simulado'", name="always_simulated"),
         Index("ix_alert_outbox_created_at", "created_at"),
+        Index("ix_alert_outbox_subscription_id", "subscription_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    subscription_id: Mapped[int] = mapped_column(ForeignKey("alert_subscriptions.id"))
+    # Si se borra una suscripción (derecho a que borren los datos de uno), se borran sus mensajes.
+    subscription_id: Mapped[int] = mapped_column(
+        ForeignKey("alert_subscriptions.id", ondelete="CASCADE")
+    )
     kind: Mapped[MessageKind] = mapped_column(text_enum(MessageKind, "alert_message_kind"))
     channel: Mapped[Channel] = mapped_column(
         text_enum(Channel, "alert_message_channel"), default=Channel.WHATSAPP

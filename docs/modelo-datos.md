@@ -28,6 +28,8 @@ erDiagram
     STATIONS ||--o{ QUALITY_FLAGS : "tiene"
     STATIONS ||--o{ CLIMATE_REFERENCES : "tiene"
     IMPORT_LOGS ||--o{ RAINFALL_RECORDS : "incorpora"
+    STATIONS ||--o{ ALERT_SUBSCRIPTIONS : "avisa sobre"
+    ALERT_SUBSCRIPTIONS ||--o{ ALERT_OUTBOX : "recibe"
 
     SOURCES {
         int id PK
@@ -211,6 +213,11 @@ Una fila por estación y día: `station_id`, `obs_date`, `mm` (≥ 0), `category
 - **Es un dato derivado:** se regenera por rango; `(station_id, obs_date)` es único.
 - Método, parámetros y límites: `docs/datos/estimacion-huecos.md`.
 
+### `alert_subscriptions` y `alert_outbox` — avisos a la población (canales simulados)
+
+- `alert_subscriptions`: quien pidió avisos. Del teléfono guarda un resumen (`phone_hash`, único) y los últimos 4 dígitos; del correo, solo la versión enmascarada. `station_id` es opcional (sin estación = todas) y apunta a `stations`. `status`: `pendiente`, `confirmada` o `baja`.
+- `alert_outbox`: lo que se enviaría, por canal (`whatsapp`, `email`, `sistema`). `category` es siempre `simulado` (lo exige una restricción). `subscription_id` apunta a la suscripción con **borrado en cascada**: al borrar una suscripción se borran sus mensajes.
+
 ### `import_logs` — registro de cada carga (auditoría)
 
 Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`audit` si solo se simuló, `commit` si se guardó), estado, filas leídas, aceptadas y rechazadas, motivos de rechazo agrupados (JSON), fecha de corte aplicada y cuándo se hizo. Es la base del **registro de limpieza** que pide la entrega.
@@ -218,6 +225,17 @@ Una fila por importación: archivo (nombre saneado y huella `sha256`), modo (`au
 ### `climate_references` — normales climáticas
 
 Normal mensual (`month` 1–12) en mm, con período de cálculo y nota de fuente. Categoría siempre `referencia`. **Solo se carga con fuente verificada**; si no hay, la tabla queda vacía y se documenta. Hoy hay una sola normal: la de **Formosa Aero (SMN, 1991-2020)**, ver `docs/fuentes/smn-normales.md`. No hay normales para las demás estaciones.
+
+### Relaciones, índices y borrado (auditoría del 20/11/2026)
+
+Reglas que cumple el modelo, comprobadas por `tests/test_relaciones.py` y por la migración `0008`:
+
+- **Toda clave foránea tiene un índice** que empieza por esa columna (el test falla si alguien agrega una sin índice). Sin índice, consultar por la relación o borrar la fila referida obliga a recorrer toda la tabla. La auditoría encontró cinco sin índice: `quality_flags.station_id` (la usa cada consulta de serie), `rainfall_records.import_id`, `import_logs.source_id`, `alert_subscriptions.station_id` y `alert_outbox.subscription_id`.
+- **Los datos medidos no se borran en cascada.** Borrar una estación con lluvia, una fuente con estaciones o una importación con registros se rechaza (`NO ACTION`): primero hay que decidirlo a propósito. Un dato se corrige o se marca, no desaparece solo.
+- **Los datos personales sí se borran en cascada:** al borrar una suscripción se borran sus mensajes.
+- **No hay relación entre `field_reports` y `stations` a propósito:** un reporte de campo es lluvia anotada donde no hay estación; su lugar es texto y, si hay, coordenadas.
+- **`sensor_readings` no apunta a una tabla de dispositivos:** hoy el dispositivo es solo un identificador (`device_id`). Una tabla de dispositivos con su estación queda para cuando haya hardware real.
+- **Las claves foráneas se hacen cumplir en los dos motores:** PostgreSQL las aplica siempre y en SQLite se activa `PRAGMA foreign_keys=ON` en cada conexión.
 
 ## 4. Reglas que se aplican al cargar y al consultar
 

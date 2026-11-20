@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -17,6 +17,7 @@ class ImportLog(Base):
             "rows_read >= 0 AND rows_accepted >= 0 AND rows_rejected >= 0", name="counts"
         ),
         CheckConstraint("rows_accepted + rows_rejected <= rows_read", name="counts_consistent"),
+        Index("ix_import_logs_source_id", "source_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
