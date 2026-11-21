@@ -118,6 +118,11 @@ body {
   color: var(--texto-suave);
 }
 
+/* Los botones dentro de una nota (por ejemplo «Ver el último período con dato») miden 44 px. */
+.nota button {
+  min-height: 44px;
+}
+
 .estado {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
