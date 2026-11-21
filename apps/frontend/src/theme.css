@@ -7,6 +7,9 @@
   /* Paleta AccuWeather: Naranja solar distintivo, Pizarra Profundo y Azul Radar */
   --accu-orange: #f05514;
   --accu-orange-hover: #ff6a2b;
+  /* Fondo del botón principal: con texto blanco el naranja de acento (#f05514) da 3,5:1; este da 5,2:1. */
+  --boton-primario: #c2410c;
+  --boton-primario-hover: #9a3412;
   --accu-orange-light: rgba(240, 85, 20, 0.15);
   --accu-orange-border: rgba(240, 85, 20, 0.4);
   --accu-navy: #0b1322;
@@ -413,7 +416,7 @@ button {
   padding: 0 1.35rem;
   font-weight: 700;
   color: #fff;
-  background: var(--accu-orange);
+  background: var(--boton-primario, var(--accu-orange));
   border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -424,7 +427,7 @@ button {
 .acciones button:hover:not(:disabled),
 .estado-error button:hover:not(:disabled),
 .boton-primario:hover:not(:disabled) {
-  background: var(--accu-orange-hover);
+  background: var(--boton-primario-hover, var(--accu-orange-hover));
   box-shadow: 0 4px 14px rgba(240, 85, 20, 0.45);
   transform: translateY(-1px);
 }
@@ -538,7 +541,7 @@ fieldset,
   padding: 0.25rem 0;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #f8fafc;
+  color: var(--tinta);
   cursor: pointer;
 }
 
@@ -617,7 +620,7 @@ fieldset > legend {
   font-family: var(--sans);
   font-size: 1.05rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--tinta);
 }
 
 .capas ul {
@@ -671,7 +674,7 @@ fieldset > legend {
   min-height: 44px;
   padding: 0 1.15rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--tinta);
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
@@ -695,7 +698,7 @@ fieldset > legend {
   align-items: center;
   gap: 0.6rem;
   font-weight: 500;
-  color: #f8fafc;
+  color: var(--tinta);
 }
 
 .filtros .opcion input {

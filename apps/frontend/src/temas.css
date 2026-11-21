@@ -494,6 +494,9 @@ html[data-tema='claro'] .v3d-pestanas [role='tab'][aria-selected='true'] {
 html[data-tema='daltonico'] {
   --accu-orange: #56b4e9;
   --accu-orange-hover: #8ecdf2;
+  /* Botón principal con texto blanco: azul profundo (7,4:1), no el celeste de acento. */
+  --boton-primario: #0b5a8f;
+  --boton-primario-hover: #084a75;
   --accu-orange-light: rgb(86 180 233 / 0.16);
   --accu-orange-border: rgb(86 180 233 / 0.5);
   --accu-radar-blue: #56b4e9;
@@ -921,4 +924,24 @@ html[data-tema='daltonico'] .v3d-tabla tr.es-elegida {
 .ayuda-advertencias dd {
   margin: 0.25rem 0 0;
   color: var(--texto-suave);
+}
+
+/* En el celular los controles del encabezado miden 44 px (objetivo táctil mínimo). */
+@media (max-width: 720px) {
+  .selector-idioma,
+  .selector-tema-opcion,
+  .a11y-boton {
+    min-height: 44px;
+  }
+
+  .selector-idioma-select {
+    min-height: 44px !important;
+  }
+
+  /* Botones y campos del contenido: objetivo táctil de 44 px en el celular. */
+  main button,
+  main select,
+  main input:not([type='checkbox'], [type='radio'], [type='range']) {
+    min-height: 44px;
+  }
 }

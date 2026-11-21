@@ -2,18 +2,15 @@ import { useState, type FormEvent } from 'react'
 import { ApiError, getReport, getStations } from '../api/client'
 import type { Report } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
+import { restarDias } from '../components/fechas'
 import { InsigniaAdvertencia } from '../components/Insignias'
+import UltimoPeriodoConDato from '../components/UltimoPeriodoConDato'
 import { FECHA_CORTE, MAX_ESTACIONES_PARTE } from '../constants'
 import { useAsync } from '../hooks/useAsync'
 import { useIdioma } from '../i18n/usar-idioma'
 
-function restarDias(fecha: string, dias: number): string {
-  const d = new Date(`${fecha}T00:00:00Z`)
-  d.setUTCDate(d.getUTCDate() - dias)
-  return d.toISOString().slice(0, 10)
-}
-
-const DESDE_INICIAL = restarDias(FECHA_CORTE, 6)
+const DIAS_PERIODO = 7
+const DESDE_INICIAL = restarDias(FECHA_CORTE, DIAS_PERIODO - 1)
 
 type Copia = 'ninguna' | 'copiado' | 'error'
 
@@ -125,6 +122,15 @@ export default function Parte() {
             </button>
           </div>
         </form>
+
+        <UltimoPeriodoConDato
+          desde={desde}
+          dias={DIAS_PERIODO}
+          onIr={(d, h) => {
+            setDesde(d)
+            setHasta(h)
+          }}
+        />
 
         {!rangoValido && (
           <ErrorEstado

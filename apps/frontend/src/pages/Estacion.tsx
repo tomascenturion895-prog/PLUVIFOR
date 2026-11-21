@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getRainfall, getStations } from '../api/client'
+import { getNetworkHealth, getRainfall, getStations } from '../api/client'
 import type { Series } from '../api/types'
 import { Cargando, ErrorEstado, Vacio } from '../components/Estados'
 import { InsigniaAdvertencia, InsigniaCategoria, InsigniaEstado } from '../components/Insignias'
@@ -19,7 +19,37 @@ function restarDias(fecha: string, dias: number): string {
   return d.toISOString().slice(0, 10)
 }
 
-const DESDE_INICIAL = restarDias(FECHA_CORTE, 89)
+const DIAS_PERIODO = 90
+const DESDE_INICIAL = restarDias(FECHA_CORTE, DIAS_PERIODO - 1)
+
+/**
+ * Cuando el período no tiene ni un día con dato, ofrece ir al último período que sí lo tiene.
+ * La fecha sale de la última lectura de la estación; si no hay, no se inventa ninguna.
+ */
+function UltimoDato({
+  stationId,
+  onIr,
+}: {
+  stationId: number
+  onIr: (desde: string, hasta: string) => void
+}) {
+  const salud = useAsync((signal) => getNetworkHealth({}, signal), [])
+  if (salud.estado.tipo !== 'listo') return null
+  const ultima = salud.estado.datos.stations.find((s) => s.station_id === stationId)
+  if (!ultima?.last_reading_date) {
+    return <p className="nota">Esta estación no tiene ninguna lectura cargada.</p>
+  }
+  const hasta = ultima.last_reading_date
+  return (
+    <p className="nota">
+      Sin dato en este período: no significa 0 mm. La última lectura de esta estación es del {hasta}
+      .{' '}
+      <button type="button" onClick={() => onIr(restarDias(hasta, DIAS_PERIODO - 1), hasta)}>
+        Ver el último período con dato
+      </button>
+    </p>
+  )
+}
 
 export function Resumen({ serie }: { serie: Series }) {
   const { t } = useIdioma()
@@ -52,7 +82,17 @@ export function Resumen({ serie }: { serie: Series }) {
   )
 }
 
-function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: string }) {
+function Serie({
+  serie,
+  desde,
+  hasta,
+  onIrAlPeriodo,
+}: {
+  serie: Series
+  desde: string
+  hasta: string
+  onIrAlPeriodo: (desde: string, hasta: string) => void
+}) {
   const { t } = useIdioma()
   return (
     <>
@@ -69,6 +109,9 @@ function Serie({ serie, desde, hasta }: { serie: Series; desde: string; hasta: s
         </p>
       )}
       <Resumen serie={serie} />
+      {serie.summary.days_with_data === 0 && (
+        <UltimoDato stationId={serie.station_id} onIr={onIrAlPeriodo} />
+      )}
       {serie.warnings.length > 0 && (
         <section aria-labelledby="advertencias">
           <h4 id="advertencias">{t('estacion.advertenciasCalidad')}</h4>
@@ -186,7 +229,15 @@ export default function Estacion() {
         <ErrorEstado mensaje={serie.estado.mensaje} onReintentar={serie.reintentar} />
       )}
       {rangoValido && stationId !== null && serie.estado.tipo === 'listo' && serie.estado.datos && (
-        <Serie serie={serie.estado.datos} desde={desde} hasta={hasta} />
+        <Serie
+          serie={serie.estado.datos}
+          desde={desde}
+          hasta={hasta}
+          onIrAlPeriodo={(d, h) => {
+            setDesde(d)
+            setHasta(h)
+          }}
+        />
       )}
     </section>
   )

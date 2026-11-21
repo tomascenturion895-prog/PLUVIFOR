@@ -54,34 +54,44 @@ export default function NetworkHealth() {
               {fechaLegible(estado.datos.data_cutoff_date)}). Son datos observados: no se mezclan
               con referencias ni estimados.
             </p>
-            <table className="tabla-dias">
-              <caption className="nota">{t('salud.tablaCaption')}</caption>
-              <thead>
-                <tr>
-                  <th scope="col">{t('comun.estacion')}</th>
-                  <th scope="col">{t('comun.zona')}</th>
-                  <th scope="col">{t('comun.estado')}</th>
-                  <th scope="col">{t('salud.ultimaLectura')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {estado.datos.stations.map((s) => (
-                  <tr key={s.station_id}>
-                    <th scope="row">
-                      {s.name} ({s.code})
-                    </th>
-                    <td>{s.zone ?? t('comun.sinDato')}</td>
-                    <td>
-                      <span className={`marca-estado marca-estado-${s.state}`} aria-hidden="true" />
-                      {TEXTO_ESTADO[s.state]}
-                    </td>
-                    <td>
-                      <UltimaLectura estacion={s} />
-                    </td>
+            <div
+              className="tabla-scroll"
+              role="region"
+              tabIndex={0}
+              aria-label={t('salud.tablaCaption')}
+            >
+              <table className="tabla-dias">
+                <caption className="nota">{t('salud.tablaCaption')}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{t('comun.estacion')}</th>
+                    <th scope="col">{t('comun.zona')}</th>
+                    <th scope="col">{t('comun.estado')}</th>
+                    <th scope="col">{t('salud.ultimaLectura')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {estado.datos.stations.map((s) => (
+                    <tr key={s.station_id}>
+                      <th scope="row">
+                        {s.name} ({s.code})
+                      </th>
+                      <td>{s.zone ?? t('comun.sinDato')}</td>
+                      <td>
+                        <span
+                          className={`marca-estado marca-estado-${s.state}`}
+                          aria-hidden="true"
+                        />
+                        {TEXTO_ESTADO[s.state]}
+                      </td>
+                      <td>
+                        <UltimaLectura estacion={s} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </>
         ))}
       <LecturasSimuladas />
