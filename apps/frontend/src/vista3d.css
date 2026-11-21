@@ -102,12 +102,12 @@
 
 .v3d-periodos button[aria-pressed='true'] {
   color: #fff;
-  background: var(--azul);
-  border-color: var(--azul);
+  background: var(--boton-primario, var(--azul));
+  border-color: var(--boton-primario, var(--azul));
 }
 
 .v3d-periodos button[aria-pressed='true'] small {
-  color: #d5eef1;
+  color: #fff;
 }
 
 .v3d-periodos-nota {
@@ -292,7 +292,7 @@
 
 .v3d-segmentado button.es-activo {
   color: #fff;
-  background: var(--accu-orange);
+  background: var(--boton-primario, var(--accu-orange));
 }
 
 @media (hover: hover) {
@@ -515,4 +515,10 @@ html[data-contraste='alto'] .v3d-etiqueta {
   color: #fff;
   background: #000;
   padding: 0 0.3rem;
+}
+
+/* El panel del 3D es siempre oscuro: el título hereda su color claro y no el del tema (en Claro salía
+   oscuro sobre oscuro). */
+html[data-tema] .v3d-panel h3 {
+  color: inherit;
 }
