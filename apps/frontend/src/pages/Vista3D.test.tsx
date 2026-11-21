@@ -142,6 +142,11 @@ describe('Vista 3D', () => {
     )
   })
 
+  it('el resumen concuerda en plural: «2 estaciones, 2 departamentos»', async () => {
+    mostrar()
+    expect(await screen.findByText(/2 estaciones, 2 departamentos\./)).toBeInTheDocument()
+  })
+
   it('al elegir un departamento muestra por qué se descartó la estación', async () => {
     mostrar()
     const tabla = await screen.findByRole('table')

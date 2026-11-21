@@ -86,8 +86,9 @@ vi.mock('../api/client', async (original) => ({
   getStations: vi.fn(),
   getAccumulated: vi.fn(),
   getEvents: vi.fn(),
+  getNetworkHealth: vi.fn(),
 }))
-import { getAccumulated, getEvents, getStations } from '../api/client'
+import { getAccumulated, getEvents, getNetworkHealth, getStations } from '../api/client'
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -175,6 +176,16 @@ function acumulados(overrides: Partial<AccumulatedOut> = {}): AccumulatedOut {
 // ---------------------------------------------------------------------------
 
 beforeEach(() => {
+  // Sin lecturas en la red: el aviso de «último período con dato» no aparece en estas pruebas.
+  vi.mocked(getNetworkHealth).mockResolvedValue({
+    category: 'observado',
+    data_cutoff_date: FECHA_CORTE,
+    silent_after_days: 30,
+    active: 0,
+    silent: 0,
+    no_data: 0,
+    stations: [],
+  })
   vi.stubGlobal(
     'fetch',
     vi.fn((url: RequestInfo | URL) =>

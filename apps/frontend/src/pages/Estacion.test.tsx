@@ -14,11 +14,13 @@ vi.mock('../api/client', async (original) => ({
   getEstimates: vi.fn(),
   getEvents: vi.fn(),
   getClimateReference: vi.fn(),
+  getNetworkHealth: vi.fn(),
 }))
 import {
   getClimateReference,
   getEstimates,
   getEvents,
+  getNetworkHealth,
   getRainfall,
   getStations,
 } from '../api/client'
@@ -88,6 +90,8 @@ beforeEach(() => {
   vi.mocked(getStations).mockResolvedValue(ESTACIONES)
   vi.mocked(getRainfall).mockReset()
   vi.mocked(getEstimates).mockReset()
+  vi.mocked(getNetworkHealth).mockReset()
+  vi.mocked(getNetworkHealth).mockResolvedValue(saludDe(null))
   vi.mocked(getEvents).mockReset()
   vi.mocked(getEvents).mockResolvedValue({
     category: 'observado',
@@ -116,7 +120,73 @@ beforeEach(() => {
   })
 })
 
+function saludDe(last: string | null) {
+  return {
+    category: 'observado',
+    data_cutoff_date: FECHA_CORTE,
+    silent_after_days: 30,
+    active: 0,
+    silent: 1,
+    no_data: 0,
+    stations: [
+      {
+        station_id: 1,
+        code: '424',
+        name: 'El Colorado',
+        zone: null,
+        department: null,
+        source: 'siga_inta',
+        network: 'INTA',
+        state: 'en_silencio',
+        last_reading_date: last,
+        last_reading_mm: last ? 0 : null,
+        days_since_last: last ? 100 : null,
+      },
+    ],
+  } as unknown as Awaited<ReturnType<typeof getNetworkHealth>>
+}
+
+const SIN_DATO = serie({
+  summary: {
+    days_in_period: 90,
+    days_with_data: 0,
+    days_sin_fila: 90,
+    days_fila_sin_valor: 0,
+    coverage: 0,
+    accumulated_mm: null,
+  },
+  days: [],
+})
+
 describe('pantalla Estación', () => {
+  it('sin ningún día con dato ofrece ir al último período con dato y lo consulta', async () => {
+    vi.mocked(getNetworkHealth).mockResolvedValue(saludDe('2016-01-04'))
+    vi.mocked(getRainfall).mockResolvedValueOnce(SIN_DATO).mockResolvedValue(serie())
+    ir()
+    await userEvent.click(await screen.findByRole('button', { name: /último período con dato/i }))
+    await waitFor(() =>
+      expect(getRainfall).toHaveBeenLastCalledWith(
+        { stationId: 1, from: '2015-10-07', to: '2016-01-04' },
+        expect.anything(),
+      ),
+    )
+  })
+
+  it('si la estación nunca tuvo lectura no inventa una fecha ni ofrece el botón', async () => {
+    vi.mocked(getNetworkHealth).mockResolvedValue(saludDe(null))
+    vi.mocked(getRainfall).mockResolvedValue(SIN_DATO)
+    ir()
+    expect(await screen.findByText(/no tiene ninguna lectura cargada/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /último período con dato/i })).toBeNull()
+  })
+
+  it('con días con dato no consulta la última lectura', async () => {
+    vi.mocked(getRainfall).mockResolvedValue(serie())
+    ir()
+    await screen.findByText('El Colorado', { selector: 'h3' })
+    expect(getNetworkHealth).not.toHaveBeenCalled()
+  })
+
   it('sin estación elegida pide elegir una y no consulta la lluvia', async () => {
     ir('/estacion')
     expect(await screen.findByText('Elegí una estación para ver su lluvia.')).toBeInTheDocument()

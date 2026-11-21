@@ -42,6 +42,7 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
   const { t } = useIdioma()
   const filas = alinearSeries(datos.stations)
   const dif = diferenciaCobertura(datos.stations)
+  const porEstacion = datos.stations.filter((e) => e.warnings.length > 0)
   return (
     <article aria-label={t('comparador.resultadoAria')}>
       <p className="metadatos">
@@ -59,7 +60,32 @@ function Resultado({ datos }: { datos: SeriesCompare }) {
           ))}
         </ul>
       ) : (
-        <p className="nota">{t('comparador.sinAdvertencias')}</p>
+        porEstacion.length === 0 && <p className="nota">{t('comparador.sinAdvertencias')}</p>
+      )}
+      {porEstacion.length > 0 && (
+        <section aria-label="Advertencias de calidad por estación">
+          <h3>Advertencias de calidad por estación</h3>
+          <p className="nota">
+            Son avisos sobre una serie en sí (por ejemplo, ceros prolongados): se muestran aunque no
+            haya diferencias entre las series.
+          </p>
+          {porEstacion.map((e) => (
+            <div key={e.station_id}>
+              <h4>{e.station_name}</h4>
+              <ul className="advertencias">
+                {e.warnings.map((w) => (
+                  <li key={`${w.code}-${w.start_date ?? ''}`}>
+                    <InsigniaAdvertencia codigo={w.code} mensaje={w.message} />
+                    <p>
+                      {w.message}
+                      {w.start_date && w.end_date && ` (${w.start_date} a ${w.end_date})`}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
       )}
       {datos.not_evaluated.length > 0 && (
         <details>

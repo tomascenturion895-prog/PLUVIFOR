@@ -460,7 +460,8 @@ export default function Vista3D() {
         {catalogo.estado.tipo === 'listo' && (
           <span className="v3d-periodos-nota">
             {estaciones.length} {t('comun.estaciones').toLowerCase()}, {ubicadas}{' '}
-            {t('v3d.departamento').toLowerCase()}. {fecha(FECHA_CORTE)}.
+            {t(ubicadas === 1 ? 'v3d.departamento' : 'v3d.departamentos').toLowerCase()}.{' '}
+            {fecha(FECHA_CORTE)}.
           </span>
         )}
       </div>

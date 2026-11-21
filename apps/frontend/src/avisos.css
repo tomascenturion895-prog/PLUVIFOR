@@ -17,7 +17,31 @@
 }
 .avisos-formulario form {
   display: grid;
+  /* minmax(0, 1fr): sin el 0, el ancho natural de un campo ensancha el formulario más que la pantalla. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
+}
+/* Campos a todo el ancho y con área táctil de 44 px (el teléfono y el correo se salían del celular). */
+.avisos-formulario label:not(.casilla),
+.panel-personal label:not(.casilla),
+.mis-avisos label:not(.casilla) {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  font-weight: 600;
+}
+.avisos-formulario input:not([type='checkbox']):not([type='radio']),
+.avisos-formulario select,
+.panel-personal input:not([type='checkbox']):not([type='radio']),
+.panel-personal select,
+.mis-avisos input:not([type='checkbox']):not([type='radio']),
+.mis-avisos select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  font: inherit;
 }
 .avisos-vista {
   display: grid;
@@ -224,6 +248,7 @@
 }
 .panel-personal form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
   max-width: 32rem;
 }
@@ -256,6 +281,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-height: 44px;
+}
+.selector-estaciones .casilla input {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 .mis-avisos {
   margin-top: 1.5rem;

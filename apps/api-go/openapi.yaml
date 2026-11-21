@@ -75,8 +75,8 @@ paths:
         en `days_100mm_or_more`. **Un día sin dato no es un día seco:** corta la racha seca y no la
         extiende. Una racha que toca la advertencia de ceros prolongados viene con
         `zero_run_warning: true` y no se da por buena. `min_dry_days` (valor provisional, 7) solo
-        filtra la lista; `longest_dry_streak` se informa siempre. Implementada solo en Go: sin el
-        driver de SQLite responde 404 por el reenvío a Python.
+        filtra la lista; `longest_dry_streak` se informa siempre. Implementada en Go y
+        también en Python (mismo contrato): sin el driver de SQLite, Go reenvía a Python.
       x-implemented-in: go
       parameters:
         - { name: station_id, in: query, schema: { $ref: '#/components/schemas/Id' } }
