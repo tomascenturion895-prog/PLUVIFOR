@@ -296,7 +296,7 @@ button[type='submit'],
 .boton-primario {
   padding: 0 1.5rem;
   color: var(--md-on-primary);
-  background: var(--md-primary);
+  background: var(--boton-primario, var(--md-primary));
   border: 1px solid transparent;
   border-radius: var(--md-corner-full);
 }
@@ -305,7 +305,10 @@ button[type='submit'],
 .estado-error button:hover:not(:disabled),
 button[type='submit']:hover:not(:disabled),
 .boton-primario:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--md-on-primary) var(--md-hover), var(--md-primary));
+  background: var(
+    --boton-primario-hover,
+    color-mix(in srgb, var(--md-on-primary) var(--md-hover), var(--md-primary))
+  );
   box-shadow: var(--md-elev-1);
 }
 

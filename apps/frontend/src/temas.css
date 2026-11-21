@@ -494,6 +494,9 @@ html[data-tema='claro'] .v3d-pestanas [role='tab'][aria-selected='true'] {
 html[data-tema='daltonico'] {
   --accu-orange: #56b4e9;
   --accu-orange-hover: #8ecdf2;
+  /* Botón principal con texto blanco: azul profundo (7,4:1), no el celeste de acento. */
+  --boton-primario: #0b5a8f;
+  --boton-primario-hover: #084a75;
   --accu-orange-light: rgb(86 180 233 / 0.16);
   --accu-orange-border: rgb(86 180 233 / 0.5);
   --accu-radar-blue: #56b4e9;
