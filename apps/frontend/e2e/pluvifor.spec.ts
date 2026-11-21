@@ -38,6 +38,9 @@ test.describe('Inicio y navegación', () => {
 
   test('se puede llegar a la ficha de estación desde el menú', async ({ page }) => {
     await page.goto('/')
+    // En el celular el menú está plegado: se abre primero.
+    const menu = page.getByRole('button', { name: /^Menú/ })
+    if (await menu.isVisible()) await menu.click()
     await page.getByRole('link', { name: 'Estación' }).first().click()
     await expect(page).toHaveURL(/\/estacion/)
     await expect(page.getByLabel('Elegí una estación')).toBeVisible()
@@ -88,7 +91,7 @@ test.describe('Importar: la escritura exige clave', () => {
     await expect(
       page.getByText('Ingresá la clave de administración para auditar y confirmar cargas.'),
     ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Auditar' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Auditar', exact: true })).toBeDisabled()
     await expect(page.getByRole('button', { name: 'Confirmar carga' })).toBeDisabled()
   })
 })

@@ -925,3 +925,23 @@ html[data-tema='daltonico'] .v3d-tabla tr.es-elegida {
   margin: 0.25rem 0 0;
   color: var(--texto-suave);
 }
+
+/* En el celular los controles del encabezado miden 44 px (objetivo táctil mínimo). */
+@media (max-width: 720px) {
+  .selector-idioma,
+  .selector-tema-opcion,
+  .a11y-boton {
+    min-height: 44px;
+  }
+
+  .selector-idioma-select {
+    min-height: 44px !important;
+  }
+
+  /* Botones y campos del contenido: objetivo táctil de 44 px en el celular. */
+  main button,
+  main select,
+  main input:not([type='checkbox'], [type='radio'], [type='range']) {
+    min-height: 44px;
+  }
+}
