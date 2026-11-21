@@ -7,6 +7,7 @@ El parte describe lo que pasó; no predice ni indica riesgo. Un día sin dato nu
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 
 from app.domain.enums import DataCategory, RainState
 from app.domain.metrics import Summary
@@ -40,7 +41,9 @@ def fmt_date(value: date) -> str:
 
 
 def fmt_mm(value: float) -> str:
-    return f"{value:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".") + " mm"
+    # Redondeo «medio hacia arriba», como la interfaz: 8,25 es 8,3 y no 8,2 (el de Python es par).
+    rounded = Decimal(str(value)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    return f"{rounded:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".") + " mm"
 
 
 @dataclass(frozen=True)

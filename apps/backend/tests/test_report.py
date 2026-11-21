@@ -201,6 +201,11 @@ class TestDominio:
         assert fmt_mm(1265.0) == "1.265,0 mm"
         assert fmt_mm(0.0) == "0,0 mm"
 
+    def test_redondea_medio_hacia_arriba_igual_que_la_interfaz(self):
+        assert fmt_mm(8.25) == "8,3 mm"  # la pantalla de comparación muestra 8,3
+        assert fmt_mm(0.05) == "0,1 mm"
+        assert fmt_mm(1264.75) == "1.264,8 mm"
+
     def test_texto_sin_estaciones_no_falla(self):
         text = compose_text(
             category=DataCategory.OBSERVADO, date_from=START, date_to=START,
