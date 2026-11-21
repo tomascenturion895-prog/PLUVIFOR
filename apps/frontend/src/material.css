@@ -228,10 +228,15 @@ a {
 }
 
 /* Pie: superficie inversa, la leyenda de prototipo siempre a la vista. */
-.pie,
-.pie small {
+.pie {
   color: var(--md-inverse-on-surface);
   background: var(--md-inverse-surface);
+}
+
+/* La leyenda hereda el color del pie: sin recuadro propio (en el tema oscuro salía un bloque blanco). */
+.pie small {
+  color: inherit;
+  background: transparent;
 }
 
 /* ---- Botones ----
