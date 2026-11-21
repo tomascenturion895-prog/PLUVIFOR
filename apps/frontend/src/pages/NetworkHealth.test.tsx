@@ -53,6 +53,15 @@ function salud(stations: StationHealth[]): Salud {
 afterEach(() => vi.clearAllMocks())
 
 describe('Salud de la red', () => {
+  it('la tabla va en una región desplazable y con nombre: en el celular no ensancha la página', async () => {
+    vi.mocked(getNetworkHealth).mockResolvedValue(salud([est({ station_id: 1, name: 'A' })]))
+    render(<NetworkHealth />)
+    const region = await screen.findByRole('region', { name: 'Estado de cada estación' })
+    expect(region).toHaveClass('tabla-scroll')
+    expect(region).toHaveAttribute('tabindex', '0')
+    expect(within(region).getByRole('table')).toBeInTheDocument()
+  })
+
   it('cuenta activas, en silencio y sin datos', async () => {
     vi.mocked(getNetworkHealth).mockResolvedValue(
       salud([
