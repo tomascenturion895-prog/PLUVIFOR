@@ -138,6 +138,52 @@ describe('Comparador', () => {
     expect(getCompare).toHaveBeenCalledWith(expect.objectContaining({ stationIds: [1, 2] }))
   })
 
+  it('muestra las advertencias de cada estación aunque no haya advertencias entre series (caso 424 vs 425)', async () => {
+    const e424 = est(1, 'El Colorado', [0, 0, 0])
+    e424.warnings = [
+      {
+        code: 'ceros_prolongados',
+        message: '281 días seguidos con 0 mm: puede ser un sensor sin registrar.',
+        severity: 'aviso',
+        start_date: '2015-09-20',
+        end_date: '2016-06-26',
+      },
+    ]
+    vi.mocked(getStations).mockResolvedValue(ESTACIONES)
+    vi.mocked(getCompare).mockResolvedValue(
+      comparacion({
+        stations: [e424, est(2, 'Bartolomé', [5, null, 3], 0.66)],
+        comparability_warnings: [],
+      }),
+    )
+    const usuario = userEvent.setup()
+    render(<Compare />)
+    await elegir(usuario, '424', '425')
+    await usuario.click(screen.getByRole('button', { name: 'Comparar' }))
+    const bloque = await screen.findByRole('region', {
+      name: 'Advertencias de calidad por estación',
+    })
+    expect(bloque).toHaveTextContent('El Colorado')
+    expect(bloque).toHaveTextContent('281 días seguidos')
+    expect(bloque).toHaveTextContent('2015-09-20 a 2016-06-26')
+    expect(
+      screen.queryByText('No se detectaron advertencias de comparabilidad entre estas series.'),
+    ).toBeNull()
+  })
+
+  it('sin advertencias en ningún nivel lo dice', async () => {
+    vi.mocked(getStations).mockResolvedValue(ESTACIONES)
+    vi.mocked(getCompare).mockResolvedValue(comparacion({ comparability_warnings: [] }))
+    const usuario = userEvent.setup()
+    render(<Compare />)
+    await elegir(usuario, '424', '425')
+    await usuario.click(screen.getByRole('button', { name: 'Comparar' }))
+    expect(await screen.findByText(/No se detectaron advertencias/)).toBeInTheDocument()
+    expect(
+      screen.queryByRole('region', { name: 'Advertencias de calidad por estación' }),
+    ).toBeNull()
+  })
+
   it('la tabla muestra el acumulado, los días sin dato y no suma estaciones', async () => {
     vi.mocked(getStations).mockResolvedValue(ESTACIONES)
     vi.mocked(getCompare).mockResolvedValue(comparacion())
