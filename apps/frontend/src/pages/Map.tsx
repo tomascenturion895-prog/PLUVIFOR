@@ -32,6 +32,8 @@ import { MAPA_BASE, TESELAS_OSM } from '../geo/mapaBase'
 import { useAsync } from '../hooks/useAsync'
 import { useIdioma } from '../i18n/usar-idioma'
 import { DALTONICO, esDaltonico } from '../components/tema/tema-colores'
+import { restarDias } from '../components/fechas'
+import UltimoPeriodoConDato from '../components/UltimoPeriodoConDato'
 import { colorMm, radiusMm, textoMmMapa } from './map-helpers'
 
 const LIMITE_ESTACIONES = 200
@@ -41,13 +43,8 @@ const SIN_ESTACIONES: Station[] = []
 // Fecha inicial
 // ---------------------------------------------------------------------------
 
-function restarDias(fecha: string, dias: number): string {
-  const d = new Date(`${fecha}T00:00:00Z`)
-  d.setUTCDate(d.getUTCDate() - dias)
-  return d.toISOString().slice(0, 10)
-}
-
-const DESDE_INICIAL = restarDias(FECHA_CORTE, 29)
+const DIAS_PERIODO = 30
+const DESDE_INICIAL = restarDias(FECHA_CORTE, DIAS_PERIODO - 1)
 
 type StationWithCoordinates = Station & { lat: number; lon: number }
 
@@ -524,6 +521,15 @@ export function Mapa() {
           />
         </label>
       </form>
+
+      <UltimoPeriodoConDato
+        desde={desde}
+        dias={DIAS_PERIODO}
+        onIr={(d, h) => {
+          setDesde(d)
+          setHasta(h)
+        }}
+      />
 
       <details className="capas-plegable">
         <summary>
